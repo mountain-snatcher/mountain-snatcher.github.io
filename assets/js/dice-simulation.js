@@ -1,20 +1,30 @@
-class DiceSimulation {
+class EnhancedDiceSimulation {
     constructor() {
         this.scene = null;
         this.camera = null;
         this.renderer = null;
-        this.world = null;
         this.dice = [];
-        this.maxDice = this.isMobile() ? 6 : 12; // Fewer dice on mobile
-        this.spawnTimer = 0;
-        this.spawnInterval = 2000; // milliseconds
         this.clock = new THREE.Clock();
         this.isVisible = true;
         
-        // Performance monitoring
-        this.setupVisibilityHandling();
+        // Enhanced controls
+        this.settings = {
+            maxDice: this.isMobile() ? 6 : 12,
+            spawnRate: 2000, // milliseconds
+            gravity: -15,
+            bounceStrength: 0.6,
+            friction: 0.95,
+            diceLifetime: 30, // seconds
+            enableShadows: !this.isMobile(),
+            enableReflections: true,
+            pauseWhenHidden: true
+        };
+        
+        this.spawnTimer = 0;
+        this.nextSpawnTime = this.settings.spawnRate;
         
         this.init();
+        this.createControls();
         this.animate();
     }
 
@@ -22,115 +32,54 @@ class DiceSimulation {
         return window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    setupVisibilityHandling() {
-        // Pause animation when tab is not visible to save battery
-        document.addEventListener('visibilitychange', () => {
-            this.isVisible = !document.hidden;
-        });
-    }
-
     init() {
         // Get canvas element
         this.canvas = document.getElementById('diceCanvas');
+        if (!this.canvas) {
+            console.warn('Dice canvas not found');
+            return;
+        }
         
         // Scene setup
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x0a0f1a); // Dark background matching the video
         
         // Camera setup
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.set(0, 8, 12);
         this.camera.lookAt(0, 0, 0);
         
-        // Renderer setup with performance optimizations
+        // Renderer setup
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: this.canvas, 
-            antialias: !this.isMobile(), // Disable antialiasing on mobile for performance
+            antialias: !this.isMobile(),
             alpha: false,
             powerPreference: "high-performance"
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio for performance
-        this.renderer.shadowMap.enabled = !this.isMobile(); // Disable shadows on mobile
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.2;
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setClearColor(0x0a0f1a);
         
-        // Physics world setup
-        this.world = new CANNON.World();
-        this.world.gravity.set(0, -15, 0);
-        this.world.broadphase = new CANNON.NaiveBroadphase();
-        this.world.solver.iterations = 10;
+        if (this.settings.enableShadows) {
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        }
         
-        // Create ground/glass surface
-        this.createGlassSurface();
-        
-        // Add lighting
         this.setupLighting();
+        this.createGlassSurface();
+        this.setupVisibilityHandling();
         
         // Handle window resize
         window.addEventListener('resize', () => this.onWindowResize(), false);
         
-        // Initial dice spawn
-        this.spawnDice();
+        console.log('Enhanced dice simulation initialized');
     }
 
-    createGlassSurface() {
-        // Visual glass surface
-        const glassGeometry = new THREE.PlaneGeometry(30, 30);
-        const glassMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x222222,
-            metalness: 0.1,
-            roughness: 0.1,
-            transmission: 0.2,
-            transparent: true,
-            opacity: 0.8,
-            reflectivity: 0.9,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1
-        });
-        
-        const glassSurface = new THREE.Mesh(glassGeometry, glassMaterial);
-        glassSurface.rotation.x = -Math.PI / 2;
-        glassSurface.position.y = -2;
-        glassSurface.receiveShadow = true;
-        this.scene.add(glassSurface);
-        
-        // Physics ground
-        const groundShape = new CANNON.Plane();
-        const groundBody = new CANNON.Body({ mass: 0 });
-        groundBody.addShape(groundShape);
-        groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-        groundBody.position.set(0, -2, 0);
-        groundBody.material = new CANNON.Material({ friction: 0.4, restitution: 0.6 });
-        this.world.add(groundBody);
-        
-        // Add invisible walls to contain dice
-        this.createWalls();
-    }
-
-    createWalls() {
-        const wallMaterial = new CANNON.Material({ friction: 0.4, restitution: 0.8 });
-        
-        // Create invisible boundary walls
-        const wallPositions = [
-            { x: 15, y: 5, z: 0, rotation: [0, 0, Math.PI/2] },   // Right wall
-            { x: -15, y: 5, z: 0, rotation: [0, 0, -Math.PI/2] }, // Left wall
-            { x: 0, y: 5, z: 15, rotation: [Math.PI/2, 0, 0] },   // Back wall
-            { x: 0, y: 5, z: -15, rotation: [-Math.PI/2, 0, 0] }  // Front wall
-        ];
-        
-        wallPositions.forEach(pos => {
-            const wallShape = new CANNON.Plane();
-            const wallBody = new CANNON.Body({ mass: 0 });
-            wallBody.addShape(wallShape);
-            wallBody.position.set(pos.x, pos.y, pos.z);
-            if (pos.rotation) {
-                wallBody.quaternion.setFromEuler(pos.rotation[0], pos.rotation[1], pos.rotation[2]);
-            }
-            wallBody.material = wallMaterial;
-            this.world.add(wallBody);
-        });
+    setupVisibilityHandling() {
+        if (this.settings.pauseWhenHidden) {
+            document.addEventListener('visibilitychange', () => {
+                this.isVisible = !document.hidden;
+            });
+        }
     }
 
     setupLighting() {
@@ -141,15 +90,19 @@ class DiceSimulation {
         // Main directional light
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(10, 20, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 50;
-        directionalLight.shadow.camera.left = -20;
-        directionalLight.shadow.camera.right = 20;
-        directionalLight.shadow.camera.top = 20;
-        directionalLight.shadow.camera.bottom = -20;
+        
+        if (this.settings.enableShadows) {
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -20;
+            directionalLight.shadow.camera.right = 20;
+            directionalLight.shadow.camera.top = 20;
+            directionalLight.shadow.camera.bottom = -20;
+        }
+        
         this.scene.add(directionalLight);
         
         // Aurora-themed accent lights
@@ -166,11 +119,45 @@ class DiceSimulation {
         this.scene.add(purpleLight);
     }
 
-    createDice() {
-        // Dice geometry with rounded edges
-        const diceGeometry = new THREE.BoxGeometry(1, 1, 1);
+    createGlassSurface() {
+        // Dark glass surface
+        const glassGeometry = new THREE.PlaneGeometry(30, 30);
         
-        // Create dice material with subtle glow
+        let glassMaterial;
+        if (this.settings.enableReflections) {
+            glassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x222222,
+                metalness: 0.1,
+                roughness: 0.1,
+                transmission: 0.2,
+                transparent: true,
+                opacity: 0.8,
+                reflectivity: 0.9,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1
+            });
+        } else {
+            glassMaterial = new THREE.MeshLambertMaterial({
+                color: 0x333333,
+                transparent: true,
+                opacity: 0.8
+            });
+        }
+        
+        this.glassSurface = new THREE.Mesh(glassGeometry, glassMaterial);
+        this.glassSurface.rotation.x = -Math.PI / 2;
+        this.glassSurface.position.y = -2;
+        this.glassSurface.receiveShadow = this.settings.enableShadows;
+        this.scene.add(this.glassSurface);
+        
+        this.groundLevel = -1.5; // Surface level for physics
+    }
+
+    createDice() {
+        if (this.dice.length >= this.settings.maxDice) return;
+        
+        // Dice geometry
+        const diceGeometry = new THREE.BoxGeometry(1, 1, 1);
         const diceMaterial = new THREE.MeshPhysicalMaterial({
             color: 0xf8f8f8,
             metalness: 0.1,
@@ -179,50 +166,56 @@ class DiceSimulation {
             clearcoatRoughness: 0.2
         });
         
-        // Create visual dice
         const diceMesh = new THREE.Mesh(diceGeometry, diceMaterial);
-        diceMesh.castShadow = true;
-        diceMesh.receiveShadow = true;
+        diceMesh.castShadow = this.settings.enableShadows;
+        diceMesh.receiveShadow = this.settings.enableShadows;
         
         // Add dots to dice faces
         this.addDiceDots(diceMesh);
         
-        // Create physics body
-        const diceShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-        const diceBody = new CANNON.Body({ mass: 1 });
-        diceBody.addShape(diceShape);
-        diceBody.material = new CANNON.Material({ friction: 0.4, restitution: 0.6 });
-        
-        // Random spawn position and rotation
+        // Random spawn position
         const spawnX = (Math.random() - 0.5) * 10;
         const spawnZ = (Math.random() - 0.5) * 10;
         const spawnY = 15 + Math.random() * 5;
         
-        diceBody.position.set(spawnX, spawnY, spawnZ);
-        diceMesh.position.copy(diceBody.position);
+        diceMesh.position.set(spawnX, spawnY, spawnZ);
         
         // Random initial rotation
-        diceBody.quaternion.set(
-            Math.random() * 2 - 1,
-            Math.random() * 2 - 1,
-            Math.random() * 2 - 1,
-            Math.random() * 2 - 1
+        diceMesh.rotation.set(
+            Math.random() * Math.PI * 2,
+            Math.random() * Math.PI * 2,
+            Math.random() * Math.PI * 2
         );
-        diceBody.quaternion.normalize();
-        diceMesh.quaternion.copy(diceBody.quaternion);
         
-        // Add to scene and physics world
         this.scene.add(diceMesh);
-        this.world.add(diceBody);
         
-        return { mesh: diceMesh, body: diceBody, age: 0 };
+        // Physics properties
+        const diceObj = {
+            mesh: diceMesh,
+            velocity: {
+                x: (Math.random() - 0.5) * 2,
+                y: 0,
+                z: (Math.random() - 0.5) * 2
+            },
+            angularVelocity: {
+                x: (Math.random() - 0.5) * 0.2,
+                y: (Math.random() - 0.5) * 0.2,
+                z: (Math.random() - 0.5) * 0.2
+            },
+            bounces: 0,
+            age: 0,
+            settled: false
+        };
+        
+        this.dice.push(diceObj);
+        return diceObj;
     }
 
     addDiceDots(diceMesh) {
         const dotGeometry = new THREE.SphereGeometry(0.08, 8, 8);
         const dotMaterial = new THREE.MeshBasicMaterial({ color: 0xcc0000 });
         
-        // Define dot patterns for each face (1-6)
+        // Define dot patterns for dice faces (1-6)
         const dotPatterns = [
             [[0, 0, 0.51]], // 1 dot
             [[-0.2, 0.2, 0.51], [0.2, -0.2, 0.51]], // 2 dots
@@ -232,7 +225,7 @@ class DiceSimulation {
             [[-0.2, 0.3, 0.51], [0.2, 0.3, 0.51], [-0.2, 0, 0.51], [0.2, 0, 0.51], [-0.2, -0.3, 0.51], [0.2, -0.3, 0.51]] // 6 dots
         ];
         
-        // Add dots to front face (just for visual detail)
+        // Add dots to front face
         const faceIndex = Math.floor(Math.random() * 6);
         const pattern = dotPatterns[faceIndex];
         
@@ -243,23 +236,203 @@ class DiceSimulation {
         });
     }
 
-    spawnDice() {
-        if (this.dice.length < this.maxDice) {
-            const dice = this.createDice();
-            this.dice.push(dice);
-        }
+    updatePhysics(deltaTime) {
+        const boundary = 12;
+        
+        this.dice.forEach((die, index) => {
+            if (die.settled) return;
+            
+            // Apply gravity
+            die.velocity.y += this.settings.gravity * deltaTime;
+            
+            // Update position
+            die.mesh.position.x += die.velocity.x * deltaTime;
+            die.mesh.position.y += die.velocity.y * deltaTime;
+            die.mesh.position.z += die.velocity.z * deltaTime;
+            
+            // Update rotation
+            die.mesh.rotation.x += die.angularVelocity.x;
+            die.mesh.rotation.y += die.angularVelocity.y;
+            die.mesh.rotation.z += die.angularVelocity.z;
+            
+            // Collision with glass surface
+            if (die.mesh.position.y <= this.groundLevel + 0.5) {
+                die.mesh.position.y = this.groundLevel + 0.5;
+                
+                // Bounce
+                die.velocity.y *= -this.settings.bounceStrength;
+                die.velocity.x *= this.settings.friction;
+                die.velocity.z *= this.settings.friction;
+                
+                // Reduce angular velocity on bounce
+                die.angularVelocity.x *= 0.8;
+                die.angularVelocity.y *= 0.8;
+                die.angularVelocity.z *= 0.8;
+                
+                die.bounces++;
+                
+                // Check if dice has settled
+                if (Math.abs(die.velocity.y) < 0.3 && 
+                    Math.abs(die.velocity.x) < 0.1 && 
+                    Math.abs(die.velocity.z) < 0.1) {
+                    die.settled = true;
+                    die.velocity = { x: 0, y: 0, z: 0 };
+                    die.angularVelocity = { x: 0, y: 0, z: 0 };
+                }
+            }
+            
+            // Boundary walls
+            if (Math.abs(die.mesh.position.x) > boundary) {
+                die.mesh.position.x = Math.sign(die.mesh.position.x) * boundary;
+                die.velocity.x *= -0.5;
+            }
+            if (Math.abs(die.mesh.position.z) > boundary) {
+                die.mesh.position.z = Math.sign(die.mesh.position.z) * boundary;
+                die.velocity.z *= -0.5;
+            }
+            
+            // Age the dice
+            die.age += deltaTime;
+            
+            // Remove old dice
+            if (die.age > this.settings.diceLifetime || die.mesh.position.y < -10) {
+                this.scene.remove(die.mesh);
+                this.dice.splice(index, 1);
+            }
+        });
     }
 
-    cleanupDice() {
-        this.dice = this.dice.filter(dice => {
-            // Remove dice that have fallen too far or are too old
-            if (dice.body.position.y < -10 || dice.age > 30000) {
-                this.scene.remove(dice.mesh);
-                this.world.remove(dice.body);
-                return false;
+    createControls() {
+        // Create control panel
+        const controlPanel = document.createElement('div');
+        controlPanel.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(11, 20, 38, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            max-width: 200px;
+            display: none;
+        `;
+        controlPanel.id = 'diceControls';
+        
+        controlPanel.innerHTML = `
+            <h4 style="margin: 0 0 10px 0; color: #00ff88;">Dice Controls</h4>
+            
+            <label>Max Dice: <span id="maxDiceValue">${this.settings.maxDice}</span></label>
+            <input type="range" id="maxDiceSlider" min="3" max="20" value="${this.settings.maxDice}" style="width: 100%;">
+            
+            <label>Spawn Rate: <span id="spawnRateValue">${this.settings.spawnRate}ms</span></label>
+            <input type="range" id="spawnRateSlider" min="500" max="5000" step="250" value="${this.settings.spawnRate}" style="width: 100%;">
+            
+            <label>Gravity: <span id="gravityValue">${Math.abs(this.settings.gravity)}</span></label>
+            <input type="range" id="gravitySlider" min="5" max="30" value="${Math.abs(this.settings.gravity)}" style="width: 100%;">
+            
+            <label>Bounce: <span id="bounceValue">${this.settings.bounceStrength}</span></label>
+            <input type="range" id="bounceSlider" min="0.1" max="1.0" step="0.1" value="${this.settings.bounceStrength}" style="width: 100%;">
+            
+            <div style="margin-top: 10px;">
+                <label><input type="checkbox" id="shadowsToggle" ${this.settings.enableShadows ? 'checked' : ''}> Shadows</label><br>
+                <label><input type="checkbox" id="reflectionsToggle" ${this.settings.enableReflections ? 'checked' : ''}> Reflections</label><br>
+                <label><input type="checkbox" id="pauseToggle" ${this.settings.pauseWhenHidden ? 'checked' : ''}> Pause when hidden</label>
+            </div>
+            
+            <button id="clearDice" style="margin-top: 10px; padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear All Dice</button>
+        `;
+        
+        document.body.appendChild(controlPanel);
+        
+        // Toggle button
+        const toggleButton = document.createElement('button');
+        toggleButton.innerHTML = '⚙️';
+        toggleButton.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 255, 136, 0.8);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        `;
+        
+        toggleButton.addEventListener('click', () => {
+            const panel = document.getElementById('diceControls');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                toggleButton.style.right = '220px';
+            } else {
+                panel.style.display = 'none';
+                toggleButton.style.right = '10px';
             }
-            return true;
         });
+        
+        document.body.appendChild(toggleButton);
+        
+        this.setupControlEvents();
+    }
+
+    setupControlEvents() {
+        // Max dice slider
+        document.getElementById('maxDiceSlider').addEventListener('input', (e) => {
+            this.settings.maxDice = parseInt(e.target.value);
+            document.getElementById('maxDiceValue').textContent = this.settings.maxDice;
+        });
+        
+        // Spawn rate slider
+        document.getElementById('spawnRateSlider').addEventListener('input', (e) => {
+            this.settings.spawnRate = parseInt(e.target.value);
+            document.getElementById('spawnRateValue').textContent = this.settings.spawnRate + 'ms';
+        });
+        
+        // Gravity slider
+        document.getElementById('gravitySlider').addEventListener('input', (e) => {
+            this.settings.gravity = -parseFloat(e.target.value);
+            document.getElementById('gravityValue').textContent = Math.abs(this.settings.gravity);
+        });
+        
+        // Bounce slider
+        document.getElementById('bounceSlider').addEventListener('input', (e) => {
+            this.settings.bounceStrength = parseFloat(e.target.value);
+            document.getElementById('bounceValue').textContent = this.settings.bounceStrength;
+        });
+        
+        // Clear dice button
+        document.getElementById('clearDice').addEventListener('click', () => {
+            this.dice.forEach(die => {
+                this.scene.remove(die.mesh);
+            });
+            this.dice = [];
+        });
+        
+        // Checkboxes (note: some require restart to take effect)
+        document.getElementById('shadowsToggle').addEventListener('change', (e) => {
+            this.settings.enableShadows = e.target.checked;
+        });
+        
+        document.getElementById('reflectionsToggle').addEventListener('change', (e) => {
+            this.settings.enableReflections = e.target.checked;
+        });
+        
+        document.getElementById('pauseToggle').addEventListener('change', (e) => {
+            this.settings.pauseWhenHidden = e.target.checked;
+        });
+    }
+
+    spawnDice() {
+        this.createDice();
     }
 
     onWindowResize() {
@@ -271,61 +444,50 @@ class DiceSimulation {
     animate() {
         requestAnimationFrame(() => this.animate());
         
-        // Skip rendering if tab is not visible
-        if (!this.isVisible) return;
+        // Skip rendering if tab is not visible and setting is enabled
+        if (!this.isVisible && this.settings.pauseWhenHidden) return;
         
         const deltaTime = this.clock.getDelta();
-        
-        // Cap deltaTime to prevent physics instability
         const clampedDeltaTime = Math.min(deltaTime, 1/30);
         
         // Update physics
-        this.world.step(clampedDeltaTime);
-        
-        // Update dice positions and age
-        this.dice.forEach(dice => {
-            dice.mesh.position.copy(dice.body.position);
-            dice.mesh.quaternion.copy(dice.body.quaternion);
-            dice.age += clampedDeltaTime * 1000; // Convert to milliseconds
-        });
+        this.updatePhysics(clampedDeltaTime);
         
         // Spawn new dice periodically
         this.spawnTimer += clampedDeltaTime * 1000;
-        if (this.spawnTimer > this.spawnInterval) {
+        if (this.spawnTimer >= this.nextSpawnTime) {
             this.spawnDice();
             this.spawnTimer = 0;
-            // Vary spawn interval for more natural feeling
-            this.spawnInterval = 1500 + Math.random() * 2000;
+            this.nextSpawnTime = this.settings.spawnRate + (Math.random() - 0.5) * 1000; // Add some randomness
         }
-        
-        // Cleanup old dice
-        this.cleanupDice();
         
         // Render scene
         this.renderer.render(this.scene, this.camera);
     }
 }
 
-// Initialize dice simulation when page loads
+// Initialize enhanced dice simulation when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if Three.js and Cannon.js are loaded
-    if (typeof THREE !== 'undefined' && typeof CANNON !== 'undefined') {
-        try {
-            new DiceSimulation();
-        } catch (error) {
-            console.warn('Dice simulation failed to initialize:', error);
-            // Fallback: hide canvas and show aurora background
+    // Wait for Three.js to load
+    setTimeout(() => {
+        if (typeof THREE !== 'undefined') {
+            try {
+                new EnhancedDiceSimulation();
+                console.log('Enhanced dice simulation started successfully!');
+            } catch (error) {
+                console.error('Enhanced dice simulation failed to initialize:', error);
+                // Hide canvas on error
+                const canvas = document.getElementById('diceCanvas');
+                if (canvas) {
+                    canvas.style.display = 'none';
+                }
+            }
+        } else {
+            console.warn('Three.js not loaded. Hiding dice canvas.');
             const canvas = document.getElementById('diceCanvas');
             if (canvas) {
                 canvas.style.display = 'none';
             }
         }
-    } else {
-        console.warn('Three.js or Cannon.js not loaded. Falling back to aurora background.');
-        // Hide canvas if libraries aren't loaded
-        const canvas = document.getElementById('diceCanvas');
-        if (canvas) {
-            canvas.style.display = 'none';
-        }
-    }
+    }, 500);
 });
