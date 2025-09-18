@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Sankalp Chudmunge
-description: Physics Graduate | Backend Engineer | Computational Physicist
+description: Quantum Engineer
 ---
 
 <!-- Home Section -->
@@ -10,7 +10,7 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
         <div class="hero-content">
             <div class="hero-text">
                 <h1 class="hero-title">Sankalp Chudmunge</h1>
-                <h2 class="hero-subtitle">Physics Graduate • Backend Engineer • Computational Physicist</h2>
+                <h2 class="hero-subtitle">Quantum Engineer</h2>
                 <p class="hero-description">Building scalable systems at the intersection of physics and software engineering</p>
                 <div class="hero-buttons">
                     <a href="#contact" class="btn btn-primary">Get In Touch</a>
