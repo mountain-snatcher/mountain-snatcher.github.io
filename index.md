@@ -1,96 +1,270 @@
 ---
 layout: default
 title: Sankalp Chudmunge
+description: Physics Graduate | Backend Engineer | Computational Physicist
 ---
 
-# Sankalp Chudmunge
-### Physics Graduate • Backend Engineer • Computational Physicist
+<!-- Home Section -->
+<section id="home" class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Sankalp Chudmunge</h1>
+                <h2 class="hero-subtitle">Physics Graduate • Backend Engineer • Computational Physicist</h2>
+                <p class="hero-description">Building scalable systems at the intersection of physics and software engineering</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Get In Touch</a>
+                    <a href="#projects" class="btn btn-secondary">View Projects</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="profile-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-> Building scalable systems at the intersection of physics and software engineering
+<!-- About Section -->
+<section id="about" class="about">
+    <div class="container">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>Physics graduate with expertise in Python, FastAPI, and scalable backend systems. I've built and deployed production platforms serving 1000+ live users, with a focus on security, performance, and cloud-native deployment.</p>
+                <p>My background in computational physics, algorithms, and numerical modeling brings unique analytical depth to software design and data-driven problem solving.</p>
+                
+                <div class="quick-facts">
+                    <div class="fact">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Maharashtra, India</span>
+                    </div>
+                    <div class="fact">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>M.Sc. Physics (Computational Physics)</span>
+                    </div>
+                    <div class="fact">
+                        <i class="fas fa-code"></i>
+                        <span>Backend Engineering & Cloud Architecture</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Backend Engineering</h3>
+                    <div class="skills">
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">FastAPI</span>
+                        <span class="skill-tag">SQLModel</span>
+                        <span class="skill-tag">REST APIs</span>
+                        <span class="skill-tag">WebSockets</span>
+                    </div>
+                </div>
+                
+                <div class="skill-category">
+                    <h3>Data & Cloud</h3>
+                    <div class="skills">
+                        <span class="skill-tag">PostgreSQL</span>
+                        <span class="skill-tag">Redis</span>
+                        <span class="skill-tag">Google Cloud</span>
+                        <span class="skill-tag">Docker</span>
+                        <span class="skill-tag">CI/CD</span>
+                    </div>
+                </div>
+                
+                <div class="skill-category">
+                    <h3>Applied Physics</h3>
+                    <div class="skills">
+                        <span class="skill-tag">NumPy</span>
+                        <span class="skill-tag">Computational Physics</span>
+                        <span class="skill-tag">Quantum Systems</span>
+                        <span class="skill-tag">Numerical Methods</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-📍 **Location:** Maharashtra, India  
-📧 **Email:** [csankalp21@gmail.com](mailto:csankalp21@gmail.com)  
-📱 **Phone:** +91 8766775227, +91 9082586324  
-🔗 **GitHub:** [mountain-snatcher](https://github.com/mountain-snatcher)
+<!-- Experience Section -->
+<section id="experience" class="experience">
+    <div class="container">
+        <h2 class="section-title">Experience & Education</h2>
+        
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Mar 2025 – Present</div>
+                <div class="timeline-content">
+                    <h3>Physics Subject Matter Expert</h3>
+                    <h4>PhysicsWallah</h4>
+                    <p>Curating and Managing Content for PW online business and batches</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Aug 2022 – May 2024</div>
+                <div class="timeline-content">
+                    <h3>Master of Science in Physics</h3>
+                    <h4>Indian Institute of Technology, Palakkad</h4>
+                    <p>Specialization in Computational Physics with focus on quantum systems and numerical modeling</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-date">Jun 2018 – Oct 2021</div>
+                <div class="timeline-content">
+                    <h3>Bachelor of Science in Physics</h3>
+                    <h4>Willingdon College, Sangli</h4>
+                    <p>Foundation in theoretical and experimental physics</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="achievements">
+            <h3>Achievements & Certifications</h3>
+            <div class="achievement-grid">
+                <div class="achievement-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>JAM-2022 AIR 768 (top 1%)</span>
+                </div>
+                <div class="achievement-item">
+                    <i class="fas fa-star"></i>
+                    <span>98.5 percentile in aptitude test</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
----
+<!-- Projects Section -->
+<section id="projects" class="projects">
+    <div class="container">
+        <h2 class="section-title">Featured Projects</h2>
+        
+        <div class="projects-grid">
+            <div class="project-card featured">
+                <div class="project-header">
+                    <h3>Menttor – Production Learning Platform</h3>
+                    <div class="project-status">Live Platform | 1000+ Active Users</div>
+                </div>
+                
+                <p class="project-description">A full-stack learning platform built for scale and performance, deployed on Google Cloud with enterprise-level security and monitoring.</p>
+                
+                <div class="project-achievements">
+                    <div class="achievement">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span><strong>Performance:</strong> Sub-200ms API response times</span>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-bolt"></i>
+                        <span><strong>Real-time:</strong> 85% latency reduction with WebSockets</span>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-shield-alt"></i>
+                        <span><strong>Security:</strong> OAuth2 + Firebase Authentication</span>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-cloud"></i>
+                        <span><strong>DevOps:</strong> Automated CI/CD pipeline</span>
+                    </div>
+                </div>
+                
+                <div class="project-tech">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">FastAPI</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Redis</span>
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">GCP</span>
+                    <span class="tech-tag">Next.js</span>
+                    <span class="tech-tag">TypeScript</span>
+                </div>
+                
+                <div class="project-links">
+                    <a href="https://github.com/mountain-snatcher/menttor" class="btn btn-outline" target="_blank">
+                        <i class="fab fa-github"></i> Source Code
+                    </a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>Quantum Majorana Edge States Research</h3>
+                    <div class="project-status">Master's Thesis | Computational Physics</div>
+                </div>
+                
+                <p class="project-description">Advanced quantum simulation research focusing on phase transitions and exotic quantum states in many-body systems.</p>
+                
+                <div class="project-achievements">
+                    <div class="achievement">
+                        <i class="fas fa-atom"></i>
+                        <span>Quantum phase transition simulation algorithms</span>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-calculator"></i>
+                        <span>Numerical methods for edge state analysis</span>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-microscope"></i>
+                        <span>Computational physics techniques</span>
+                    </div>
+                </div>
+                
+                <div class="project-tech">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">NumPy</span>
+                    <span class="tech-tag">Quantum Computing</span>
+                    <span class="tech-tag">Numerical Methods</span>
+                </div>
+                
+                <div class="project-links">
+                    <a href="https://github.com/mountain-snatcher/majorana-tfim-vqet" class="btn btn-outline" target="_blank">
+                        <i class="fab fa-github"></i> Source Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-## About Me
-
-Physics graduate with expertise in Python, FastAPI, and scalable backend systems. I've built and deployed production platforms serving 1000+ live users, with a focus on security, performance, and cloud-native deployment. My background in computational physics, algorithms, and numerical modeling brings unique analytical depth to software design and data-driven problem solving.
-
----
-
-## Technical Skills
-
-- **Backend Engineering:** Python (FastAPI, SQLModel), REST APIs, WebSockets, async services  
-- **Data & Modeling:** PostgreSQL, Redis, NumPy, Pandas, algorithm optimization, statistical modeling  
-- **Cloud & DevOps:** Google Cloud (Cloud Run, Cloud SQL), Docker, CI/CD (GitHub Actions)  
-- **Security:** OAuth2, Firebase Authentication, JWT, API encryption access control  
-- **Applied Physics:** Computational simulations, numerical methods, quantum system modeling  
-- **Frontend (working knowledge):** Next.js, React, TypeScript, TailwindCSS  
-
----
-
-## Featured Projects
-
-### 🚀 [Menttor – Production Learning Platform](https://github.com/mountain-snatcher/menttor)
-**Live Platform | 1000+ Active Users**
-
-A full-stack learning platform built for scale and performance, deployed on Google Cloud with enterprise-level security and monitoring.
-
-**Key Achievements:**
-- 🎯 **Performance:** Sub-200ms API response times through Redis caching and query optimization
-- ⚡ **Real-time:** 85% latency reduction with WebSocket streaming implementation  
-- 🔒 **Security:** OAuth2 + Firebase Authentication with JWT validation and TLS encryption
-- 🌐 **DevOps:** Automated CI/CD pipeline with Docker and GitHub Actions to GCP Cloud Run
-
-**Tech Stack:** `Python` `FastAPI` `PostgreSQL` `Redis` `Docker` `GCP` `Next.js` `TypeScript`
-
----
-
-### 🔬 [Quantum Majorana Edge States Research](https://github.com/mountain-snatcher/majorana-tfim-vqet)
-**Master's Thesis | Computational Physics**
-
-Advanced quantum simulation research focusing on phase transitions and exotic quantum states in many-body systems.
-
-**Research Focus:**
-- Designed algorithms for quantum phase transition simulation
-- Implemented numerical methods for edge state emergence analysis
-- Applied computational physics techniques to theoretical quantum mechanics
-
-**Tech Stack:** `Python` `NumPy` `Quantum Computing` `Numerical Methods`
-
----
-
-## Professional Experience
-
-**Physics Subject Matter Expert, PhysicsWallah**  
-Curating and Managing Content for PW online business and batches  
-Mar 2025 – Present
-
----
-
-## Education
-
-- **Master of Science in Physics (Computational Physics)**  
-  Indian Institute of Technology, Palakkad  
-  Aug 2022 – May 2024
-
-- **Bachelor of Science in Physics**  
-  Willingdon College, Sangli  
-  Jun 2018 – Oct 2021
-
----
-
-## Achievements & Certifications
-
-- JAM-2022 AIR 768 (top 1%)
-- 98.5 percentile in an aptitude test
-
----
-
-## Contact
-
-You can reach me via email at [csankalp21@gmail.com](mailto:csankalp21@gmail.com) or phone at +91 8766775227, +91 9082586324.  
-Find more about my work on [GitHub](https://github.com/mountain-snatcher).
+<!-- Contact Section -->
+<section id="contact" class="contact">
+    <div class="container">
+        <h2 class="section-title">Get In Touch</h2>
+        
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>Let's Connect</h3>
+                <p>I'm always interested in discussing new opportunities, collaborations, or innovative projects at the intersection of physics and technology.</p>
+                
+                <div class="contact-methods">
+                    <a href="mailto:csankalp21@gmail.com" class="contact-method">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <span class="label">Email</span>
+                            <span class="value">csankalp21@gmail.com</span>
+                        </div>
+                    </a>
+                    
+                    <a href="tel:+918766775227" class="contact-method">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <span class="label">Phone</span>
+                            <span class="value">+91 8766775227</span>
+                        </div>
+                    </a>
+                    
+                    <a href="https://github.com/mountain-snatcher" class="contact-method" target="_blank">
+                        <i class="fab fa-github"></i>
+                        <div>
+                            <span class="label">GitHub</span>
+                            <span class="value">mountain-snatcher</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
