@@ -14,7 +14,11 @@ if (container) {
   document.body.appendChild(renderer.domElement)
 }
 
-const controls = new THREE.OrbitControls(camera, renderer.domElement)
+// Optional orbit controls (for background effect, we don't need camera controls)
+let controls = null
+if (typeof THREE.OrbitControls !== 'undefined') {
+  controls = new THREE.OrbitControls(camera, renderer.domElement)
+}
 
 // --- Lights ---
 const light = new THREE.PointLight(0xffffff, 1.2)
@@ -107,7 +111,7 @@ function animate() {
     }
   })
 
-  controls.update()
+  if (controls) controls.update()
   renderer.render(scene, camera)
 }
 
