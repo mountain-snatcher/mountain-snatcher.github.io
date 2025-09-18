@@ -32,8 +32,7 @@ description: Quantum Engineer
         <h2 class="section-title">About Me</h2>
         <div class="about-content">
             <div class="about-text">
-                <p>Backend engineer specializing in quantum many-body systems and scalable architectures. Completed M.Sc. in Computational Physics at IIT Palakkad, investigating Majorana fermions in transverse-field Ising models under Dr. Kusum Dhochak, with focus on topological quantum phase transitions and many-body localization.</p>
-                <p>Applying numerical methods and Monte Carlo techniques from condensed matter research to production software systems. Developed high-performance platforms leveraging parallel algorithms, statistical modeling, and cloud-native deployment strategies.</p>
+                <p>Backend engineer with M.Sc. in Computational Physics from IIT Palakkad. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
                 
                 <div class="quick-facts">
                     <div class="fact">
@@ -88,6 +87,64 @@ description: Quantum Engineer
     </div>
 </section>
 
+<!-- Projects Section -->
+<section id="projects" class="projects">
+    <div class="container">
+        <h2 class="section-title">Featured Projects</h2>
+        
+        <div class="projects-grid">
+            <div class="project-card featured">
+                <div class="project-header">
+                    <h3>menttor</h3>
+                    <div class="project-status">Live Platform | 1000+ Users</div>
+                </div>
+                
+                <p class="project-description">Full-stack learning platform with sub-200ms API response times and real-time features.</p>
+                
+                <div class="project-tech">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">FastAPI</span>
+                    <span class="tech-tag">PostgreSQL</span>
+                    <span class="tech-tag">Redis</span>
+                    <span class="tech-tag">GCP</span>
+                    <span class="tech-tag">Next.js</span>
+                </div>
+                
+                <div class="project-links">
+                    <a href="https://github.com/mountain-snatcher/menttor" class="btn btn-outline" target="_blank">
+                        <i class="fab fa-github"></i> Code
+                    </a>
+                    <a href="https://menttor.live" class="btn btn-outline" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Live
+                    </a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>Quantum Majorana Edge States</h3>
+                    <div class="project-status">Master's Thesis</div>
+                </div>
+                
+                <p class="project-description">Quantum simulation research on phase transitions and edge states in many-body systems.</p>
+                
+                <div class="project-tech">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">NumPy</span>
+                    <span class="tech-tag">Quantum Computing</span>
+                    <span class="tech-tag">Numerical Methods</span>
+                </div>
+                
+                <div class="project-links">
+                    <a href="https://github.com/mountain-snatcher/majorana-tfim-vqet" class="btn btn-outline" target="_blank">
+                        <i class="fab fa-github"></i> Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Experience Section -->
 <section id="experience" class="experience">
     <div class="container">
@@ -132,100 +189,6 @@ description: Quantum Engineer
                 <div class="achievement-item">
                     <i class="fas fa-star"></i>
                     <span>98.5 percentile in aptitude test</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Projects Section -->
-<section id="projects" class="projects">
-    <div class="container">
-        <h2 class="section-title">Featured Projects</h2>
-        
-        <div class="projects-grid">
-            <div class="project-card featured">
-                <div class="project-header">
-                    <h3>menttor</h3>
-                    <div class="project-status">Live Platform | 1000+ Active Users</div>
-                </div>
-                
-                <p class="project-description">A full-stack learning platform built for scale and performance, deployed on Google Cloud with enterprise-level security and monitoring.</p>
-                
-                <div class="project-achievements">
-                    <div class="achievement">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span><strong>Performance:</strong> Sub-200ms API response times</span>
-                    </div>
-                    <div class="achievement">
-                        <i class="fas fa-bolt"></i>
-                        <span><strong>Real-time:</strong> 85% latency reduction with WebSockets</span>
-                    </div>
-                    <div class="achievement">
-                        <i class="fas fa-shield-alt"></i>
-                        <span><strong>Security:</strong> OAuth2 + Firebase Authentication</span>
-                    </div>
-                    <div class="achievement">
-                        <i class="fas fa-cloud"></i>
-                        <span><strong>DevOps:</strong> Automated CI/CD pipeline</span>
-                    </div>
-                </div>
-                
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">FastAPI</span>
-                    <span class="tech-tag">PostgreSQL</span>
-                    <span class="tech-tag">Redis</span>
-                    <span class="tech-tag">Docker</span>
-                    <span class="tech-tag">GCP</span>
-                    <span class="tech-tag">Next.js</span>
-                    <span class="tech-tag">TypeScript</span>
-                </div>
-                
-                <div class="project-links">
-                    <a href="https://github.com/mountain-snatcher/menttor" class="btn btn-outline" target="_blank">
-                        <i class="fab fa-github"></i> Source Code
-                    </a>
-                    <a href="https://menttor.live" class="btn btn-outline" target="_blank">
-                        <i class="fas fa-external-link-alt"></i> Site
-                    </a>
-                </div>
-            </div>
-            
-            <div class="project-card">
-                <div class="project-header">
-                    <h3>Quantum Majorana Edge States Research</h3>
-                    <div class="project-status">Master's Thesis | Computational Physics</div>
-                </div>
-                
-                <p class="project-description">Advanced quantum simulation research focusing on phase transitions and exotic quantum states in many-body systems.</p>
-                
-                <div class="project-achievements">
-                    <div class="achievement">
-                        <i class="fas fa-atom"></i>
-                        <span>Quantum phase transition simulation algorithms</span>
-                    </div>
-                    <div class="achievement">
-                        <i class="fas fa-calculator"></i>
-                        <span>Numerical methods for edge state analysis</span>
-                    </div>
-                    <div class="achievement">
-                        <i class="fas fa-microscope"></i>
-                        <span>Computational physics techniques</span>
-                    </div>
-                </div>
-                
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">NumPy</span>
-                    <span class="tech-tag">Quantum Computing</span>
-                    <span class="tech-tag">Numerical Methods</span>
-                </div>
-                
-                <div class="project-links">
-                    <a href="https://github.com/mountain-snatcher/majorana-tfim-vqet" class="btn btn-outline" target="_blank">
-                        <i class="fab fa-github"></i> Source Code
-                    </a>
                 </div>
             </div>
         </div>
