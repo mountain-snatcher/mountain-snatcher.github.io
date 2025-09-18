@@ -11,13 +11,16 @@ class EnhancedDiceSimulation {
         this.settings = {
             maxDice: this.isMobile() ? 6 : 12,
             spawnRate: 2000, // milliseconds
-            gravity: -15,
-            bounceStrength: 0.6,
-            friction: 0.95,
-            diceLifetime: 30, // seconds
+            gravity: -9.81, // More realistic Earth gravity
+            bounceStrength: 0.4, // Less bouncy for realism
+            friction: 0.8, // More friction
+            airResistance: 0.02, // Air drag
+            angularDamping: 0.95, // Angular friction
+            diceLifetime: 45, // seconds
             enableShadows: !this.isMobile(),
             enableReflections: true,
-            pauseWhenHidden: true
+            pauseWhenHidden: true,
+            realism: 1.0 // Realism factor (0-1)
         };
         
         this.spawnTimer = 0;
@@ -156,8 +159,25 @@ class EnhancedDiceSimulation {
     createDice() {
         if (this.dice.length >= this.settings.maxDice) return;
         
-        // Dice geometry
-        const diceGeometry = new THREE.BoxGeometry(1, 1, 1);
+        // Create more rounded dice geometry for realistic physics
+        const diceGeometry = new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
+        
+        // Apply slight rounding to edges for more realistic collision
+        const vertices = diceGeometry.attributes.position.array;
+        for (let i = 0; i < vertices.length; i += 3) {
+            const x = vertices[i];
+            const y = vertices[i + 1];
+            const z = vertices[i + 2];
+            
+            // Slightly round the corners
+            const roundFactor = 0.05;
+            vertices[i] = x * (1 - roundFactor * Math.abs(y) * Math.abs(z));
+            vertices[i + 1] = y * (1 - roundFactor * Math.abs(x) * Math.abs(z));
+            vertices[i + 2] = z * (1 - roundFactor * Math.abs(x) * Math.abs(y));
+        }
+        diceGeometry.attributes.position.needsUpdate = true;
+        diceGeometry.computeVertexNormals();
+        
         const diceMaterial = new THREE.MeshPhysicalMaterial({
             color: 0xf8f8f8,
             metalness: 0.1,
@@ -173,38 +193,46 @@ class EnhancedDiceSimulation {
         // Add dots to dice faces
         this.addDiceDots(diceMesh);
         
-        // Random spawn position
-        const spawnX = (Math.random() - 0.5) * 10;
-        const spawnZ = (Math.random() - 0.5) * 10;
-        const spawnY = 15 + Math.random() * 5;
+        // More realistic spawn positioning
+        const spawnX = (Math.random() - 0.5) * 8;
+        const spawnZ = (Math.random() - 0.5) * 8;
+        const spawnY = 12 + Math.random() * 8; // Higher drop for more tumbling
         
         diceMesh.position.set(spawnX, spawnY, spawnZ);
         
-        // Random initial rotation
+        // Random initial rotation (slight tilt, not completely random)
         diceMesh.rotation.set(
-            Math.random() * Math.PI * 2,
-            Math.random() * Math.PI * 2,
-            Math.random() * Math.PI * 2
+            (Math.random() - 0.5) * 0.4,
+            (Math.random() - 0.5) * 0.4,
+            (Math.random() - 0.5) * 0.4
         );
         
         this.scene.add(diceMesh);
         
-        // Physics properties
+        // More realistic physics properties
         const diceObj = {
             mesh: diceMesh,
+            mass: 15, // Realistic dice mass in grams
+            inertia: 0.1667, // Moment of inertia for cube (1/6 * m * a^2)
             velocity: {
-                x: (Math.random() - 0.5) * 2,
+                x: (Math.random() - 0.5) * 1.5, // Less initial horizontal velocity
                 y: 0,
-                z: (Math.random() - 0.5) * 2
+                z: (Math.random() - 0.5) * 1.5
             },
             angularVelocity: {
-                x: (Math.random() - 0.5) * 0.2,
-                y: (Math.random() - 0.5) * 0.2,
-                z: (Math.random() - 0.5) * 0.2
+                x: (Math.random() - 0.5) * 8, // More realistic tumbling
+                y: (Math.random() - 0.5) * 8,
+                z: (Math.random() - 0.5) * 8
             },
+            torque: { x: 0, y: 0, z: 0 },
+            forces: { x: 0, y: 0, z: 0 },
             bounces: 0,
             age: 0,
-            settled: false
+            settled: false,
+            lastCollisionTime: 0,
+            settleThreshold: 0.1,
+            cornerContacts: 0, // Track corner vs face contacts
+            restingOrientation: null
         };
         
         this.dice.push(diceObj);
@@ -240,56 +268,60 @@ class EnhancedDiceSimulation {
         const boundary = 12;
         
         this.dice.forEach((die, index) => {
-            if (die.settled) return;
+            if (die.settled) {
+                // Even settled dice can be nudged by other dice
+                this.applySettledPhysics(die, deltaTime);
+                return;
+            }
             
-            // Apply gravity
-            die.velocity.y += this.settings.gravity * deltaTime;
+            // Reset forces each frame
+            die.forces = { x: 0, y: 0, z: 0 };
+            die.torque = { x: 0, y: 0, z: 0 };
             
-            // Update position
+            // Apply gravitational force
+            die.forces.y += this.settings.gravity * die.mass;
+            
+            // Apply air resistance (quadratic drag)
+            const speed = Math.sqrt(die.velocity.x**2 + die.velocity.y**2 + die.velocity.z**2);
+            if (speed > 0) {
+                const dragCoeff = this.settings.airResistance * speed;
+                die.forces.x -= die.velocity.x * dragCoeff;
+                die.forces.y -= die.velocity.y * dragCoeff * 0.5; // Less air resistance vertically
+                die.forces.z -= die.velocity.z * dragCoeff;
+            }
+            
+            // Apply angular damping (air resistance on rotation)
+            die.angularVelocity.x *= this.settings.angularDamping;
+            die.angularVelocity.y *= this.settings.angularDamping;
+            die.angularVelocity.z *= this.settings.angularDamping;
+            
+            // Update velocity from forces (F = ma, so a = F/m)
+            die.velocity.x += (die.forces.x / die.mass) * deltaTime;
+            die.velocity.y += (die.forces.y / die.mass) * deltaTime;
+            die.velocity.z += (die.forces.z / die.mass) * deltaTime;
+            
+            // Update position from velocity
             die.mesh.position.x += die.velocity.x * deltaTime;
             die.mesh.position.y += die.velocity.y * deltaTime;
             die.mesh.position.z += die.velocity.z * deltaTime;
             
-            // Update rotation
-            die.mesh.rotation.x += die.angularVelocity.x;
-            die.mesh.rotation.y += die.angularVelocity.y;
-            die.mesh.rotation.z += die.angularVelocity.z;
+            // Update angular velocity from torque
+            die.angularVelocity.x += (die.torque.x / die.inertia) * deltaTime;
+            die.angularVelocity.y += (die.torque.y / die.inertia) * deltaTime;
+            die.angularVelocity.z += (die.torque.z / die.inertia) * deltaTime;
+            
+            // Update rotation from angular velocity
+            die.mesh.rotation.x += die.angularVelocity.x * deltaTime;
+            die.mesh.rotation.y += die.angularVelocity.y * deltaTime;
+            die.mesh.rotation.z += die.angularVelocity.z * deltaTime;
             
             // Collision with glass surface
             if (die.mesh.position.y <= this.groundLevel + 0.5) {
-                die.mesh.position.y = this.groundLevel + 0.5;
-                
-                // Bounce
-                die.velocity.y *= -this.settings.bounceStrength;
-                die.velocity.x *= this.settings.friction;
-                die.velocity.z *= this.settings.friction;
-                
-                // Reduce angular velocity on bounce
-                die.angularVelocity.x *= 0.8;
-                die.angularVelocity.y *= 0.8;
-                die.angularVelocity.z *= 0.8;
-                
-                die.bounces++;
-                
-                // Check if dice has settled
-                if (Math.abs(die.velocity.y) < 0.3 && 
-                    Math.abs(die.velocity.x) < 0.1 && 
-                    Math.abs(die.velocity.z) < 0.1) {
-                    die.settled = true;
-                    die.velocity = { x: 0, y: 0, z: 0 };
-                    die.angularVelocity = { x: 0, y: 0, z: 0 };
-                }
+                this.handleGroundCollision(die, deltaTime);
             }
             
-            // Boundary walls
-            if (Math.abs(die.mesh.position.x) > boundary) {
-                die.mesh.position.x = Math.sign(die.mesh.position.x) * boundary;
-                die.velocity.x *= -0.5;
-            }
-            if (Math.abs(die.mesh.position.z) > boundary) {
-                die.mesh.position.z = Math.sign(die.mesh.position.z) * boundary;
-                die.velocity.z *= -0.5;
-            }
+            // Boundary walls with more realistic collision
+            this.handleWallCollisions(die, boundary);
             
             // Age the dice
             die.age += deltaTime;
@@ -300,6 +332,147 @@ class EnhancedDiceSimulation {
                 this.dice.splice(index, 1);
             }
         });
+    }
+    
+    handleGroundCollision(die, deltaTime) {
+        die.mesh.position.y = this.groundLevel + 0.5;
+        die.lastCollisionTime = die.age;
+        die.bounces++;
+        
+        // More realistic collision response
+        const collisionNormal = { x: 0, y: 1, z: 0 };
+        
+        // Calculate collision impulse
+        const relativeVelocity = {
+            x: die.velocity.x,
+            y: die.velocity.y,
+            z: die.velocity.z
+        };
+        
+        const velocityAlongNormal = relativeVelocity.y;
+        
+        if (velocityAlongNormal > 0) return; // Objects separating
+        
+        // Calculate restitution based on impact force
+        let restitution = this.settings.bounceStrength;
+        const impactForce = Math.abs(velocityAlongNormal);
+        
+        // Reduce bounce for hard impacts (energy loss)
+        if (impactForce > 5) {
+            restitution *= 0.7;
+        }
+        
+        // Apply collision impulse
+        const impulse = -(1 + restitution) * velocityAlongNormal;
+        die.velocity.y += impulse;
+        
+        // Apply friction
+        const tangentialVelocity = {
+            x: die.velocity.x,
+            z: die.velocity.z
+        };
+        
+        const tangentialSpeed = Math.sqrt(tangentialVelocity.x**2 + tangentialVelocity.z**2);
+        if (tangentialSpeed > 0) {
+            const frictionCoeff = this.settings.friction;
+            const frictionForce = Math.min(frictionCoeff * Math.abs(impulse), tangentialSpeed);
+            
+            die.velocity.x -= (tangentialVelocity.x / tangentialSpeed) * frictionForce;
+            die.velocity.z -= (tangentialVelocity.z / tangentialSpeed) * frictionForce;
+        }
+        
+        // Apply rotational effects from collision
+        const contactPoint = { x: 0, y: -0.5, z: 0 }; // Bottom of dice
+        
+        // Convert linear velocity to angular velocity (rolling)
+        const rollingFactor = 0.4;
+        die.angularVelocity.x += die.velocity.z * rollingFactor;
+        die.angularVelocity.z -= die.velocity.x * rollingFactor;
+        
+        // Reduce existing angular velocity from collision
+        die.angularVelocity.x *= 0.7;
+        die.angularVelocity.y *= 0.8;
+        die.angularVelocity.z *= 0.7;
+        
+        // Check for settling
+        this.checkSettling(die);
+    }
+    
+    checkSettling(die) {
+        const velocityThreshold = 0.5;
+        const angularThreshold = 1.0;
+        const timeThreshold = 0.5; // Must be stable for this long
+        
+        const totalVelocity = Math.sqrt(die.velocity.x**2 + die.velocity.y**2 + die.velocity.z**2);
+        const totalAngular = Math.sqrt(die.angularVelocity.x**2 + die.angularVelocity.y**2 + die.angularVelocity.z**2);
+        
+        if (totalVelocity < velocityThreshold && 
+            totalAngular < angularThreshold &&
+            die.age - die.lastCollisionTime > timeThreshold) {
+            
+            die.settled = true;
+            die.velocity = { x: 0, y: 0, z: 0 };
+            die.angularVelocity = { x: 0, y: 0, z: 0 };
+            
+            // Snap to stable orientation
+            this.snapToStableOrientation(die);
+        }
+    }
+    
+    snapToStableOrientation(die) {
+        // Find the closest face-down orientation
+        const orientations = [
+            { x: 0, y: 0, z: 0 },                    // 1 up
+            { x: Math.PI, y: 0, z: 0 },             // 6 up
+            { x: Math.PI/2, y: 0, z: 0 },           // 2 up  
+            { x: -Math.PI/2, y: 0, z: 0 },          // 5 up
+            { x: 0, y: 0, z: Math.PI/2 },           // 3 up
+            { x: 0, y: 0, z: -Math.PI/2 }           // 4 up
+        ];
+        
+        let closestOrientation = orientations[0];
+        let minDistance = Infinity;
+        
+        orientations.forEach(orientation => {
+            const distance = Math.abs(die.mesh.rotation.x - orientation.x) + 
+                           Math.abs(die.mesh.rotation.y - orientation.y) + 
+                           Math.abs(die.mesh.rotation.z - orientation.z);
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestOrientation = orientation;
+            }
+        });
+        
+        // Smoothly rotate to stable position
+        die.restingOrientation = closestOrientation;
+    }
+    
+    applySettledPhysics(die, deltaTime) {
+        // Smoothly rotate to final resting position
+        if (die.restingOrientation) {
+            const lerpFactor = 0.1;
+            
+            die.mesh.rotation.x += (die.restingOrientation.x - die.mesh.rotation.x) * lerpFactor;
+            die.mesh.rotation.y += (die.restingOrientation.y - die.mesh.rotation.y) * lerpFactor;
+            die.mesh.rotation.z += (die.restingOrientation.z - die.mesh.rotation.z) * lerpFactor;
+        }
+    }
+    
+    handleWallCollisions(die, boundary) {
+        // X boundaries
+        if (Math.abs(die.mesh.position.x) > boundary) {
+            die.mesh.position.x = Math.sign(die.mesh.position.x) * boundary;
+            die.velocity.x *= -0.3; // Energy loss
+            die.angularVelocity.y += die.velocity.x * 0.5; // Add spin from wall collision
+        }
+        
+        // Z boundaries  
+        if (Math.abs(die.mesh.position.z) > boundary) {
+            die.mesh.position.z = Math.sign(die.mesh.position.z) * boundary;
+            die.velocity.z *= -0.3; // Energy loss
+            die.angularVelocity.x -= die.velocity.z * 0.5; // Add spin from wall collision
+        }
     }
 
     createControls() {
@@ -332,11 +505,17 @@ class EnhancedDiceSimulation {
             <label>Spawn Rate: <span id="spawnRateValue">${this.settings.spawnRate}ms</span></label>
             <input type="range" id="spawnRateSlider" min="500" max="5000" step="250" value="${this.settings.spawnRate}" style="width: 100%;">
             
-            <label>Gravity: <span id="gravityValue">${Math.abs(this.settings.gravity)}</span></label>
-            <input type="range" id="gravitySlider" min="5" max="30" value="${Math.abs(this.settings.gravity)}" style="width: 100%;">
+            <label>Gravity: <span id="gravityValue">${Math.abs(this.settings.gravity).toFixed(1)}</span></label>
+            <input type="range" id="gravitySlider" min="2" max="20" step="0.1" value="${Math.abs(this.settings.gravity)}" style="width: 100%;">
             
             <label>Bounce: <span id="bounceValue">${this.settings.bounceStrength}</span></label>
-            <input type="range" id="bounceSlider" min="0.1" max="1.0" step="0.1" value="${this.settings.bounceStrength}" style="width: 100%;">
+            <input type="range" id="bounceSlider" min="0.1" max="0.8" step="0.05" value="${this.settings.bounceStrength}" style="width: 100%;">
+            
+            <label>Air Resistance: <span id="airValue">${this.settings.airResistance}</span></label>
+            <input type="range" id="airSlider" min="0" max="0.1" step="0.005" value="${this.settings.airResistance}" style="width: 100%;">
+            
+            <label>Friction: <span id="frictionValue">${this.settings.friction}</span></label>
+            <input type="range" id="frictionSlider" min="0.1" max="0.95" step="0.05" value="${this.settings.friction}" style="width: 100%;">
             
             <div style="margin-top: 10px;">
                 <label><input type="checkbox" id="shadowsToggle" ${this.settings.enableShadows ? 'checked' : ''}> Shadows</label><br>
@@ -400,13 +579,25 @@ class EnhancedDiceSimulation {
         // Gravity slider
         document.getElementById('gravitySlider').addEventListener('input', (e) => {
             this.settings.gravity = -parseFloat(e.target.value);
-            document.getElementById('gravityValue').textContent = Math.abs(this.settings.gravity);
+            document.getElementById('gravityValue').textContent = Math.abs(this.settings.gravity).toFixed(1);
         });
         
         // Bounce slider
         document.getElementById('bounceSlider').addEventListener('input', (e) => {
             this.settings.bounceStrength = parseFloat(e.target.value);
             document.getElementById('bounceValue').textContent = this.settings.bounceStrength;
+        });
+        
+        // Air resistance slider
+        document.getElementById('airSlider').addEventListener('input', (e) => {
+            this.settings.airResistance = parseFloat(e.target.value);
+            document.getElementById('airValue').textContent = this.settings.airResistance;
+        });
+        
+        // Friction slider
+        document.getElementById('frictionSlider').addEventListener('input', (e) => {
+            this.settings.friction = parseFloat(e.target.value);
+            document.getElementById('frictionValue').textContent = this.settings.friction;
         });
         
         // Clear dice button
