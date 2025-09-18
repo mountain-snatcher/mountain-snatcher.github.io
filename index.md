@@ -32,8 +32,9 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
         <h2 class="section-title">About Me</h2>
         <div class="about-content">
             <div class="about-text">
-                <p>Physics graduate with expertise in Python, FastAPI, and scalable backend systems. I've built and deployed production platforms serving 1000+ live users, with a focus on security, performance, and cloud-native deployment.</p>
-                <p>My background in computational physics, algorithms, and numerical modeling brings unique analytical depth to software design and data-driven problem solving.</p>
+                <p>I am a computational physicist and backend engineer specializing in quantum systems modeling and scalable software architecture. I completed my M.Sc. in Physics (Computational Physics) from the Indian Institute of Technology, Palakkad, where I conducted research on Majorana zero edge states in quantum Ising chains under the guidance of Dr. Kusum Dhochak, focusing on topological phases and strongly correlated electron systems.</p>
+                <p>My research background in computational physics, quantum system modeling, and numerical methods has naturally evolved into scalable backend engineering, where I apply the same analytical rigor and algorithmic thinking used in physics simulations to build robust software systems. This unique perspective has enabled me to develop and deploy production platforms serving live users and learners across educational and enterprise environments, with a focus on performance optimization, security, and cloud-native deployment.</p>
+                <p>My work bridges theoretical physics concepts with practical software engineering, leveraging computational methods and numerical modeling techniques to solve complex data-driven problems and design scalable systems.</p>
                 
                 <div class="quick-facts">
                     <div class="fact">
@@ -42,11 +43,11 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
                     </div>
                     <div class="fact">
                         <i class="fas fa-graduation-cap"></i>
-                        <span>M.Sc. Physics (Computational Physics)</span>
+                        <span>M.Sc. Physics (Computational Physics), IIT Palakkad</span>
                     </div>
                     <div class="fact">
-                        <i class="fas fa-code"></i>
-                        <span>Backend Engineering & Cloud Architecture</span>
+                        <i class="fas fa-atom"></i>
+                        <span>Quantum Systems & Backend Engineering</span>
                     </div>
                 </div>
             </div>
