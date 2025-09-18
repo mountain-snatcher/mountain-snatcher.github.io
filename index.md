@@ -32,9 +32,8 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
         <h2 class="section-title">About Me</h2>
         <div class="about-content">
             <div class="about-text">
-                <p>I am a computational physicist and backend engineer specializing in quantum systems modeling and scalable software architecture. I completed my M.Sc. in Physics (Computational Physics) from the Indian Institute of Technology, Palakkad, where I conducted research on Majorana zero edge states in quantum Ising chains under the guidance of Dr. Kusum Dhochak, focusing on topological phases and strongly correlated electron systems.</p>
-                <p>My research background in computational physics, quantum system modeling, and numerical methods has naturally evolved into scalable backend engineering, where I apply the same analytical rigor and algorithmic thinking used in physics simulations to build robust software systems. This unique perspective has enabled me to develop and deploy production platforms serving live users and learners across educational and enterprise environments, with a focus on performance optimization, security, and cloud-native deployment.</p>
-                <p>My work bridges theoretical physics concepts with practical software engineering, leveraging computational methods and numerical modeling techniques to solve complex data-driven problems and design scalable systems.</p>
+                <p>Backend engineer specializing in quantum many-body systems and scalable architectures. Completed M.Sc. in Computational Physics at IIT Palakkad, investigating Majorana fermions in transverse-field Ising models under Dr. Kusum Dhochak, with focus on topological quantum phase transitions and many-body localization.</p>
+                <p>Applying numerical methods and Monte Carlo techniques from condensed matter research to production software systems. Developed high-performance platforms leveraging parallel algorithms, statistical modeling, and cloud-native deployment strategies.</p>
                 
                 <div class="quick-facts">
                     <div class="fact">
@@ -147,7 +146,7 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
         <div class="projects-grid">
             <div class="project-card featured">
                 <div class="project-header">
-                    <h3>Menttor – Production Learning Platform</h3>
+                    <h3>menttor</h3>
                     <div class="project-status">Live Platform | 1000+ Active Users</div>
                 </div>
                 
@@ -186,6 +185,9 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
                 <div class="project-links">
                     <a href="https://github.com/mountain-snatcher/menttor" class="btn btn-outline" target="_blank">
                         <i class="fab fa-github"></i> Source Code
+                    </a>
+                    <a href="https://menttor.live" class="btn btn-outline" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Site
                     </a>
                 </div>
             </div>

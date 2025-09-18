@@ -661,7 +661,7 @@ section {
 
 .projects-grid {
     display: grid;
-    gap: 2rem;
+    gap: 1.5rem;
     position: relative;
     z-index: 2;
 }
@@ -671,7 +671,7 @@ section {
     backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 255, 136, 0.3);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: var(--aurora-glow-green);
     transition: all 0.3s ease;
     position: relative;
@@ -711,10 +711,10 @@ section {
 
 .project-header h3 {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: var(--aurora-stellar-white);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
 
@@ -728,21 +728,21 @@ section {
 }
 
 .project-description {
-    font-size: 1.125rem;
+    font-size: 1rem;
     color: rgba(248, 250, 252, 0.9);
-    margin-bottom: 1.5rem;
-    line-height: 1.7;
+    margin-bottom: 1rem;
+    line-height: 1.6;
 }
 
 .project-achievements {
-    margin: 1.5rem 0;
+    margin: 1rem 0;
 }
 
 .achievement {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
     padding: 0.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -762,8 +762,8 @@ section {
 .project-tech {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1.5rem 0;
+    gap: 0.4rem;
+    margin: 1rem 0;
 }
 
 .tech-tag {
@@ -787,8 +787,8 @@ section {
 
 .project-links {
     display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .btn-outline {
@@ -1045,7 +1045,7 @@ section {
     }
     
     .project-card {
-        padding: 1.5rem;
+        padding: 1rem;
     }
     
     .nav-container {
