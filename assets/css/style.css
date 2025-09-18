@@ -325,33 +325,51 @@ body::before {
     position: relative;
 }
 
-.profile-placeholder {
+.profile-image {
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    background: rgba(0, 255, 136, 0.1);
     border: 3px solid var(--aurora-electric-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 6rem;
-    color: var(--aurora-electric-green);
     box-shadow: 
         var(--aurora-glow-green),
-        inset 0 0 50px rgba(0, 255, 136, 0.1);
+        0 0 50px rgba(0, 255, 136, 0.2);
     animation: profile-pulse 3s ease-in-out infinite alternate;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
 }
 
 @keyframes profile-pulse {
     0% { 
         box-shadow: 
             0 0 20px rgba(0, 255, 136, 0.3),
-            inset 0 0 50px rgba(0, 255, 136, 0.1);
+            0 0 50px rgba(0, 255, 136, 0.2);
     }
     100% { 
         box-shadow: 
             0 0 40px rgba(0, 255, 136, 0.6),
-            inset 0 0 50px rgba(0, 255, 136, 0.2);
+            0 0 80px rgba(0, 255, 136, 0.4);
     }
 }
 
@@ -989,10 +1007,9 @@ section {
         gap: 1rem;
     }
     
-    .profile-placeholder {
+    .profile-image {
         width: 200px;
         height: 200px;
-        font-size: 4rem;
     }
     
     .section-title {

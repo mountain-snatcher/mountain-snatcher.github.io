@@ -18,8 +18,8 @@ description: Physics Graduate | Backend Engineer | Computational Physicist
                 </div>
             </div>
             <div class="hero-image">
-                <div class="profile-placeholder">
-                    <i class="fas fa-user"></i>
+                <div class="profile-image">
+                    <img src="coast_side.png" alt="Sankalp Chudmunge" />
                 </div>
             </div>
         </div>
