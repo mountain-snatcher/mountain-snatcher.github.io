@@ -4,17 +4,20 @@ title: Sankalp Chudmunge
 ---
 
 # Sankalp Chudmunge
+### Physics Graduate • Backend Engineer • Computational Physicist
 
-MH, India  
-📱 +91 8766775227, +91 9082586324  
-✉️ [csankalp21@gmail.com](mailto:csankalp21@gmail.com)  
-[GitHub](https://github.com/mountain-snatcher)
+> Building scalable systems at the intersection of physics and software engineering
+
+📍 **Location:** Maharashtra, India  
+📧 **Email:** [csankalp21@gmail.com](mailto:csankalp21@gmail.com)  
+📱 **Phone:** +91 8766775227, +91 9082586324  
+🔗 **GitHub:** [mountain-snatcher](https://github.com/mountain-snatcher)
 
 ---
 
-## Professional Summary
+## About Me
 
-Physics Grad with expertise in Python, FastAPI, and scalable backend systems. Built and deployed production platform serving 1000+ live users, with focus on security, performance, and cloud-native deployment. Native background in computational physics, algorithms, and numerical modeling, bringing analytical depth to software design and data-driven problem solving.
+Physics graduate with expertise in Python, FastAPI, and scalable backend systems. I've built and deployed production platforms serving 1000+ live users, with a focus on security, performance, and cloud-native deployment. My background in computational physics, algorithms, and numerical modeling brings unique analytical depth to software design and data-driven problem solving.
 
 ---
 
@@ -29,21 +32,34 @@ Physics Grad with expertise in Python, FastAPI, and scalable backend systems. Bu
 
 ---
 
-## Key Projects
+## Featured Projects
 
-### [Menttor – A Learning Platform](https://github.com/mountain-snatcher/menttor)
+### 🚀 [Menttor – Production Learning Platform](https://github.com/mountain-snatcher/menttor)
+**Live Platform | 1000+ Active Users**
 
-- Built and deployed production-ready backend with multiple REST endpoints serving 1000+ users
-- Achieved sub-200ms response times using Redis caching, async operations, and DB query optimization
-- Implemented real-time streaming with WebSockets, reducing user latency by 85%
-- Secured platform using OAuth2 + Firebase Authentication, JWT validation, and TLS encryption
-- Automated deployments with Docker + GitHub Actions to Google Cloud Run (auto-scaling, monitoring)
-- **Tech stack:** Python, FastAPI, PostgreSQL, Redis, Docker, GCP, Next.js, TypeScript
+A full-stack learning platform built for scale and performance, deployed on Google Cloud with enterprise-level security and monitoring.
 
-### [Majorana Zero Edge States in a Quantum Ising Chain (Master’s Thesis Project)](https://github.com/mountain-snatcher/majorana-tfim-vqet)
+**Key Achievements:**
+- 🎯 **Performance:** Sub-200ms API response times through Redis caching and query optimization
+- ⚡ **Real-time:** 85% latency reduction with WebSocket streaming implementation  
+- 🔒 **Security:** OAuth2 + Firebase Authentication with JWT validation and TLS encryption
+- 🌐 **DevOps:** Automated CI/CD pipeline with Docker and GitHub Actions to GCP Cloud Run
 
-- Designed simulation for quantum phase transitions and edge state emergence
-- Tools: Python, NumPy, algorithmic modeling
+**Tech Stack:** `Python` `FastAPI` `PostgreSQL` `Redis` `Docker` `GCP` `Next.js` `TypeScript`
+
+---
+
+### 🔬 [Quantum Majorana Edge States Research](https://github.com/mountain-snatcher/majorana-tfim-vqet)
+**Master's Thesis | Computational Physics**
+
+Advanced quantum simulation research focusing on phase transitions and exotic quantum states in many-body systems.
+
+**Research Focus:**
+- Designed algorithms for quantum phase transition simulation
+- Implemented numerical methods for edge state emergence analysis
+- Applied computational physics techniques to theoretical quantum mechanics
+
+**Tech Stack:** `Python` `NumPy` `Quantum Computing` `Numerical Methods`
 
 ---
 
