@@ -209,20 +209,24 @@ class EnhancedDiceSimulation {
         
         this.scene.add(diceMesh);
         
-        // More realistic physics properties
+        // Much more realistic physics properties
         const diceObj = {
             mesh: diceMesh,
-            mass: 15, // Realistic dice mass in grams
-            inertia: 0.1667, // Moment of inertia for cube (1/6 * m * a^2)
+            mass: 0.015, // 15 grams in kg for proper physics
+            inertia: {
+                x: 0.000025, // Moment of inertia for 1cm cube in kg*m^2
+                y: 0.000025,
+                z: 0.000025
+            },
             velocity: {
-                x: (Math.random() - 0.5) * 1.5, // Less initial horizontal velocity
+                x: (Math.random() - 0.5) * 0.5, // Very small initial horizontal velocity
                 y: 0,
-                z: (Math.random() - 0.5) * 1.5
+                z: (Math.random() - 0.5) * 0.5
             },
             angularVelocity: {
-                x: (Math.random() - 0.5) * 8, // More realistic tumbling
-                y: (Math.random() - 0.5) * 8,
-                z: (Math.random() - 0.5) * 8
+                x: (Math.random() - 0.5) * 4, // Realistic tumbling rate (rad/s)
+                y: (Math.random() - 0.5) * 4,
+                z: (Math.random() - 0.5) * 4
             },
             torque: { x: 0, y: 0, z: 0 },
             forces: { x: 0, y: 0, z: 0 },
@@ -230,9 +234,14 @@ class EnhancedDiceSimulation {
             age: 0,
             settled: false,
             lastCollisionTime: 0,
-            settleThreshold: 0.1,
-            cornerContacts: 0, // Track corner vs face contacts
-            restingOrientation: null
+            settleThreshold: 0.05,
+            rollingThreshold: 0.1,
+            restingOrientation: null,
+            stabilityCounter: 0,
+            lastPosition: { x: spawnX, y: spawnY, z: spawnZ },
+            isRolling: false,
+            contactNormal: { x: 0, y: 1, z: 0 },
+            coefficientOfRestitution: 0.3 // How bouncy the dice is
         };
         
         this.dice.push(diceObj);
@@ -245,22 +254,49 @@ class EnhancedDiceSimulation {
         
         // Define dot patterns for dice faces (1-6)
         const dotPatterns = [
-            [[0, 0, 0.51]], // 1 dot
-            [[-0.2, 0.2, 0.51], [0.2, -0.2, 0.51]], // 2 dots
-            [[-0.25, 0.25, 0.51], [0, 0, 0.51], [0.25, -0.25, 0.51]], // 3 dots
-            [[-0.2, 0.2, 0.51], [0.2, 0.2, 0.51], [-0.2, -0.2, 0.51], [0.2, -0.2, 0.51]], // 4 dots
-            [[-0.2, 0.2, 0.51], [0.2, 0.2, 0.51], [0, 0, 0.51], [-0.2, -0.2, 0.51], [0.2, -0.2, 0.51]], // 5 dots
-            [[-0.2, 0.3, 0.51], [0.2, 0.3, 0.51], [-0.2, 0, 0.51], [0.2, 0, 0.51], [-0.2, -0.3, 0.51], [0.2, -0.3, 0.51]] // 6 dots
+            [[0, 0, 0]], // 1 dot - center
+            [[-0.25, 0.25, 0], [0.25, -0.25, 0]], // 2 dots - diagonal
+            [[-0.25, 0.25, 0], [0, 0, 0], [0.25, -0.25, 0]], // 3 dots - diagonal with center
+            [[-0.25, 0.25, 0], [0.25, 0.25, 0], [-0.25, -0.25, 0], [0.25, -0.25, 0]], // 4 dots - corners
+            [[-0.25, 0.25, 0], [0.25, 0.25, 0], [0, 0, 0], [-0.25, -0.25, 0], [0.25, -0.25, 0]], // 5 dots - corners + center
+            [[-0.25, 0.25, 0], [0.25, 0.25, 0], [-0.25, 0, 0], [0.25, 0, 0], [-0.25, -0.25, 0], [0.25, -0.25, 0]] // 6 dots - two columns
         ];
         
-        // Add dots to front face
-        const faceIndex = Math.floor(Math.random() * 6);
-        const pattern = dotPatterns[faceIndex];
+        // Define all 6 face orientations and their corresponding numbers
+        // Standard dice: opposite faces add up to 7 (1-6, 2-5, 3-4)
+        const faceData = [
+            { normal: [0, 0, 1], number: 1 },   // Front face - 1
+            { normal: [0, 0, -1], number: 6 },  // Back face - 6 
+            { normal: [1, 0, 0], number: 2 },   // Right face - 2
+            { normal: [-1, 0, 0], number: 5 },  // Left face - 5
+            { normal: [0, 1, 0], number: 3 },   // Top face - 3
+            { normal: [0, -1, 0], number: 4 }   // Bottom face - 4
+        ];
         
-        pattern.forEach(dotPos => {
-            const dot = new THREE.Mesh(dotGeometry, dotMaterial);
-            dot.position.set(dotPos[0], dotPos[1], dotPos[2]);
-            diceMesh.add(dot);
+        // Add dots to all 6 faces
+        faceData.forEach(face => {
+            const pattern = dotPatterns[face.number - 1]; // Convert to 0-based index
+            
+            pattern.forEach(dotPos => {
+                const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+                
+                // Position dot on the correct face
+                if (face.normal[2] === 1) { // Front face (z+)
+                    dot.position.set(dotPos[0], dotPos[1], 0.51);
+                } else if (face.normal[2] === -1) { // Back face (z-)
+                    dot.position.set(-dotPos[0], dotPos[1], -0.51); // Mirror x for back
+                } else if (face.normal[0] === 1) { // Right face (x+)
+                    dot.position.set(0.51, dotPos[1], -dotPos[0]);
+                } else if (face.normal[0] === -1) { // Left face (x-)
+                    dot.position.set(-0.51, dotPos[1], dotPos[0]);
+                } else if (face.normal[1] === 1) { // Top face (y+)
+                    dot.position.set(dotPos[0], 0.51, -dotPos[1]);
+                } else if (face.normal[1] === -1) { // Bottom face (y-)
+                    dot.position.set(dotPos[0], -0.51, dotPos[1]);
+                }
+                
+                diceMesh.add(dot);
+            });
         });
     }
 
@@ -269,59 +305,77 @@ class EnhancedDiceSimulation {
         
         this.dice.forEach((die, index) => {
             if (die.settled) {
-                // Even settled dice can be nudged by other dice
                 this.applySettledPhysics(die, deltaTime);
                 return;
             }
+            
+            // Store previous position for stability checking
+            die.lastPosition = {
+                x: die.mesh.position.x,
+                y: die.mesh.position.y,
+                z: die.mesh.position.z
+            };
             
             // Reset forces each frame
             die.forces = { x: 0, y: 0, z: 0 };
             die.torque = { x: 0, y: 0, z: 0 };
             
-            // Apply gravitational force
+            // Apply gravitational force (F = mg)
             die.forces.y += this.settings.gravity * die.mass;
             
-            // Apply air resistance (quadratic drag)
+            // Apply air resistance (quadratic drag: F = -½ρv²CdA)
             const speed = Math.sqrt(die.velocity.x**2 + die.velocity.y**2 + die.velocity.z**2);
-            if (speed > 0) {
-                const dragCoeff = this.settings.airResistance * speed;
-                die.forces.x -= die.velocity.x * dragCoeff;
-                die.forces.y -= die.velocity.y * dragCoeff * 0.5; // Less air resistance vertically
-                die.forces.z -= die.velocity.z * dragCoeff;
+            if (speed > 0.01) {
+                const dragCoeff = this.settings.airResistance * speed * speed * 0.0001; // Realistic scale
+                const dragX = -die.velocity.x * dragCoeff;
+                const dragY = -die.velocity.y * dragCoeff * 0.7; // Less drag vertically  
+                const dragZ = -die.velocity.z * dragCoeff;
+                
+                die.forces.x += dragX;
+                die.forces.y += dragY;
+                die.forces.z += dragZ;
+                
+                // Air resistance also creates torque opposing rotation
+                die.torque.x -= die.angularVelocity.x * dragCoeff * 0.001;
+                die.torque.y -= die.angularVelocity.y * dragCoeff * 0.001;
+                die.torque.z -= die.angularVelocity.z * dragCoeff * 0.001;
             }
             
-            // Apply angular damping (air resistance on rotation)
+            // Apply angular damping
             die.angularVelocity.x *= this.settings.angularDamping;
             die.angularVelocity.y *= this.settings.angularDamping;
             die.angularVelocity.z *= this.settings.angularDamping;
             
-            // Update velocity from forces (F = ma, so a = F/m)
+            // Integration: Update velocity from forces (a = F/m)
             die.velocity.x += (die.forces.x / die.mass) * deltaTime;
             die.velocity.y += (die.forces.y / die.mass) * deltaTime;
             die.velocity.z += (die.forces.z / die.mass) * deltaTime;
             
-            // Update position from velocity
+            // Integration: Update position from velocity
             die.mesh.position.x += die.velocity.x * deltaTime;
             die.mesh.position.y += die.velocity.y * deltaTime;
             die.mesh.position.z += die.velocity.z * deltaTime;
             
-            // Update angular velocity from torque
-            die.angularVelocity.x += (die.torque.x / die.inertia) * deltaTime;
-            die.angularVelocity.y += (die.torque.y / die.inertia) * deltaTime;
-            die.angularVelocity.z += (die.torque.z / die.inertia) * deltaTime;
+            // Integration: Update angular velocity from torque (α = τ/I)
+            die.angularVelocity.x += (die.torque.x / die.inertia.x) * deltaTime;
+            die.angularVelocity.y += (die.torque.y / die.inertia.y) * deltaTime;
+            die.angularVelocity.z += (die.torque.z / die.inertia.z) * deltaTime;
             
-            // Update rotation from angular velocity
+            // Integration: Update rotation from angular velocity
             die.mesh.rotation.x += die.angularVelocity.x * deltaTime;
             die.mesh.rotation.y += die.angularVelocity.y * deltaTime;
             die.mesh.rotation.z += die.angularVelocity.z * deltaTime;
             
-            // Collision with glass surface
+            // Collision detection and response
             if (die.mesh.position.y <= this.groundLevel + 0.5) {
-                this.handleGroundCollision(die, deltaTime);
+                this.handleAdvancedGroundCollision(die, deltaTime);
             }
             
-            // Boundary walls with more realistic collision
+            // Boundary walls
             this.handleWallCollisions(die, boundary);
+            
+            // Check for settling with improved stability detection
+            this.checkAdvancedSettling(die, deltaTime);
             
             // Age the dice
             die.age += deltaTime;
@@ -334,118 +388,173 @@ class EnhancedDiceSimulation {
         });
     }
     
-    handleGroundCollision(die, deltaTime) {
+    handleAdvancedGroundCollision(die, deltaTime) {
         die.mesh.position.y = this.groundLevel + 0.5;
         die.lastCollisionTime = die.age;
         die.bounces++;
         
-        // More realistic collision response
         const collisionNormal = { x: 0, y: 1, z: 0 };
         
-        // Calculate collision impulse
-        const relativeVelocity = {
-            x: die.velocity.x,
-            y: die.velocity.y,
-            z: die.velocity.z
-        };
+        // Calculate relative velocity at contact point
+        const relativeVelY = die.velocity.y;
         
-        const velocityAlongNormal = relativeVelocity.y;
+        if (relativeVelY > 0) return; // Objects separating
         
-        if (velocityAlongNormal > 0) return; // Objects separating
+        // Calculate impulse magnitude using coefficient of restitution
+        const impactSpeed = Math.abs(relativeVelY);
+        let restitution = die.coefficientOfRestitution;
         
-        // Calculate restitution based on impact force
-        let restitution = this.settings.bounceStrength;
-        const impactForce = Math.abs(velocityAlongNormal);
-        
-        // Reduce bounce for hard impacts (energy loss)
-        if (impactForce > 5) {
-            restitution *= 0.7;
+        // Energy loss increases with impact speed (realistic)
+        if (impactSpeed > 3) {
+            restitution *= Math.max(0.1, 1 - (impactSpeed - 3) * 0.1);
         }
         
-        // Apply collision impulse
-        const impulse = -(1 + restitution) * velocityAlongNormal;
+        // Calculate impulse
+        const impulse = -(1 + restitution) * relativeVelY;
+        
+        // Apply normal impulse
         die.velocity.y += impulse;
         
-        // Apply friction
-        const tangentialVelocity = {
-            x: die.velocity.x,
-            z: die.velocity.z
-        };
+        // Apply friction forces (Coulomb friction model)
+        const normalForce = Math.abs(impulse * die.mass);
+        const maxFriction = this.settings.friction * normalForce;
         
-        const tangentialSpeed = Math.sqrt(tangentialVelocity.x**2 + tangentialVelocity.z**2);
-        if (tangentialSpeed > 0) {
-            const frictionCoeff = this.settings.friction;
-            const frictionForce = Math.min(frictionCoeff * Math.abs(impulse), tangentialSpeed);
+        const tangentialVel = Math.sqrt(die.velocity.x**2 + die.velocity.z**2);
+        if (tangentialVel > 0.01) {
+            const frictionDirection = {
+                x: -die.velocity.x / tangentialVel,
+                z: -die.velocity.z / tangentialVel
+            };
             
-            die.velocity.x -= (tangentialVelocity.x / tangentialSpeed) * frictionForce;
-            die.velocity.z -= (tangentialVelocity.z / tangentialSpeed) * frictionForce;
+            const frictionImpulse = Math.min(maxFriction, tangentialVel * die.mass);
+            
+            die.velocity.x += frictionDirection.x * frictionImpulse / die.mass;
+            die.velocity.z += frictionDirection.z * frictionImpulse / die.mass;
+            
+            // Friction creates torque (τ = r × F)
+            const contactRadius = 0.5;
+            die.torque.x += frictionDirection.z * frictionImpulse * contactRadius;
+            die.torque.z -= frictionDirection.x * frictionImpulse * contactRadius;
         }
         
-        // Apply rotational effects from collision
-        const contactPoint = { x: 0, y: -0.5, z: 0 }; // Bottom of dice
+        // Apply rolling resistance
+        const rollingResistance = 0.01;
+        die.angularVelocity.x *= (1 - rollingResistance);
+        die.angularVelocity.z *= (1 - rollingResistance);
         
-        // Convert linear velocity to angular velocity (rolling)
-        const rollingFactor = 0.4;
-        die.angularVelocity.x += die.velocity.z * rollingFactor;
-        die.angularVelocity.z -= die.velocity.x * rollingFactor;
+        // Collision damping on angular velocity
+        const angularDamping = 0.85;
+        die.angularVelocity.x *= angularDamping;
+        die.angularVelocity.y *= angularDamping;
+        die.angularVelocity.z *= angularDamping;
         
-        // Reduce existing angular velocity from collision
-        die.angularVelocity.x *= 0.7;
-        die.angularVelocity.y *= 0.8;
-        die.angularVelocity.z *= 0.7;
-        
-        // Check for settling
-        this.checkSettling(die);
+        // Sound/impact effects based on collision strength
+        if (impactSpeed > 1.5) {
+            // Could add collision sound here
+        }
     }
     
-    checkSettling(die) {
-        const velocityThreshold = 0.5;
-        const angularThreshold = 1.0;
-        const timeThreshold = 0.5; // Must be stable for this long
+    checkAdvancedSettling(die, deltaTime) {
+        const velocityThreshold = 0.08; // Much stricter
+        const angularThreshold = 0.3;   // Much stricter
+        const positionThreshold = 0.01; // Position stability
+        const timeThreshold = 1.0;      // Must be stable longer
         
         const totalVelocity = Math.sqrt(die.velocity.x**2 + die.velocity.y**2 + die.velocity.z**2);
         const totalAngular = Math.sqrt(die.angularVelocity.x**2 + die.angularVelocity.y**2 + die.angularVelocity.z**2);
         
-        if (totalVelocity < velocityThreshold && 
+        // Check position stability
+        const positionChange = Math.sqrt(
+            (die.mesh.position.x - die.lastPosition.x)**2 + 
+            (die.mesh.position.y - die.lastPosition.y)**2 + 
+            (die.mesh.position.z - die.lastPosition.z)**2
+        );
+        
+        // Check if dice is in contact with ground
+        const isGrounded = die.mesh.position.y <= this.groundLevel + 0.51;
+        
+        // All stability conditions must be met
+        if (isGrounded && 
+            totalVelocity < velocityThreshold && 
             totalAngular < angularThreshold &&
+            positionChange < positionThreshold &&
             die.age - die.lastCollisionTime > timeThreshold) {
             
-            die.settled = true;
-            die.velocity = { x: 0, y: 0, z: 0 };
-            die.angularVelocity = { x: 0, y: 0, z: 0 };
+            die.stabilityCounter += deltaTime;
             
-            // Snap to stable orientation
-            this.snapToStableOrientation(die);
+            // Must maintain stability for additional time
+            if (die.stabilityCounter > 0.5) {
+                die.settled = true;
+                die.velocity = { x: 0, y: 0, z: 0 };
+                die.angularVelocity = { x: 0, y: 0, z: 0 };
+                
+                // Snap to nearest stable face orientation
+                this.snapToStableOrientation(die);
+            }
+        } else {
+            // Reset stability counter if conditions not met
+            die.stabilityCounter = 0;
         }
     }
     
     snapToStableOrientation(die) {
-        // Find the closest face-down orientation
-        const orientations = [
-            { x: 0, y: 0, z: 0 },                    // 1 up
-            { x: Math.PI, y: 0, z: 0 },             // 6 up
-            { x: Math.PI/2, y: 0, z: 0 },           // 2 up  
-            { x: -Math.PI/2, y: 0, z: 0 },          // 5 up
-            { x: 0, y: 0, z: Math.PI/2 },           // 3 up
-            { x: 0, y: 0, z: -Math.PI/2 }           // 4 up
+        // Normalize current rotation to 0-2π range
+        const normalizeAngle = (angle) => {
+            while (angle < 0) angle += Math.PI * 2;
+            while (angle >= Math.PI * 2) angle -= Math.PI * 2;
+            return angle;
+        };
+        
+        const currentX = normalizeAngle(die.mesh.rotation.x);
+        const currentY = normalizeAngle(die.mesh.rotation.y);
+        const currentZ = normalizeAngle(die.mesh.rotation.z);
+        
+        // Define stable face orientations (proper dice faces)
+        const stableOrientations = [
+            { x: 0, y: 0, z: 0, face: 1 },                      // 1 face up
+            { x: Math.PI, y: 0, z: 0, face: 6 },               // 6 face up  
+            { x: Math.PI/2, y: 0, z: 0, face: 4 },             // 4 face up
+            { x: -Math.PI/2, y: 0, z: 0, face: 3 },            // 3 face up
+            { x: 0, y: 0, z: Math.PI/2, face: 2 },             // 2 face up
+            { x: 0, y: 0, z: -Math.PI/2, face: 5 }             // 5 face up
         ];
         
-        let closestOrientation = orientations[0];
+        let closestOrientation = stableOrientations[0];
         let minDistance = Infinity;
         
-        orientations.forEach(orientation => {
-            const distance = Math.abs(die.mesh.rotation.x - orientation.x) + 
-                           Math.abs(die.mesh.rotation.y - orientation.y) + 
-                           Math.abs(die.mesh.rotation.z - orientation.z);
+        stableOrientations.forEach(orientation => {
+            // Calculate angular distance considering periodic boundary
+            const distX = Math.min(
+                Math.abs(currentX - orientation.x),
+                Math.abs(currentX - orientation.x + Math.PI * 2),
+                Math.abs(currentX - orientation.x - Math.PI * 2)
+            );
+            const distY = Math.min(
+                Math.abs(currentY - orientation.y),
+                Math.abs(currentY - orientation.y + Math.PI * 2),
+                Math.abs(currentY - orientation.y - Math.PI * 2)
+            );
+            const distZ = Math.min(
+                Math.abs(currentZ - orientation.z),
+                Math.abs(currentZ - orientation.z + Math.PI * 2),
+                Math.abs(currentZ - orientation.z - Math.PI * 2)
+            );
             
-            if (distance < minDistance) {
-                minDistance = distance;
+            const totalDistance = distX + distY + distZ;
+            
+            if (totalDistance < minDistance) {
+                minDistance = totalDistance;
                 closestOrientation = orientation;
             }
         });
         
-        // Smoothly rotate to stable position
-        die.restingOrientation = closestOrientation;
+        // Set target orientation for smooth interpolation
+        die.restingOrientation = {
+            x: closestOrientation.x,
+            y: closestOrientation.y,
+            z: closestOrientation.z,
+            face: closestOrientation.face
+        };
     }
     
     applySettledPhysics(die, deltaTime) {
