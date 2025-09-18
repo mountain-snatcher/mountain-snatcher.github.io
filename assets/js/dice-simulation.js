@@ -11,11 +11,11 @@ class EnhancedDiceSimulation {
         this.settings = {
             maxDice: this.isMobile() ? 6 : 12,
             spawnRate: 2000, // milliseconds
-            gravity: -9.81, // More realistic Earth gravity
-            bounceStrength: 0.4, // Less bouncy for realism
-            friction: 0.8, // More friction
-            airResistance: 0.02, // Air drag
-            angularDamping: 0.95, // Angular friction
+            gravity: -15, // Stronger gravity for more impact
+            bounceStrength: 0.7, // Much more bouncy
+            friction: 0.3, // Much less friction for more sliding
+            airResistance: 0.005, // Less air resistance
+            angularDamping: 0.98, // Less angular damping
             diceLifetime: 45, // seconds
             enableShadows: !this.isMobile(),
             enableReflections: true,
@@ -219,14 +219,14 @@ class EnhancedDiceSimulation {
                 z: 0.000025
             },
             velocity: {
-                x: (Math.random() - 0.5) * 0.5, // Very small initial horizontal velocity
+                x: (Math.random() - 0.5) * 2, // More initial horizontal velocity
                 y: 0,
-                z: (Math.random() - 0.5) * 0.5
+                z: (Math.random() - 0.5) * 2
             },
             angularVelocity: {
-                x: (Math.random() - 0.5) * 4, // Realistic tumbling rate (rad/s)
-                y: (Math.random() - 0.5) * 4,
-                z: (Math.random() - 0.5) * 4
+                x: (Math.random() - 0.5) * 10, // Much more tumbling
+                y: (Math.random() - 0.5) * 10,
+                z: (Math.random() - 0.5) * 10
             },
             torque: { x: 0, y: 0, z: 0 },
             forces: { x: 0, y: 0, z: 0 },
@@ -234,14 +234,14 @@ class EnhancedDiceSimulation {
             age: 0,
             settled: false,
             lastCollisionTime: 0,
-            settleThreshold: 0.05,
-            rollingThreshold: 0.1,
+            settleThreshold: 0.02,
+            rollingThreshold: 0.05,
             restingOrientation: null,
             stabilityCounter: 0,
             lastPosition: { x: spawnX, y: spawnY, z: spawnZ },
             isRolling: false,
             contactNormal: { x: 0, y: 1, z: 0 },
-            coefficientOfRestitution: 0.3 // How bouncy the dice is
+            coefficientOfRestitution: 0.8 // Much more bouncy
         };
         
         this.dice.push(diceObj);
@@ -404,9 +404,9 @@ class EnhancedDiceSimulation {
         const impactSpeed = Math.abs(relativeVelY);
         let restitution = die.coefficientOfRestitution;
         
-        // Energy loss increases with impact speed (realistic)
-        if (impactSpeed > 3) {
-            restitution *= Math.max(0.1, 1 - (impactSpeed - 3) * 0.1);
+        // Keep bounces strong even at high impact speeds
+        if (impactSpeed > 5) {
+            restitution *= Math.max(0.6, 1 - (impactSpeed - 5) * 0.05);
         }
         
         // Calculate impulse
@@ -415,35 +415,35 @@ class EnhancedDiceSimulation {
         // Apply normal impulse
         die.velocity.y += impulse;
         
-        // Apply friction forces (Coulomb friction model)
+        // Apply reduced friction forces for more sliding
         const normalForce = Math.abs(impulse * die.mass);
-        const maxFriction = this.settings.friction * normalForce;
+        const maxFriction = this.settings.friction * normalForce * 0.5; // Reduce friction effect
         
         const tangentialVel = Math.sqrt(die.velocity.x**2 + die.velocity.z**2);
-        if (tangentialVel > 0.01) {
+        if (tangentialVel > 0.05) {
             const frictionDirection = {
                 x: -die.velocity.x / tangentialVel,
                 z: -die.velocity.z / tangentialVel
             };
             
-            const frictionImpulse = Math.min(maxFriction, tangentialVel * die.mass);
+            const frictionImpulse = Math.min(maxFriction, tangentialVel * die.mass * 0.3); // Less friction
             
             die.velocity.x += frictionDirection.x * frictionImpulse / die.mass;
             die.velocity.z += frictionDirection.z * frictionImpulse / die.mass;
             
-            // Friction creates torque (τ = r × F)
+            // More torque from friction for better rolling
             const contactRadius = 0.5;
-            die.torque.x += frictionDirection.z * frictionImpulse * contactRadius;
-            die.torque.z -= frictionDirection.x * frictionImpulse * contactRadius;
+            die.torque.x += frictionDirection.z * frictionImpulse * contactRadius * 2;
+            die.torque.z -= frictionDirection.x * frictionImpulse * contactRadius * 2;
         }
         
-        // Apply rolling resistance
-        const rollingResistance = 0.01;
+        // Less rolling resistance
+        const rollingResistance = 0.005;
         die.angularVelocity.x *= (1 - rollingResistance);
         die.angularVelocity.z *= (1 - rollingResistance);
         
-        // Collision damping on angular velocity
-        const angularDamping = 0.85;
+        // Less collision damping on angular velocity
+        const angularDamping = 0.95;
         die.angularVelocity.x *= angularDamping;
         die.angularVelocity.y *= angularDamping;
         die.angularVelocity.z *= angularDamping;
@@ -455,10 +455,10 @@ class EnhancedDiceSimulation {
     }
     
     checkAdvancedSettling(die, deltaTime) {
-        const velocityThreshold = 0.08; // Much stricter
-        const angularThreshold = 0.3;   // Much stricter
-        const positionThreshold = 0.01; // Position stability
-        const timeThreshold = 1.0;      // Must be stable longer
+        const velocityThreshold = 0.02; // Much stricter - very slow movement
+        const angularThreshold = 0.1;   // Much stricter - very slow rotation
+        const positionThreshold = 0.005; // Very strict position stability
+        const timeThreshold = 3.0;      // Much longer time before settling allowed
         
         const totalVelocity = Math.sqrt(die.velocity.x**2 + die.velocity.y**2 + die.velocity.z**2);
         const totalAngular = Math.sqrt(die.angularVelocity.x**2 + die.angularVelocity.y**2 + die.angularVelocity.z**2);
@@ -473,17 +473,21 @@ class EnhancedDiceSimulation {
         // Check if dice is in contact with ground
         const isGrounded = die.mesh.position.y <= this.groundLevel + 0.51;
         
-        // All stability conditions must be met
+        // Check if dice has bounced recently (prevent quick settling)
+        const timeSinceLastBounce = die.age - die.lastCollisionTime;
+        const hasBouncedRecently = timeSinceLastBounce < timeThreshold;
+        
+        // All stability conditions must be met AND no recent bounces
         if (isGrounded && 
+            !hasBouncedRecently &&
             totalVelocity < velocityThreshold && 
             totalAngular < angularThreshold &&
-            positionChange < positionThreshold &&
-            die.age - die.lastCollisionTime > timeThreshold) {
+            positionChange < positionThreshold) {
             
             die.stabilityCounter += deltaTime;
             
-            // Must maintain stability for additional time
-            if (die.stabilityCounter > 0.5) {
+            // Must maintain stability for much longer
+            if (die.stabilityCounter > 2.0) {
                 die.settled = true;
                 die.velocity = { x: 0, y: 0, z: 0 };
                 die.angularVelocity = { x: 0, y: 0, z: 0 };
