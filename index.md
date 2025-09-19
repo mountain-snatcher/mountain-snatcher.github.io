@@ -9,17 +9,10 @@ description: Quantum Engineer
     <div class="container">
         <div class="hero-content">
             <div class="hero-text">
-                <h1 class="hero-title">Sankalp Chudmunge</h1>
-                <h2 class="hero-subtitle">Quantum Engineer</h2>
-                <p class="hero-description">Building scalable systems at the intersection of physics and software engineering</p>
+                <h1 class="hero-title">Welcome</h1>
+                <p class="hero-description">Explore my work and journey</p>
                 <div class="hero-buttons">
-                    <a href="#contact" class="btn btn-primary">Get In Touch</a>
-                    <a href="#projects" class="btn btn-secondary">View Projects</a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="profile-image">
-                    <img src="coast_side.png" alt="Sankalp Chudmunge" />
+                    <a href="#about" class="btn btn-primary">Learn More</a>
                 </div>
             </div>
         </div>
@@ -31,7 +24,24 @@ description: Quantum Engineer
     <div class="container">
         <h2 class="section-title">About Me</h2>
         <div class="about-content">
-            <div class="about-text">
+            <div class="about-header">
+                <div class="about-text">
+                    <h1 class="hero-title">Sankalp Chudmunge</h1>
+                    <h2 class="hero-subtitle">Quantum Engineer</h2>
+                    <p class="hero-description">Building scalable systems at the intersection of physics and software engineering</p>
+                    <div class="hero-buttons">
+                        <a href="#contact" class="btn btn-primary">Get In Touch</a>
+                        <a href="#projects" class="btn btn-secondary">View Projects</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="profile-image">
+                        <img src="coast_side.png" alt="Sankalp Chudmunge" />
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-details">
                 <p>Backend engineer with M.Sc. in Computational Physics from IIT Palakkad. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
                 
                 <div class="quick-facts">
