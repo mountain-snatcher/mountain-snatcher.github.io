@@ -123,47 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup perspective camera
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            this.camera.position.set(0, 5, 15);
-            
-            // Cinematic camera animation parameters (Christopher Nolan inspired)
-            this.cameraAnimation = {
-                time: 0,
-                totalDuration: 80, // Extended to 80 seconds for smoother transitions
-                
-                // Camera state for smooth interpolation
-                currentPosition: new THREE.Vector3(0, 8, 20),
-                currentTarget: new THREE.Vector3(0, 0, 0),
-                
-                // Predefined cinematic keyframes for smooth movement with horizontal and vertical perspectives
-                keyframes: [
-                    // Opening wide shot - establishing the scene from above-behind
-                    { time: 0, position: [0, 12, 18], target: [0, 0, 0], fov: 75 },
-                    
-                    // Gentle arc to the right side, showing horizontal donut perspective
-                    { time: 10, position: [15, 8, 10], target: [0, 0, 0], fov: 72 },
-                    
-                    // Continue arc to show donut from horizontal angle (avoid line view)
-                    { time: 20, position: [18, 4, -2], target: [0, 0, 0], fov: 68 },
-                    
-                    // Move to show donut from below-horizontal perspective
-                    { time: 30, position: [12, -6, -12], target: [0, 0, 0], fov: 65 },
-                    
-                    // Sweep to the left side, maintaining good donut visibility
-                    { time: 40, position: [-8, -4, -15], target: [0, 0, 0], fov: 62 },
-                    
-                    // Low horizontal sweep from the left
-                    { time: 50, position: [-18, 2, -8], target: [0, 0, 0], fov: 65 },
-                    
-                    // Rise up while moving to back-left
-                    { time: 60, position: [-12, 10, 8], target: [0, 0, 0], fov: 70 },
-                    
-                    // Final approach back to starting region
-                    { time: 70, position: [-6, 12, 15], target: [0, 0, 0], fov: 73 },
-                    
-                    // Return to start position
-                    { time: 80, position: [0, 12, 18], target: [0, 0, 0], fov: 75 }
-                ]
-            };
+            // Static top-down view to show the complete circular plasma formation
+            this.camera.position.set(0, 15, 0);
+            this.camera.lookAt(0, 0, 0);
         }
 
         // Setup WebGL renderer with shadow support and high quality
@@ -426,9 +388,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Setup OrbitControls for interaction (mouse/touch) - disabled for background
+        // Setup OrbitControls for interaction (mouse/touch)
         setupControls() {
-            // Disabled for background use to avoid conflicts with page navigation
+            if (typeof THREE.OrbitControls !== 'undefined') {
+                this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.enableZoom = true;
+                this.controls.enableRotate = true;
+                this.controls.enablePan = true;
+                this.controls.maxDistance = 50;
+                this.controls.minDistance = 5;
+                this.controls.maxPolarAngle = Math.PI; // Allow full rotation
+            }
         }
 
         // Setup post-processing pipeline for cinematic bloom effect on plasma
@@ -452,9 +424,6 @@ document.addEventListener('DOMContentLoaded', function() {
             requestAnimationFrame(() => this.animate());
 
             const delta = this.clock.getDelta() * this.params.animationSpeed;
-
-            // Update camera panning
-            this.updateCamera(delta);
 
             // Update controls if available
             if (this.controls) {
@@ -480,89 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Cinematic camera animation with keyframe interpolation (Christopher Nolan style)
-        updateCamera(delta) {
-            this.cameraAnimation.time += delta;
-            
-            // Loop the animation
-            const normalizedTime = (this.cameraAnimation.time % this.cameraAnimation.totalDuration);
-            
-            // Find the two keyframes to interpolate between
-            const keyframes = this.cameraAnimation.keyframes;
-            let startFrame = keyframes[keyframes.length - 1]; // Default to last frame
-            let endFrame = keyframes[0]; // Default to first frame
-            let t = 0;
-            
-            for (let i = 0; i < keyframes.length - 1; i++) {
-                if (normalizedTime >= keyframes[i].time && normalizedTime <= keyframes[i + 1].time) {
-                    startFrame = keyframes[i];
-                    endFrame = keyframes[i + 1];
-                    const segmentDuration = endFrame.time - startFrame.time;
-                    t = (normalizedTime - startFrame.time) / segmentDuration;
-                    break;
-                }
-            }
-            
-            // Handle wrap-around (last to first keyframe)
-            if (normalizedTime > keyframes[keyframes.length - 1].time) {
-                startFrame = keyframes[keyframes.length - 1];
-                endFrame = keyframes[0];
-                const wrapTime = this.cameraAnimation.totalDuration - startFrame.time;
-                t = (normalizedTime - startFrame.time) / wrapTime;
-            }
-            
-            // Smooth easing for cinematic feel
-            const easedT = this.cinematicEase(t);
-            
-            // Interpolate position
-            const position = this.smoothInterpolateVector3(
-                startFrame.position,
-                endFrame.position,
-                easedT
-            );
-            
-            // Interpolate target
-            const target = this.smoothInterpolateVector3(
-                startFrame.target,
-                endFrame.target,
-                easedT
-            );
-            
-            // Interpolate FOV for dramatic zooms
-            const fov = THREE.MathUtils.lerp(startFrame.fov, endFrame.fov, easedT);
-            
-            // Apply ultra-smooth camera movement with increased interpolation
-            this.cameraAnimation.currentPosition.lerp(new THREE.Vector3(...position), 0.02);
-            this.cameraAnimation.currentTarget.lerp(new THREE.Vector3(...target), 0.02);
-            
-            // Update camera
-            this.camera.position.copy(this.cameraAnimation.currentPosition);
-            this.camera.lookAt(this.cameraAnimation.currentTarget);
-            this.camera.fov = fov;
-            this.camera.updateProjectionMatrix();
-        }
-        
-        // Smooth easing function for camera transitions
-        easeInOut(t) {
-            return t * t * (3.0 - 2.0 * t);
-        }
-        
-        // Cinematic easing function (inspired by film camera moves)
-        cinematicEase(t) {
-            // Smooth cubic hermite interpolation for ultra-smooth camera moves
-            // This eliminates jerky transitions and provides film-like smoothness
-            return t * t * (3.0 - 2.0 * t);
-        }
-        
-        // Smooth vector interpolation with optional cubic interpolation
-        smoothInterpolateVector3(start, end, t) {
-            return [
-                THREE.MathUtils.lerp(start[0], end[0], t),
-                THREE.MathUtils.lerp(start[1], end[1], t),
-                THREE.MathUtils.lerp(start[2], end[2], t)
-            ];
-        }
-        
         // Update particle lifecycle phases
         updateParticleLifecycle(delta) {
             this.particleLifecycle.time += delta;
