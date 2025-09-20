@@ -9,7 +9,7 @@ description: Quantum Engineer
     <div class="container">
         <div class="hero-content">
             <div class="hero-text">
-                <h1 class="hero-title">Welcome</h1>
+                <h1 class="hero-title">Hi there !</h1>
                 <p class="hero-description">Explore my work and journey</p>
                 <div class="hero-buttons">
                     <a href="#about" class="btn btn-primary">Learn More</a>
