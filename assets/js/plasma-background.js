@@ -47,7 +47,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 bloomThreshold: 0.7,      // Brightness threshold for bloom
                 lightningIntensity: 0.6,  // Lightning frequency
                 mouseForce: 1.8,          // Mouse interaction strength
-                energyLevel: 1.0          // Overall energy level
+                energyLevel: 1.0,         // Overall energy level
+                particleCycleDuration: 150, // Particle lifecycle in seconds (2.5 minutes)
+                deathPhaseDuration: 30,   // Time for particles to die out (30 seconds)
+                birthPhaseDuration: 30    // Time for particles to recreate (30 seconds)
+            };
+            
+            // Particle lifecycle tracking
+            this.particleLifecycle = {
+                time: 0,
+                phase: 'active', // 'active', 'dying', 'dead', 'birthing'
+                phaseProgress: 0,
+                cycleProgress: 0
             };
 
             // Plasma-specific objects - multiple particle types
@@ -112,13 +123,34 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup perspective camera
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            this.camera.position.set(0, 5, 10);
+            this.camera.position.set(0, 5, 15);
             
-            // Camera panning parameters
-            this.cameraRadius = 12;
-            this.cameraHeight = 5;
-            this.cameraSpeed = 0.3;
-            this.cameraAngle = 0;
+            // Complex camera animation parameters
+            this.cameraAnimation = {
+                phase: 0, // 0: zoom in, 1: pan around, 2: pass through, 3: rotate around
+                time: 0,
+                phaseDurations: [8, 12, 6, 10], // Duration of each phase in seconds
+                
+                // Phase 0: Zoom in
+                startDistance: 20,
+                closeDistance: 8,
+                
+                // Phase 1: Pan around
+                panRadius: 8,
+                panHeight: 5,
+                
+                // Phase 2: Pass through center
+                throughStartRadius: 8,
+                throughEndRadius: 8,
+                
+                // Phase 3: Rotate around
+                rotateRadius: 12,
+                rotateHeight: 5,
+                rotateSpeed: 0.3
+            };
+            
+            this.cameraPhaseTime = 0;
+            this.totalCycleTime = this.cameraAnimation.phaseDurations.reduce((a, b) => a + b, 0);
         }
 
         // Setup WebGL renderer with shadow support and high quality
@@ -212,28 +244,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(config.count * 3);
             const velocities = new Float32Array(config.count * 3);
+            const lifetimes = new Float32Array(config.count); // Particle individual lifetimes
+            const maxLifetimes = new Float32Array(config.count); // Max lifetime for each particle
 
             // Initialize particles with clustered distribution
             for (let i = 0; i < config.count; i++) {
                 const i3 = i * 3;
-                // Create clusters and filaments
-                const clusterIndex = Math.floor(Math.random() * 4);
-                const clusterAngle = (clusterIndex / 4) * Math.PI * 2;
-                const clusterRadius = 1.2 + Math.random() * 1.8;
                 
-                const localRadius = Math.pow(Math.random(), 0.6) * 0.9;
-                const theta = clusterAngle + (Math.random() - 0.5) * Math.PI * 0.4;
-                const phi = Math.acos(2 * Math.random() - 1);
+                // Initialize positions
+                this.resetParticlePosition(positions, i3);
                 
-                positions[i3] = clusterRadius * Math.cos(clusterAngle) + localRadius * Math.sin(phi) * Math.cos(theta);
-                positions[i3 + 1] = clusterRadius * Math.sin(clusterAngle) + localRadius * Math.sin(phi) * Math.sin(theta);
-                positions[i3 + 2] = localRadius * Math.cos(phi);
-
                 // Type-specific velocities
-                const swirl = 0.04 / config.mass;
-                velocities[i3] = (Math.random() - 0.5) * config.speed + swirl * -positions[i3 + 1];
-                velocities[i3 + 1] = (Math.random() - 0.5) * config.speed + swirl * positions[i3];
-                velocities[i3 + 2] = (Math.random() - 0.5) * config.speed * 0.6;
+                this.resetParticleVelocity(velocities, positions, i3, config);
+                
+                // Initialize lifetimes
+                lifetimes[i] = 1.0; // Start fully alive
+                maxLifetimes[i] = 0.8 + Math.random() * 0.4; // Varied max lifetimes
             }
 
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -253,13 +279,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const system = new THREE.Points(geometry, material);
             system.userData = {
-            config: config,
-            velocities: velocities  // remove positions, use geometry.attributes.position.array directly
+                config: config,
+                velocities: velocities,
+                lifetimes: lifetimes,
+                maxLifetimes: maxLifetimes,
+                baseOpacity: 0.5
             };
 
-            
             this.scene.add(system);
             return system;
+        }
+        
+        // Reset particle position to initial clustered distribution
+        resetParticlePosition(positions, i3) {
+            // Create clusters and filaments
+            const clusterIndex = Math.floor(Math.random() * 4);
+            const clusterAngle = (clusterIndex / 4) * Math.PI * 2;
+            const clusterRadius = 1.2 + Math.random() * 1.8;
+            
+            const localRadius = Math.pow(Math.random(), 0.6) * 0.9;
+            const theta = clusterAngle + (Math.random() - 0.5) * Math.PI * 0.4;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            positions[i3] = clusterRadius * Math.cos(clusterAngle) + localRadius * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = clusterRadius * Math.sin(clusterAngle) + localRadius * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = localRadius * Math.cos(phi);
+        }
+        
+        // Reset particle velocity
+        resetParticleVelocity(velocities, positions, i3, config) {
+            const swirl = 0.04 / config.mass;
+            velocities[i3] = (Math.random() - 0.5) * config.speed + swirl * -positions[i3 + 1];
+            velocities[i3 + 1] = (Math.random() - 0.5) * config.speed + swirl * positions[i3];
+            velocities[i3 + 2] = (Math.random() - 0.5) * config.speed * 0.6;
         }
 
         // High-quality procedural texture for smooth circular particles
@@ -386,6 +438,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.controls.update();
             }
 
+            // Update particle lifecycle
+            this.updateParticleLifecycle(delta);
+
             // Update all particle systems with enhanced physics
             this.updateParticleSystem(this.electronSystem, delta);
             this.updateParticleSystem(this.ionSystem, delta);
@@ -402,34 +457,171 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Update camera for smooth orbital panning
+        // Update camera with complex multi-phase animation
         updateCamera(delta) {
-            // Increment the camera angle for smooth rotation
-            this.cameraAngle += this.cameraSpeed * delta;
+            this.cameraPhaseTime += delta;
+            this.cameraAnimation.time += delta;
             
-            // Calculate new camera position in circular orbit
-            const x = Math.cos(this.cameraAngle) * this.cameraRadius;
-            const z = Math.sin(this.cameraAngle) * this.cameraRadius;
-            const y = this.cameraHeight + Math.sin(this.cameraAngle * 0.5) * 2; // Slight vertical oscillation
+            // Determine current phase and progress within phase
+            let currentPhase = 0;
+            let phaseProgress = 0;
+            let elapsedTime = this.cameraAnimation.time % this.totalCycleTime;
+            
+            for (let i = 0; i < this.cameraAnimation.phaseDurations.length; i++) {
+                if (elapsedTime <= this.cameraAnimation.phaseDurations[i]) {
+                    currentPhase = i;
+                    phaseProgress = elapsedTime / this.cameraAnimation.phaseDurations[i];
+                    break;
+                }
+                elapsedTime -= this.cameraAnimation.phaseDurations[i];
+            }
+            
+            let x, y, z;
+            const target = new THREE.Vector3(0, 0, 0);
+            
+            switch (currentPhase) {
+                case 0: // Phase 0: Zoom in closer
+                    {
+                        const distance = THREE.MathUtils.lerp(
+                            this.cameraAnimation.startDistance,
+                            this.cameraAnimation.closeDistance,
+                            this.easeInOut(phaseProgress)
+                        );
+                        const angle = this.cameraAnimation.time * 0.2;
+                        x = Math.cos(angle) * distance;
+                        z = Math.sin(angle) * distance;
+                        y = 5 + Math.sin(angle * 0.5) * 2;
+                    }
+                    break;
+                    
+                case 1: // Phase 1: Pan around the entire field
+                    {
+                        const angle = phaseProgress * Math.PI * 4; // 2 full rotations
+                        const radius = this.cameraAnimation.panRadius;
+                        x = Math.cos(angle) * radius;
+                        z = Math.sin(angle) * radius;
+                        y = this.cameraAnimation.panHeight + Math.sin(angle * 0.3) * 3;
+                    }
+                    break;
+                    
+                case 2: // Phase 2: Pass through the center of the donut
+                    {
+                        const startAngle = this.cameraAnimation.time * 0.2;
+                        const startX = Math.cos(startAngle) * this.cameraAnimation.throughStartRadius;
+                        const startZ = Math.sin(startAngle) * this.cameraAnimation.throughStartRadius;
+                        const startY = 5;
+                        
+                        // Move through the center to the opposite side
+                        const endX = -startX;
+                        const endZ = -startZ;
+                        const endY = 5;
+                        
+                        x = THREE.MathUtils.lerp(startX, endX, this.easeInOut(phaseProgress));
+                        z = THREE.MathUtils.lerp(startZ, endZ, this.easeInOut(phaseProgress));
+                        y = THREE.MathUtils.lerp(startY, endY, this.easeInOut(phaseProgress));
+                        
+                        // Adjust look target for dramatic effect when passing through center
+                        if (phaseProgress > 0.3 && phaseProgress < 0.7) {
+                            const centerProgress = (phaseProgress - 0.3) / 0.4;
+                            target.set(
+                                Math.sin(centerProgress * Math.PI * 6) * 2,
+                                Math.cos(centerProgress * Math.PI * 4) * 1,
+                                Math.sin(centerProgress * Math.PI * 8) * 1
+                            );
+                        }
+                    }
+                    break;
+                    
+                case 3: // Phase 3: Rotate around at distance (like original)
+                    {
+                        const angle = phaseProgress * Math.PI * 2 + this.cameraAnimation.time * this.cameraAnimation.rotateSpeed;
+                        const radius = this.cameraAnimation.rotateRadius;
+                        x = Math.cos(angle) * radius;
+                        z = Math.sin(angle) * radius;
+                        y = this.cameraAnimation.rotateHeight + Math.sin(angle * 0.5) * 2;
+                    }
+                    break;
+            }
             
             // Update camera position
             this.camera.position.set(x, y, z);
             
-            // Always look at the center of the plasma field
-            this.camera.lookAt(0, 0, 0);
+            // Look at target (usually center, but can vary during pass-through)
+            this.camera.lookAt(target);
+        }
+        
+        // Smooth easing function for camera transitions
+        easeInOut(t) {
+            return t * t * (3.0 - 2.0 * t);
+        }
+        
+        // Update particle lifecycle phases
+        updateParticleLifecycle(delta) {
+            this.particleLifecycle.time += delta;
+            
+            const cycleDuration = this.params.particleCycleDuration;
+            const deathDuration = this.params.deathPhaseDuration;
+            const birthDuration = this.params.birthPhaseDuration;
+            const activeDuration = cycleDuration - deathDuration - birthDuration;
+            
+            this.particleLifecycle.cycleProgress = (this.particleLifecycle.time % cycleDuration) / cycleDuration;
+            const cycleTime = this.particleLifecycle.time % cycleDuration;
+            
+            // Determine current phase
+            if (cycleTime < activeDuration) {
+                // Active phase
+                this.particleLifecycle.phase = 'active';
+                this.particleLifecycle.phaseProgress = cycleTime / activeDuration;
+            } else if (cycleTime < activeDuration + deathDuration) {
+                // Dying phase
+                this.particleLifecycle.phase = 'dying';
+                this.particleLifecycle.phaseProgress = (cycleTime - activeDuration) / deathDuration;
+            } else {
+                // Birthing phase (recreating)
+                this.particleLifecycle.phase = 'birthing';
+                this.particleLifecycle.phaseProgress = (cycleTime - activeDuration - deathDuration) / birthDuration;
+            }
         }
 
         // Enhanced particle system update with type-specific physics
         updateParticleSystem(system, delta) {
             if (!system || !system.userData) return;
 
-            const { config, positions, velocities } = system.userData;
+            const { config, velocities, lifetimes, maxLifetimes, baseOpacity } = system.userData;
             const positionsArray = system.geometry.attributes.position.array;
             const radius = 3.2;
             const time = this.clock.getElapsedTime();
+            
+            // Update system opacity based on lifecycle phase
+            let systemOpacity = baseOpacity;
+            if (this.particleLifecycle.phase === 'dying') {
+                systemOpacity = baseOpacity * (1.0 - this.particleLifecycle.phaseProgress);
+            } else if (this.particleLifecycle.phase === 'birthing') {
+                systemOpacity = baseOpacity * this.particleLifecycle.phaseProgress;
+            }
+            system.material.opacity = systemOpacity;
 
             for (let i = 0; i < config.count; i++) {
                 const i3 = i * 3;
+                
+                // Handle particle recreation during birthing phase
+                if (this.particleLifecycle.phase === 'birthing' && Math.random() < delta * 2.0) {
+                    // Randomly recreate particles during birthing phase
+                    if (lifetimes[i] <= 0) {
+                        this.resetParticlePosition(positionsArray, i3);
+                        this.resetParticleVelocity(velocities, positionsArray, i3, config);
+                        lifetimes[i] = maxLifetimes[i];
+                    }
+                }
+                
+                // Update individual particle lifetime
+                if (this.particleLifecycle.phase === 'dying') {
+                    lifetimes[i] -= delta * (1.0 + Math.random() * 0.5) / this.params.deathPhaseDuration;
+                    lifetimes[i] = Math.max(0, lifetimes[i]);
+                }
+                
+                // Skip physics for dead particles
+                if (lifetimes[i] <= 0) continue;
                 
                 // Current position
                 const x = positionsArray[i3];
