@@ -82,6 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('THREE.js failed to load');
                 return;
             }
+            
+            console.log('THREE.js loaded:', typeof THREE);
+            console.log('OrbitControls available:', typeof THREE.OrbitControls);
 
             // Step 2: Check post-processing availability
             this.usePostProcessing = typeof THREE.EffectComposer !== 'undefined' &&
