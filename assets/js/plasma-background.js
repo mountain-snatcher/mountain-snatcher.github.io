@@ -498,6 +498,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const radius = 3.2;
             const time = this.clock.getElapsedTime();
             
+            // Constants for torus geometry (declare once outside loop)
+            const majorRadius = 2.5;
+            const minorRadius = 1.2;
+            const maxVertical = 1.5;
+            
             // Update system opacity based on lifecycle phase
             let systemOpacity = baseOpacity;
             if (this.particleLifecycle.phase === 'dying') {
@@ -557,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const confinementStrength = 0.015 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
                 
                 // Radial restoring force toward major radius  
-                const radialDeviation = rho - 2.5; // majorRadius value
+                const radialDeviation = rho - majorRadius;
                 const radialForce = -radialDeviation * confinementStrength;
                 const radialX = radialForce * (x / rho);
                 const radialY = radialForce * (y / rho);
@@ -603,11 +608,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Toroidal containment boundary
                 const rhoNew = Math.sqrt(positionsArray[i3]**2 + positionsArray[i3 + 1]**2);
-                const minorRadius = 1.2;
-                const maxVertical = 1.5;
                 
                 // Check if particle is outside torus bounds
-                const distFromMajorRadius = Math.abs(rhoNew - 2.5); // majorRadius value
+                const distFromMajorRadius = Math.abs(rhoNew - majorRadius);
                 const verticalDist = Math.abs(positionsArray[i3 + 2]);
                 
                 if (distFromMajorRadius > minorRadius || verticalDist > maxVertical) {
