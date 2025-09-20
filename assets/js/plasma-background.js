@@ -403,6 +403,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup OrbitControls for interaction (mouse/touch)
         setupControls() {
             if (typeof THREE.OrbitControls !== 'undefined') {
+                console.log('Setting up OrbitControls...');
                 this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
                 this.controls.enableDamping = true;
                 this.controls.dampingFactor = 0.05;
@@ -412,6 +413,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.controls.maxDistance = 50;
                 this.controls.minDistance = 5;
                 this.controls.maxPolarAngle = Math.PI; // Allow full rotation
+                
+                // Test event listener
+                this.controls.addEventListener('change', () => {
+                    console.log('Camera moved!');
+                });
+                
+                console.log('OrbitControls setup complete');
+            } else {
+                console.warn('THREE.OrbitControls not available');
             }
         }
 
