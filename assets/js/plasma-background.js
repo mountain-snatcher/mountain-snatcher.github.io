@@ -113,6 +113,12 @@ document.addEventListener('DOMContentLoaded', function() {
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             this.camera.position.set(0, 5, 10);
+            
+            // Camera panning parameters
+            this.cameraRadius = 12;
+            this.cameraHeight = 5;
+            this.cameraSpeed = 0.3;
+            this.cameraAngle = 0;
         }
 
         // Setup WebGL renderer with shadow support and high quality
@@ -372,6 +378,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const delta = this.clock.getDelta() * this.params.animationSpeed;
 
+            // Update camera panning
+            this.updateCamera(delta);
+
             // Update controls if available
             if (this.controls) {
                 this.controls.update();
@@ -391,6 +400,23 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 this.renderer.render(this.scene, this.camera);
             }
+        }
+
+        // Update camera for smooth orbital panning
+        updateCamera(delta) {
+            // Increment the camera angle for smooth rotation
+            this.cameraAngle += this.cameraSpeed * delta;
+            
+            // Calculate new camera position in circular orbit
+            const x = Math.cos(this.cameraAngle) * this.cameraRadius;
+            const z = Math.sin(this.cameraAngle) * this.cameraRadius;
+            const y = this.cameraHeight + Math.sin(this.cameraAngle * 0.5) * 2; // Slight vertical oscillation
+            
+            // Update camera position
+            this.camera.position.set(x, y, z);
+            
+            // Always look at the center of the plasma field
+            this.camera.lookAt(0, 0, 0);
         }
 
         // Enhanced particle system update with type-specific physics

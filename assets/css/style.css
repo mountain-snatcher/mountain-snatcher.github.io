@@ -150,7 +150,7 @@ body {
     gap: 2rem;
     align-items: center;
     position: relative;
-    z-index: 3;
+    z-index: 10;
 }
 
 .hero-title {
@@ -968,10 +968,13 @@ section {
 }
 
 #fourierContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 1200px;
-    height: 600px;
-    margin: 0 auto;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
 }
 /* Center hero section content */
 .hero {
@@ -984,10 +987,13 @@ section {
 }
 
 #fourierContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 1200px;
-    height: 600px;
-    margin: 0 auto;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
 }
 /* Center hero section content */
 .hero {
@@ -1000,8 +1006,11 @@ section {
 }
 
 #fourierContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 1200px;
-    height: 600px;
-    margin: 0 auto;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
 }
