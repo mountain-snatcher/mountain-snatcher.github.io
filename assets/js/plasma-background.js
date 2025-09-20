@@ -1,4 +1,4 @@
-// Plasma Field Background Animation
+// Full Plasma Field Simulation (adapted from 3d-visualization-1758355648905.html)
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('fourierContainer');
     if (!container) return;
@@ -17,94 +17,249 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    class PlasmaBackground {
-        constructor(container) {
-            this.container = container;
+    // Wait for all dependencies to load
+    setTimeout(() => {
+        // Start the full simulation
+        const simulation = new PlasmaFieldSimulation();
+        simulation.init();
+    }, 100);
+
+    // Full Plasma Field Simulation Class (directly from HTML file)
+    class PlasmaFieldSimulation {
+        constructor() {
+            // Core Three.js objects
             this.scene = null;
             this.camera = null;
             this.renderer = null;
-            this.clock = new THREE.Clock();
-            
-            // Particle systems
+            this.controls = null;
+            this.gui = null;
+            this.composer = null;
+            this.usePostProcessing = false;
+
+            // Enhanced simulation parameters (optimized for background)
+            this.params = {
+                animationSpeed: 1.0,      // Speed of particle movement
+                electronCount: 2000,      // Number of electrons (blue, small, fast)
+                ionCount: 1500,           // Number of ions (red, medium, slower)
+                neutralCount: 800,        // Number of neutrals (white, large, slow)
+                bloomStrength: 1.8,       // Intensity of glow effect
+                bloomRadius: 0.5,         // Spread of bloom
+                bloomThreshold: 0.7,      // Brightness threshold for bloom
+                lightningIntensity: 0.6,  // Lightning frequency
+                mouseForce: 1.8,          // Mouse interaction strength
+                energyLevel: 1.0          // Overall energy level
+            };
+
+            // Plasma-specific objects - multiple particle types
             this.electronSystem = null;
             this.ionSystem = null;
             this.neutralSystem = null;
+            this.lightningSystem = null;
             this.lightningLines = [];
+            this.clock = new THREE.Clock();
             
             // Mouse interaction
             this.mouse = new THREE.Vector2();
             this.mouseWorld = new THREE.Vector3();
             this.mouseInfluence = 0;
-            
-            // Enhanced background parameters
-            this.params = {
-                electronCount: 800,         // Increased particle count
-                ionCount: 600,
-                neutralCount: 400,
-                animationSpeed: 0.8,
-                lightningIntensity: 0.6,
-                mouseForce: 1.5,
-                energyLevel: 1.2
-            };
-
-            this.init();
         }
 
+        // Initialize the simulation after dependency checks
         init() {
-            this.createScene();
-            this.createLighting();
-            this.createParticles();
-            this.createLightning();
+            // Step 1: Validate core dependencies
+            if (typeof THREE === 'undefined') {
+                console.error('THREE.js failed to load');
+                return;
+            }
+
+            // Step 2: Check post-processing availability
+            this.usePostProcessing = typeof THREE.EffectComposer !== 'undefined' &&
+                                     typeof THREE.ShaderPass !== 'undefined' &&
+                                     typeof THREE.RenderPass !== 'undefined' &&
+                                     typeof THREE.UnrealBloomPass !== 'undefined';
+            if (!this.usePostProcessing) {
+                console.warn('Post-processing dependencies missing, falling back to basic rendering');
+            }
+
+            // Step 3: Setup scene, camera, renderer
+            this.setupScene();
+            this.setupCamera();
+            this.setupRenderer();
+            this.setupLighting();
+            this.createEnvironment();
+            this.createMultipleParticleTypes();
+            this.createLightningSystem();
+            this.setupContainment();
             this.setupMouseInteraction();
-            this.setupResize();
+            if (this.usePostProcessing) {
+                this.setupPostProcessing();
+            }
+            this.setupControls();
+            // Skip GUI for background use
+
+            // Step 4: Start animation loop
             this.animate();
         }
 
-        createScene() {
-            // Scene with deep space background
+        // Setup the main scene
+        setupScene() {
             this.scene = new THREE.Scene();
-            this.scene.background = new THREE.Color(0x000008);
+            this.scene.background = new THREE.Color(0x000008); // Deep space black
+            // Add subtle fog for depth
             this.scene.fog = new THREE.Fog(0x000008, 8, 25);
+        }
 
-            // Camera - positioned for background effect
-            this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-            this.camera.position.set(0, 2, 10);
+        // Setup perspective camera
+        setupCamera() {
+            this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            this.camera.position.set(0, 5, 10);
+        }
 
-            // Enhanced renderer for better visual quality
-            this.renderer = new THREE.WebGLRenderer({ 
-                antialias: true,
-                alpha: true,
-                powerPreference: "default"
-            });
+        // Setup WebGL renderer with shadow support and high quality
+        setupRenderer() {
+            this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             this.renderer.setSize(window.innerWidth, window.innerHeight);
-            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            this.renderer.setClearColor(0x000008, 0);
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows for realism
+            this.renderer.physicallyCorrectLights = true; // Enable PBR lighting model
             this.renderer.outputEncoding = THREE.sRGBEncoding;
             this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
             this.renderer.toneMappingExposure = 1.0;
-            this.container.appendChild(this.renderer.domElement);
+            this.renderer.setClearColor(0x000008, 0); // Transparent background
+            container.appendChild(this.renderer.domElement);
+
+            // Handle window resize for responsiveness
+            window.addEventListener('resize', () => {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                if (this.usePostProcessing && this.composer) {
+                    this.composer.setSize(window.innerWidth, window.innerHeight);
+                }
+            }, false);
         }
 
-        createLighting() {
-            // Hemisphere light for soft ambient illumination
+        // Setup physically-accurate lighting: Hemisphere for ambient, Directional for key light and shadows
+        setupLighting() {
+            // Hemisphere light for soft, natural ambient illumination
             const hemiLight = new THREE.HemisphereLight(0x444444, 0x000011, 0.6);
             hemiLight.position.set(0, 20, 0);
             this.scene.add(hemiLight);
 
-            // Directional light for highlights
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            // Directional light for sharp shadows and highlights (simulating a strong energy source)
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
             dirLight.position.set(10, 10, 5);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 50;
+            dirLight.shadow.camera.left = -10;
+            dirLight.shadow.camera.right = 10;
+            dirLight.shadow.camera.top = 10;
+            dirLight.shadow.camera.bottom = -10;
             this.scene.add(dirLight);
-
-            // Point light for plasma glow
-            const pointLight = new THREE.PointLight(0x00ff88, 1.2, 50);
-            pointLight.position.set(0, 0, 5);
-            this.scene.add(pointLight);
         }
 
+        // Create environment: Pure space environment
+        createEnvironment() {
+            // No ground plane - pure floating space effect
+            // Set scene background to deep space
+            this.scene.background = new THREE.Color(0x000008);
+        }
+
+        // Create multiple particle types for realistic plasma composition
+        createMultipleParticleTypes() {
+            // Electrons: Small, fast, blue particles
+            this.electronSystem = this.createParticleType({
+                count: this.params.electronCount,
+                color: 0x0088ff,
+                size: 1.2,
+                mass: 1,
+                charge: -1,
+                speed: 0.15
+            });
+
+            // Ions: Medium, slower, red/orange particles  
+            this.ionSystem = this.createParticleType({
+                count: this.params.ionCount,
+                color: 0xff4400,
+                size: 1.8,
+                mass: 10,
+                charge: 1,
+                speed: 0.08
+            });
+
+            // Neutral atoms: Large, slow, white/purple particles
+            this.neutralSystem = this.createParticleType({
+                count: this.params.neutralCount,
+                color: 0xaa88ff,
+                size: 2.2,
+                mass: 15,
+                charge: 0,
+                speed: 0.04
+            });
+        }
+
+        // Create individual particle type system
+        createParticleType(config) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(config.count * 3);
+            const velocities = new Float32Array(config.count * 3);
+
+            // Initialize particles with clustered distribution
+            for (let i = 0; i < config.count; i++) {
+                const i3 = i * 3;
+                // Create clusters and filaments
+                const clusterIndex = Math.floor(Math.random() * 4);
+                const clusterAngle = (clusterIndex / 4) * Math.PI * 2;
+                const clusterRadius = 1.2 + Math.random() * 1.8;
+                
+                const localRadius = Math.pow(Math.random(), 0.6) * 0.9;
+                const theta = clusterAngle + (Math.random() - 0.5) * Math.PI * 0.4;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i3] = clusterRadius * Math.cos(clusterAngle) + localRadius * Math.sin(phi) * Math.cos(theta);
+                positions[i3 + 1] = clusterRadius * Math.sin(clusterAngle) + localRadius * Math.sin(phi) * Math.sin(theta);
+                positions[i3 + 2] = localRadius * Math.cos(phi);
+
+                // Type-specific velocities
+                const swirl = 0.04 / config.mass;
+                velocities[i3] = (Math.random() - 0.5) * config.speed + swirl * -positions[i3 + 1];
+                velocities[i3 + 1] = (Math.random() - 0.5) * config.speed + swirl * positions[i3];
+                velocities[i3 + 2] = (Math.random() - 0.5) * config.speed * 0.6;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            // Type-specific material
+            const material = new THREE.PointsMaterial({
+                color: config.color,
+                size: config.size,
+                sizeAttenuation: true,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending,
+                map: this.createParticleTexture(),
+                alphaTest: 0.001,
+                depthWrite: false
+            });
+
+            const system = new THREE.Points(geometry, material);
+            system.userData = {
+                config: config,
+                positions: positions,
+                velocities: velocities
+            };
+            
+            this.scene.add(system);
+            return system;
+        }
+
+        // High-quality procedural texture for smooth circular particles
         createParticleTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 128;
+            canvas.width = 128;  // Higher resolution
             canvas.height = 128;
             const ctx = canvas.getContext('2d');
             const center = 64;
@@ -128,96 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return texture;
         }
 
-        createParticleType(config) {
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(config.count * 3);
-            const velocities = new Float32Array(config.count * 3);
-
-            // Enhanced clustered distribution
-            for (let i = 0; i < config.count; i++) {
-                const i3 = i * 3;
-                
-                // Create clusters and filaments
-                const clusterIndex = Math.floor(Math.random() * 4);
-                const clusterAngle = (clusterIndex / 4) * Math.PI * 2;
-                const clusterRadius = 1.2 + Math.random() * 1.8;
-                
-                const localRadius = Math.pow(Math.random(), 0.6) * 0.9;
-                const theta = clusterAngle + (Math.random() - 0.5) * Math.PI * 0.4;
-                const phi = Math.acos(2 * Math.random() - 1);
-                
-                positions[i3] = clusterRadius * Math.cos(clusterAngle) + localRadius * Math.sin(phi) * Math.cos(theta);
-                positions[i3 + 1] = clusterRadius * Math.sin(clusterAngle) + localRadius * Math.sin(phi) * Math.sin(theta);
-                positions[i3 + 2] = localRadius * Math.cos(phi);
-
-                // Type-specific velocities with swirl motion
-                const swirl = 0.04 / config.mass;
-                velocities[i3] = (Math.random() - 0.5) * config.speed + swirl * -positions[i3 + 1];
-                velocities[i3 + 1] = (Math.random() - 0.5) * config.speed + swirl * positions[i3];
-                velocities[i3 + 2] = (Math.random() - 0.5) * config.speed * 0.6;
-            }
+        // Create lightning system for electrical arcing effects
+        createLightningSystem() {
+            this.lightningLines = [];
             
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            
-            // Enhanced material with better rendering
-            const material = new THREE.PointsMaterial({
-                color: config.color,
-                size: config.size,
-                sizeAttenuation: true,
-                transparent: true,
-                opacity: 0.85,
-                blending: THREE.AdditiveBlending,
-                map: this.createParticleTexture(),
-                alphaTest: 0.001,
-                depthWrite: false
-            });
-            
-            const system = new THREE.Points(geometry, material);
-            system.userData = {
-                config: config,
-                positions: positions,
-                velocities: velocities
-            };
-            
-            this.scene.add(system);
-            return system;
-        }
-
-        createParticles() {
-            // Electrons - blue, small, fast
-            this.electronSystem = this.createParticleType({
-                count: this.params.electronCount,
-                color: 0x0088ff,
-                size: 1.2,
-                mass: 1,
-                charge: -1,
-                speed: 0.15
-            });
-            
-            // Ions - red/orange, medium, slower
-            this.ionSystem = this.createParticleType({
-                count: this.params.ionCount,
-                color: 0xff4400,
-                size: 1.8,
-                mass: 10,
-                charge: 1,
-                speed: 0.08
-            });
-            
-            // Neutral atoms - purple/white, large, slow
-            this.neutralSystem = this.createParticleType({
-                count: this.params.neutralCount,
-                color: 0xaa88ff,
-                size: 2.2,
-                mass: 15,
-                charge: 0,
-                speed: 0.04
-            });
-        }
-
-        createLightning() {
-            // Create lightning line objects for performance
-            for (let i = 0; i < 15; i++) {
+            // Pre-create lightning line objects for performance
+            for (let i = 0; i < 20; i++) {
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(6); // 2 points, 3 coords each
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -243,6 +314,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // No visible containment - particles contained by physics boundaries
+        setupContainment() {
+            // Containment sphere removed for cleaner visualization
+        }
+
+        // Setup mouse interaction for disturbing the plasma field
         setupMouseInteraction() {
             const canvas = this.renderer.domElement;
             
@@ -268,14 +345,55 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        setupResize() {
-            window.addEventListener('resize', () => {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-            });
+        // Setup OrbitControls for interaction (mouse/touch) - disabled for background
+        setupControls() {
+            // Disabled for background use to avoid conflicts with page navigation
         }
 
+        // Setup post-processing pipeline for cinematic bloom effect on plasma
+        setupPostProcessing() {
+            this.composer = new THREE.EffectComposer(this.renderer);
+            const renderPass = new THREE.RenderPass(this.scene, this.camera);
+            this.composer.addPass(renderPass);
+
+            // UnrealBloomPass for glowing plasma highlights
+            const bloomPass = new THREE.UnrealBloomPass(
+                new THREE.Vector2(window.innerWidth, window.innerHeight),
+                this.params.bloomStrength, // Strength
+                this.params.bloomRadius,   // Radius
+                this.params.bloomThreshold // Threshold
+            );
+            this.composer.addPass(bloomPass);
+        }
+
+        // Animation loop: Update particles, controls, and render
+        animate() {
+            requestAnimationFrame(() => this.animate());
+
+            const delta = this.clock.getDelta() * this.params.animationSpeed;
+
+            // Update controls if available
+            if (this.controls) {
+                this.controls.update();
+            }
+
+            // Update all particle systems with enhanced physics
+            this.updateParticleSystem(this.electronSystem, delta);
+            this.updateParticleSystem(this.ionSystem, delta);
+            this.updateParticleSystem(this.neutralSystem, delta);
+
+            // Update lightning effects
+            this.updateLightning(delta);
+
+            // Render the scene (use composer if available)
+            if (this.usePostProcessing && this.composer) {
+                this.composer.render();
+            } else {
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // Enhanced particle system update with type-specific physics
         updateParticleSystem(system, delta) {
             if (!system || !system.userData) return;
 
@@ -364,6 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
             system.geometry.attributes.position.needsUpdate = true;
         }
 
+        // Update lightning/arcing effects
         updateLightning(delta) {
             const time = this.clock.getElapsedTime();
             
@@ -387,6 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Create individual lightning bolt between particle clusters
         createLightningBolt() {
             // Find inactive lightning line
             const lightning = this.lightningLines.find(l => !l.active);
@@ -434,25 +554,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 lightning.line.material.color = color;
             }
         }
-
-        animate() {
-            requestAnimationFrame(() => this.animate());
-            
-            const delta = this.clock.getDelta() * this.params.animationSpeed;
-            
-            // Update particle systems
-            this.updateParticleSystem(this.electronSystem, delta);
-            this.updateParticleSystem(this.ionSystem, delta);
-            this.updateParticleSystem(this.neutralSystem, delta);
-            
-            // Update lightning
-            this.updateLightning(delta);
-            
-            // Render
-            this.renderer.render(this.scene, this.camera);
-        }
     }
-
-    // Initialize plasma background
-    new PlasmaBackground(container);
 });
