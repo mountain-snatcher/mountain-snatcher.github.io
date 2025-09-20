@@ -957,3 +957,51 @@ section {
         padding: 1rem;
     }
 }
+/* Center the hero section content */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#fourierContainer {
+    width: 100%;
+    max-width: 1200px;
+    height: 600px;
+    margin: 0 auto;
+}
+/* Center hero section content */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#fourierContainer {
+    width: 100%;
+    max-width: 1200px;
+    height: 600px;
+    margin: 0 auto;
+}
+/* Center hero section content */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#fourierContainer {
+    width: 100%;
+    max-width: 1200px;
+    height: 600px;
+    margin: 0 auto;
+}

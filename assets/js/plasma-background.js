@@ -1,4 +1,4 @@
-// Full Plasma Field Simulation (adapted from 3d-visualization-1758355648905.html)
+// Full Plasma Field Simulation 
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('fourierContainer');
     if (!container) return;
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         simulation.init();
     }, 100);
 
-    // Full Plasma Field Simulation Class (directly from HTML file)
+    // Full Plasma Field Simulation Class with multiple particle types and enhanced effects
     class PlasmaFieldSimulation {
         constructor() {
             // Core Three.js objects
@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Enhanced simulation parameters (optimized for background)
             this.params = {
                 animationSpeed: 1.0,      // Speed of particle movement
-                electronCount: 2000,      // Number of electrons (blue, small, fast)
-                ionCount: 1500,           // Number of ions (red, medium, slower)
-                neutralCount: 800,        // Number of neutrals (white, large, slow)
-                bloomStrength: 1.8,       // Intensity of glow effect
+                electronCount: 1000,      // Number of electrons (blue, small, fast)
+                ionCount: 500,           // Number of ions (red, medium, slower)
+                neutralCount: 100,        // Number of neutrals (white, large, slow)
+                bloomStrength: 0.8,       // Intensity of glow effect
                 bloomRadius: 0.5,         // Spread of bloom
                 bloomThreshold: 0.7,      // Brightness threshold for bloom
                 lightningIntensity: 0.6,  // Lightning frequency
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.renderer.physicallyCorrectLights = true; // Enable PBR lighting model
             this.renderer.outputEncoding = THREE.sRGBEncoding;
             this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            this.renderer.toneMappingExposure = 1.0;
+            this.renderer.toneMappingExposure = 0.7;
             this.renderer.setClearColor(0x000008, 0); // Transparent background
             container.appendChild(this.renderer.domElement);
 
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.scene.add(hemiLight);
 
             // Directional light for sharp shadows and highlights (simulating a strong energy source)
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
             dirLight.position.set(10, 10, 5);
             dirLight.castShadow = true;
             dirLight.shadow.mapSize.width = 2048;
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.scene.background = new THREE.Color(0x000008);
         }
 
-        // Create multiple particle types for realistic plasma composition
+        // Create multiple particle types for plasma composition
         createMultipleParticleTypes() {
             // Electrons: Small, fast, blue particles
             this.electronSystem = this.createParticleType({
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 size: config.size,
                 sizeAttenuation: true,
                 transparent: true,
-                opacity: 0.85,
+                opacity: 0.5,
                 blending: THREE.AdditiveBlending,
                 map: this.createParticleTexture(),
                 alphaTest: 0.001,
@@ -247,10 +247,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const system = new THREE.Points(geometry, material);
             system.userData = {
-                config: config,
-                positions: positions,
-                velocities: velocities
+            config: config,
+            velocities: velocities  // remove positions, use geometry.attributes.position.array directly
             };
+
             
             this.scene.add(system);
             return system;
