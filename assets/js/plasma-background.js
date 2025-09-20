@@ -125,32 +125,42 @@ document.addEventListener('DOMContentLoaded', function() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             this.camera.position.set(0, 5, 15);
             
-            // Complex camera animation parameters
+            // Cinematic camera animation parameters (Christopher Nolan inspired)
             this.cameraAnimation = {
-                phase: 0, // 0: zoom in, 1: pan around, 2: pass through, 3: rotate around
                 time: 0,
-                phaseDurations: [8, 12, 6, 10], // Duration of each phase in seconds
+                totalDuration: 60, // 1 minute full cinematic cycle
                 
-                // Phase 0: Zoom in
-                startDistance: 20,
-                closeDistance: 8,
+                // Camera state for smooth interpolation
+                currentPosition: new THREE.Vector3(0, 8, 20),
+                currentTarget: new THREE.Vector3(0, 0, 0),
                 
-                // Phase 1: Pan around
-                panRadius: 8,
-                panHeight: 5,
-                
-                // Phase 2: Pass through center
-                throughStartRadius: 8,
-                throughEndRadius: 8,
-                
-                // Phase 3: Rotate around
-                rotateRadius: 12,
-                rotateHeight: 5,
-                rotateSpeed: 0.3
+                // Predefined cinematic keyframes for smooth movement
+                keyframes: [
+                    // Opening wide shot - establishing the scene
+                    { time: 0, position: [0, 8, 20], target: [0, 0, 0], fov: 75 },
+                    
+                    // Slow zoom in while rotating
+                    { time: 10, position: [12, 6, 12], target: [0, 0, 0], fov: 70 },
+                    
+                    // Close inspection - orbit around the plasma
+                    { time: 20, position: [8, 4, 0], target: [0, 0, 0], fov: 65 },
+                    
+                    // Dramatic approach to the ring
+                    { time: 30, position: [6, 2, -2], target: [0, 0, 2], fov: 60 },
+                    
+                    // Pass through the center (hero shot)
+                    { time: 40, position: [0, 0, 0], target: [0, 0, -4], fov: 55 },
+                    
+                    // Exit and pull back
+                    { time: 45, position: [-6, 2, -8], target: [0, 0, 0], fov: 60 },
+                    
+                    // High orbital view
+                    { time: 55, position: [-15, 12, -10], target: [0, 0, 0], fov: 70 },
+                    
+                    // Return to start
+                    { time: 60, position: [0, 8, 20], target: [0, 0, 0], fov: 75 }
+                ]
             };
-            
-            this.cameraPhaseTime = 0;
-            this.totalCycleTime = this.cameraAnimation.phaseDurations.reduce((a, b) => a + b, 0);
         }
 
         // Setup WebGL renderer with shadow support and high quality
@@ -457,102 +467,91 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Update camera with complex multi-phase animation
+        // Cinematic camera animation with keyframe interpolation (Christopher Nolan style)
         updateCamera(delta) {
-            this.cameraPhaseTime += delta;
             this.cameraAnimation.time += delta;
             
-            // Determine current phase and progress within phase
-            let currentPhase = 0;
-            let phaseProgress = 0;
-            let elapsedTime = this.cameraAnimation.time % this.totalCycleTime;
+            // Loop the animation
+            const normalizedTime = (this.cameraAnimation.time % this.cameraAnimation.totalDuration);
             
-            for (let i = 0; i < this.cameraAnimation.phaseDurations.length; i++) {
-                if (elapsedTime <= this.cameraAnimation.phaseDurations[i]) {
-                    currentPhase = i;
-                    phaseProgress = elapsedTime / this.cameraAnimation.phaseDurations[i];
+            // Find the two keyframes to interpolate between
+            const keyframes = this.cameraAnimation.keyframes;
+            let startFrame = keyframes[keyframes.length - 1]; // Default to last frame
+            let endFrame = keyframes[0]; // Default to first frame
+            let t = 0;
+            
+            for (let i = 0; i < keyframes.length - 1; i++) {
+                if (normalizedTime >= keyframes[i].time && normalizedTime <= keyframes[i + 1].time) {
+                    startFrame = keyframes[i];
+                    endFrame = keyframes[i + 1];
+                    const segmentDuration = endFrame.time - startFrame.time;
+                    t = (normalizedTime - startFrame.time) / segmentDuration;
                     break;
                 }
-                elapsedTime -= this.cameraAnimation.phaseDurations[i];
             }
             
-            let x, y, z;
-            const target = new THREE.Vector3(0, 0, 0);
-            
-            switch (currentPhase) {
-                case 0: // Phase 0: Zoom in closer
-                    {
-                        const distance = THREE.MathUtils.lerp(
-                            this.cameraAnimation.startDistance,
-                            this.cameraAnimation.closeDistance,
-                            this.easeInOut(phaseProgress)
-                        );
-                        const angle = this.cameraAnimation.time * 0.2;
-                        x = Math.cos(angle) * distance;
-                        z = Math.sin(angle) * distance;
-                        y = 5 + Math.sin(angle * 0.5) * 2;
-                    }
-                    break;
-                    
-                case 1: // Phase 1: Pan around the entire field
-                    {
-                        const angle = phaseProgress * Math.PI * 4; // 2 full rotations
-                        const radius = this.cameraAnimation.panRadius;
-                        x = Math.cos(angle) * radius;
-                        z = Math.sin(angle) * radius;
-                        y = this.cameraAnimation.panHeight + Math.sin(angle * 0.3) * 3;
-                    }
-                    break;
-                    
-                case 2: // Phase 2: Pass through the center of the donut
-                    {
-                        const startAngle = this.cameraAnimation.time * 0.2;
-                        const startX = Math.cos(startAngle) * this.cameraAnimation.throughStartRadius;
-                        const startZ = Math.sin(startAngle) * this.cameraAnimation.throughStartRadius;
-                        const startY = 5;
-                        
-                        // Move through the center to the opposite side
-                        const endX = -startX;
-                        const endZ = -startZ;
-                        const endY = 5;
-                        
-                        x = THREE.MathUtils.lerp(startX, endX, this.easeInOut(phaseProgress));
-                        z = THREE.MathUtils.lerp(startZ, endZ, this.easeInOut(phaseProgress));
-                        y = THREE.MathUtils.lerp(startY, endY, this.easeInOut(phaseProgress));
-                        
-                        // Adjust look target for dramatic effect when passing through center
-                        if (phaseProgress > 0.3 && phaseProgress < 0.7) {
-                            const centerProgress = (phaseProgress - 0.3) / 0.4;
-                            target.set(
-                                Math.sin(centerProgress * Math.PI * 6) * 2,
-                                Math.cos(centerProgress * Math.PI * 4) * 1,
-                                Math.sin(centerProgress * Math.PI * 8) * 1
-                            );
-                        }
-                    }
-                    break;
-                    
-                case 3: // Phase 3: Rotate around at distance (like original)
-                    {
-                        const angle = phaseProgress * Math.PI * 2 + this.cameraAnimation.time * this.cameraAnimation.rotateSpeed;
-                        const radius = this.cameraAnimation.rotateRadius;
-                        x = Math.cos(angle) * radius;
-                        z = Math.sin(angle) * radius;
-                        y = this.cameraAnimation.rotateHeight + Math.sin(angle * 0.5) * 2;
-                    }
-                    break;
+            // Handle wrap-around (last to first keyframe)
+            if (normalizedTime > keyframes[keyframes.length - 1].time) {
+                startFrame = keyframes[keyframes.length - 1];
+                endFrame = keyframes[0];
+                const wrapTime = this.cameraAnimation.totalDuration - startFrame.time;
+                t = (normalizedTime - startFrame.time) / wrapTime;
             }
             
-            // Update camera position
-            this.camera.position.set(x, y, z);
+            // Smooth easing for cinematic feel
+            const easedT = this.cinematicEase(t);
             
-            // Look at target (usually center, but can vary during pass-through)
-            this.camera.lookAt(target);
+            // Interpolate position
+            const position = this.smoothInterpolateVector3(
+                startFrame.position,
+                endFrame.position,
+                easedT
+            );
+            
+            // Interpolate target
+            const target = this.smoothInterpolateVector3(
+                startFrame.target,
+                endFrame.target,
+                easedT
+            );
+            
+            // Interpolate FOV for dramatic zooms
+            const fov = THREE.MathUtils.lerp(startFrame.fov, endFrame.fov, easedT);
+            
+            // Apply smooth camera movement
+            this.cameraAnimation.currentPosition.lerp(new THREE.Vector3(...position), 0.05);
+            this.cameraAnimation.currentTarget.lerp(new THREE.Vector3(...target), 0.05);
+            
+            // Update camera
+            this.camera.position.copy(this.cameraAnimation.currentPosition);
+            this.camera.lookAt(this.cameraAnimation.currentTarget);
+            this.camera.fov = fov;
+            this.camera.updateProjectionMatrix();
         }
         
         // Smooth easing function for camera transitions
         easeInOut(t) {
             return t * t * (3.0 - 2.0 * t);
+        }
+        
+        // Cinematic easing function (inspired by film camera moves)
+        cinematicEase(t) {
+            // Combination of ease-in-out with slight overshoot for organic feel
+            if (t < 0.5) {
+                return 2 * t * t * t;
+            } else {
+                const p = 2 * t - 2;
+                return 1 + p * p * p / 2;
+            }
+        }
+        
+        // Smooth vector interpolation with optional cubic interpolation
+        smoothInterpolateVector3(start, end, t) {
+            return [
+                THREE.MathUtils.lerp(start[0], end[0], t),
+                THREE.MathUtils.lerp(start[1], end[1], t),
+                THREE.MathUtils.lerp(start[2], end[2], t)
+            ];
         }
         
         // Update particle lifecycle phases
