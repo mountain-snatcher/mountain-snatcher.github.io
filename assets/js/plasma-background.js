@@ -552,13 +552,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Toroidal plasma forces
                 const rho = Math.sqrt(x*x + y*y) || 0.001; // Distance from Z-axis
-                const majorRadius = 2.5;
                 
                 // Magnetic confinement force (keeps particles in torus shape)
                 const confinementStrength = 0.015 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
                 
-                // Radial restoring force toward major radius
-                const radialDeviation = rho - majorRadius;
+                // Radial restoring force toward major radius  
+                const radialDeviation = rho - 2.5; // majorRadius value
                 const radialForce = -radialDeviation * confinementStrength;
                 const radialX = radialForce * (x / rho);
                 const radialY = radialForce * (y / rho);
@@ -608,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const maxVertical = 1.5;
                 
                 // Check if particle is outside torus bounds
-                const distFromMajorRadius = Math.abs(rhoNew - majorRadius);
+                const distFromMajorRadius = Math.abs(rhoNew - 2.5); // majorRadius value
                 const verticalDist = Math.abs(positionsArray[i3 + 2]);
                 
                 if (distFromMajorRadius > minorRadius || verticalDist > maxVertical) {
