@@ -279,10 +279,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const majorR = majorRadius + (Math.random() - 0.5) * 0.3;
             const minorR = minorRadius * Math.random();
             
-            // Convert to Cartesian coordinates (torus lying in X-Z plane)
+            // Convert to Cartesian coordinates (torus standing vertically in X-Y plane)
             positions[i3] = (majorR + minorR * Math.cos(phi)) * Math.cos(theta);     // X
-            positions[i3 + 1] = minorR * Math.sin(phi);                              // Y (height)
-            positions[i3 + 2] = (majorR + minorR * Math.cos(phi)) * Math.sin(theta); // Z
+            positions[i3 + 1] = (majorR + minorR * Math.cos(phi)) * Math.sin(theta); // Y 
+            positions[i3 + 2] = minorR * Math.sin(phi);                              // Z (height)
         }
         
         // Reset particle velocity for toroidal motion
@@ -291,24 +291,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const y = positions[i3 + 1];
             const z = positions[i3 + 2];
             
-            // Calculate distance from Y-axis (center of torus)
-            const rho = Math.sqrt(x*x + z*z) || 0.001;
+            // Calculate distance from Z-axis (center of torus)
+            const rho = Math.sqrt(x*x + y*y) || 0.001;
             
             // Toroidal velocity: particles flow around the major radius
             const toroidalSpeed = 0.08 / config.mass;
-            velocities[i3] = toroidalSpeed * (-z / rho);     // Tangential in X-Z plane
-            velocities[i3 + 1] = 0;                          // No initial Y velocity
-            velocities[i3 + 2] = toroidalSpeed * (x / rho);  // Tangential in X-Z plane
+            velocities[i3] = toroidalSpeed * (-y / rho);     // Tangential in X-Y plane
+            velocities[i3 + 1] = toroidalSpeed * (x / rho);  // Tangential in X-Y plane
+            velocities[i3 + 2] = 0;                          // No initial Z velocity
             
             // Add some poloidal motion (around the minor radius)
             const poloidalSpeed = 0.02 / config.mass;
-            const theta = Math.atan2(z, x);
-            velocities[i3 + 1] += poloidalSpeed * (Math.random() - 0.5);
+            const theta = Math.atan2(y, x);
+            velocities[i3 + 2] += poloidalSpeed * (Math.random() - 0.5);
             
             // Add small random motion
             velocities[i3] += (Math.random() - 0.5) * config.speed * 0.3;
-            velocities[i3 + 1] += (Math.random() - 0.5) * config.speed * 0.2;
-            velocities[i3 + 2] += (Math.random() - 0.5) * config.speed * 0.3;
+            velocities[i3 + 1] += (Math.random() - 0.5) * config.speed * 0.3;
+            velocities[i3 + 2] += (Math.random() - 0.5) * config.speed * 0.2;
         }
 
         // High-quality procedural texture for smooth circular particles
@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 // Toroidal plasma forces
-                const rho = Math.sqrt(x*x + z*z) || 0.001; // Distance from Y-axis
+                const rho = Math.sqrt(x*x + y*y) || 0.001; // Distance from Z-axis
                 const majorRadius = 2.5;
                 
                 // Magnetic confinement force (keeps particles in torus shape)
@@ -561,10 +561,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const radialDeviation = rho - majorRadius;
                 const radialForce = -radialDeviation * confinementStrength;
                 const radialX = radialForce * (x / rho);
-                const radialZ = radialForce * (z / rho);
+                const radialY = radialForce * (y / rho);
                 
                 // Vertical confinement (keeps particles near midplane)
-                const verticalForce = -y * confinementStrength * 0.8;
+                const verticalForce = -z * confinementStrength * 0.8;
                 
                 if (config.charge !== 0) {
                     // Charged particles: toroidal and poloidal motion
@@ -572,23 +572,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     const poloidalFreq = 0.3 * config.charge / config.mass;
                     
                     // Toroidal drift (around major radius)
-                    const toroidalX = toroidalFreq * (-z / rho) * delta;
-                    const toroidalZ = toroidalFreq * (x / rho) * delta;
+                    const toroidalX = toroidalFreq * (-y / rho) * delta;
+                    const toroidalY = toroidalFreq * (x / rho) * delta;
                     
                     // Poloidal motion (around minor radius)
-                    const poloidalY = poloidalFreq * (x * Math.sin(time) + z * Math.cos(time)) * delta * 0.1;
+                    const poloidalZ = poloidalFreq * (x * Math.sin(time) + y * Math.cos(time)) * delta * 0.1;
                     
                     velocities[i3] += radialX + toroidalX;
-                    velocities[i3 + 1] += verticalForce + poloidalY;
-                    velocities[i3 + 2] += radialZ + toroidalZ;
+                    velocities[i3 + 1] += radialY + toroidalY;
+                    velocities[i3 + 2] += verticalForce + poloidalZ;
                 } else {
                     // Neutral particles: weaker confinement
                     const neutralConfinement = confinementStrength * 0.4;
                     const neutralToroidal = 0.2 / config.mass;
                     
-                    velocities[i3] += radialX * 0.5 + neutralToroidal * (-z / rho) * delta;
-                    velocities[i3 + 1] += verticalForce * 0.5;
-                    velocities[i3 + 2] += radialZ * 0.5 + neutralToroidal * (x / rho) * delta;
+                    velocities[i3] += radialX * 0.5 + neutralToroidal * (-y / rho) * delta;
+                    velocities[i3 + 1] += radialY * 0.5 + neutralToroidal * (x / rho) * delta;
+                    velocities[i3 + 2] += verticalForce * 0.5;
                 }
 
                 // Thermal motion (mass-dependent)
@@ -603,14 +603,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 positionsArray[i3 + 2] += velocities[i3 + 2] * delta;
 
                 // Toroidal containment boundary
-                const rhoNew = Math.sqrt(positionsArray[i3]**2 + positionsArray[i3 + 2]**2);
-                const majorRadius = 2.5;
+                const rhoNew = Math.sqrt(positionsArray[i3]**2 + positionsArray[i3 + 1]**2);
                 const minorRadius = 1.2;
                 const maxVertical = 1.5;
                 
                 // Check if particle is outside torus bounds
                 const distFromMajorRadius = Math.abs(rhoNew - majorRadius);
-                const verticalDist = Math.abs(positionsArray[i3 + 1]);
+                const verticalDist = Math.abs(positionsArray[i3 + 2]);
                 
                 if (distFromMajorRadius > minorRadius || verticalDist > maxVertical) {
                     // Reset particle back into torus
