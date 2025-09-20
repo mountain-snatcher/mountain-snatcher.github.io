@@ -18,11 +18,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Wait for all dependencies to load
-    setTimeout(() => {
-        // Start the full simulation
-        const simulation = new PlasmaFieldSimulation();
-        simulation.init();
-    }, 100);
+    let checkCount = 0;
+    const maxChecks = 50; // 5 seconds max wait
+    
+    function checkDependencies() {
+        checkCount++;
+        if (typeof THREE !== 'undefined' && typeof THREE.OrbitControls !== 'undefined') {
+            console.log('All dependencies ready, starting simulation');
+            const simulation = new PlasmaFieldSimulation();
+            simulation.init();
+        } else if (checkCount < maxChecks) {
+            console.log('Waiting for dependencies...', {
+                THREE: typeof THREE,
+                OrbitControls: typeof THREE !== 'undefined' ? typeof THREE.OrbitControls : 'N/A'
+            });
+            setTimeout(checkDependencies, 100);
+        } else {
+            console.warn('Dependencies not loaded after 5 seconds, starting anyway');
+            const simulation = new PlasmaFieldSimulation();
+            simulation.init();
+        }
+    }
+    
+    setTimeout(checkDependencies, 100);
 
     // Full Plasma Field Simulation Class with multiple particle types and enhanced effects
     class PlasmaFieldSimulation {
