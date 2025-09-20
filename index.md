@@ -24,72 +24,79 @@ description: Quantum Engineer
     <div class="container">
         <h2 class="section-title">About Me</h2>
         <div class="about-content">
-            <div class="about-header">
-                <div class="about-text">
-                    <h1 class="hero-title">Sankalp Chudmunge</h1>
-                    <h2 class="hero-subtitle">Quantum Engineer</h2>
-                    <p class="hero-description">Building scalable systems at the intersection of physics and software engineering</p>
+            <div class="about-left">
+                <div class="about-header">
+                    <div class="profile-section">
+                        <div class="profile-image">
+                            <img src="coast_side.png" alt="Sankalp Chudmunge" />
+                        </div>
+                        <div class="profile-info">
+                            <h1 class="profile-name">Sankalp Chudmunge</h1>
+                            <h2 class="profile-title">Quantum Engineer</h2>
+                            <p class="profile-tagline">Building scalable systems at the intersection of physics and software engineering</p>
+                        </div>
+                    </div>
                     <div class="hero-buttons">
                         <a href="#contact" class="btn btn-primary">Get In Touch</a>
                         <a href="#projects" class="btn btn-secondary">View Projects</a>
                     </div>
                 </div>
-                <div class="hero-image">
-                    <div class="profile-image">
-                        <img src="coast_side.png" alt="Sankalp Chudmunge" />
+                
+                <div class="about-details">
+                    <p>Backend engineer with M.Sc. in Computational Physics from IIT Palakkad. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
+                    
+                    <div class="quick-facts">
+                        <div class="fact">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Maharashtra, India</span>
+                        </div>
+                        <div class="fact">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>M.Sc. Physics (Computational Physics), IIT Palakkad</span>
+                        </div>
+                        <div class="fact">
+                            <i class="fas fa-atom"></i>
+                            <span>Quantum Systems & Backend Engineering</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="about-details">
-                <p>Backend engineer with M.Sc. in Computational Physics from IIT Palakkad. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
-                
-                <div class="quick-facts">
-                    <div class="fact">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Maharashtra, India</span>
-                    </div>
-                    <div class="fact">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>M.Sc. Physics (Computational Physics), IIT Palakkad</span>
-                    </div>
-                    <div class="fact">
-                        <i class="fas fa-atom"></i>
-                        <span>Quantum Systems & Backend Engineering</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <h3>Backend Engineering</h3>
-                    <div class="skills">
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">FastAPI</span>
-                        <span class="skill-tag">SQLModel</span>
-                        <span class="skill-tag">REST APIs</span>
-                        <span class="skill-tag">WebSockets</span>
-                    </div>
-                </div>
-                
-                <div class="skill-category">
-                    <h3>Data & Cloud</h3>
-                    <div class="skills">
-                        <span class="skill-tag">PostgreSQL</span>
-                        <span class="skill-tag">Redis</span>
-                        <span class="skill-tag">Google Cloud</span>
-                        <span class="skill-tag">Docker</span>
-                        <span class="skill-tag">CI/CD</span>
-                    </div>
-                </div>
-                
-                <div class="skill-category">
-                    <h3>Applied Physics</h3>
-                    <div class="skills">
-                        <span class="skill-tag">NumPy</span>
-                        <span class="skill-tag">Computational Physics</span>
-                        <span class="skill-tag">Quantum Systems</span>
-                        <span class="skill-tag">Numerical Methods</span>
+            <div class="about-right">
+                <div class="skills-sidebar">
+                    <h3 class="skills-title">Technical Skills</h3>
+                    <div class="skills-compact">
+                        <div class="skill-category-compact">
+                            <h4>Backend Engineering</h4>
+                            <div class="skills">
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">FastAPI</span>
+                                <span class="skill-tag">SQLModel</span>
+                                <span class="skill-tag">REST APIs</span>
+                                <span class="skill-tag">WebSockets</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-category-compact">
+                            <h4>Data & Cloud</h4>
+                            <div class="skills">
+                                <span class="skill-tag">PostgreSQL</span>
+                                <span class="skill-tag">Redis</span>
+                                <span class="skill-tag">Google Cloud</span>
+                                <span class="skill-tag">Docker</span>
+                                <span class="skill-tag">CI/CD</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-category-compact">
+                            <h4>Applied Physics</h4>
+                            <div class="skills">
+                                <span class="skill-tag">NumPy</span>
+                                <span class="skill-tag">Computational Physics</span>
+                                <span class="skill-tag">Quantum Systems</span>
+                                <span class="skill-tag">Numerical Methods</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

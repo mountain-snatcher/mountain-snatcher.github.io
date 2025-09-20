@@ -366,14 +366,25 @@ section {
 
 .about-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
     align-items: start;
     position: relative;
     z-index: 2;
 }
 
-.about-text {
+.about-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.about-right {
+    position: sticky;
+    top: 100px;
+}
+
+.about-header {
     background: rgba(26, 35, 50, 0.4);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 255, 136, 0.2);
@@ -382,7 +393,65 @@ section {
     box-shadow: var(--aurora-glow-green);
 }
 
-.about-text p {
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--aurora-electric-green);
+    box-shadow: 
+        var(--aurora-glow-green),
+        0 0 30px rgba(0, 255, 136, 0.2);
+    animation: profile-pulse 3s ease-in-out infinite alternate;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.profile-title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--aurora-electric-green);
+    margin-bottom: 0.75rem;
+    text-shadow: var(--aurora-glow-green);
+}
+
+.profile-tagline {
+    font-size: 1rem;
+    color: rgba(248, 250, 252, 0.9);
+    line-height: 1.5;
+}
+
+.about-details {
+    background: rgba(26, 35, 50, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--aurora-glow-cyan);
+}
+
+.about-details p {
     font-size: 1.125rem;
     margin-bottom: 1.5rem;
     color: var(--aurora-stellar-white);
@@ -417,6 +486,54 @@ section {
 .skills-grid {
     display: grid;
     gap: 2rem;
+}
+
+/* Compact Skills Sidebar */
+.skills-sidebar {
+    background: rgba(26, 35, 50, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: var(--aurora-glow-purple);
+}
+
+.skills-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    background: var(--aurora-gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.skills-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.skill-category-compact {
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    padding-bottom: 1rem;
+}
+
+.skill-category-compact:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.skill-category-compact h4 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--aurora-cosmic-purple);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .skill-category {
@@ -466,6 +583,12 @@ section {
     background: var(--aurora-electric-green);
     color: var(--aurora-deep-space);
     transform: scale(1.05);
+}
+
+/* Compact skills - smaller tags */
+.skill-category-compact .skill-tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
 }
 
 /* Experience Section with Cosmic Timeline */
@@ -945,6 +1068,24 @@ section {
     .about-content {
         grid-template-columns: 1fr;
         gap: 2rem;
+    }
+    
+    .about-right {
+        position: static;
+    }
+    
+    .profile-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+    }
+    
+    .profile-title {
+        font-size: 1.1rem;
     }
     
     .skills-grid {
