@@ -66,36 +66,21 @@ description: Quantum Engineer
                 <div class="skills-sidebar">
                     <h3 class="skills-title">Technical Skills</h3>
                     <div class="skills-compact">
-                        <div class="skill-category-compact">
-                            <h4>Backend Engineering</h4>
-                            <div class="skills">
-                                <span class="skill-tag">Python</span>
-                                <span class="skill-tag">FastAPI</span>
-                                <span class="skill-tag">SQLModel</span>
-                                <span class="skill-tag">REST APIs</span>
-                                <span class="skill-tag">WebSockets</span>
-                            </div>
-                        </div>
-                        
-                        <div class="skill-category-compact">
-                            <h4>Data & Cloud</h4>
-                            <div class="skills">
-                                <span class="skill-tag">PostgreSQL</span>
-                                <span class="skill-tag">Redis</span>
-                                <span class="skill-tag">Google Cloud</span>
-                                <span class="skill-tag">Docker</span>
-                                <span class="skill-tag">CI/CD</span>
-                            </div>
-                        </div>
-                        
-                        <div class="skill-category-compact">
-                            <h4>Applied Physics</h4>
-                            <div class="skills">
-                                <span class="skill-tag">NumPy</span>
-                                <span class="skill-tag">Computational Physics</span>
-                                <span class="skill-tag">Quantum Systems</span>
-                                <span class="skill-tag">Numerical Methods</span>
-                            </div>
+                        <div class="skills">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">FastAPI</span>
+                            <span class="skill-tag">SQLModel</span>
+                            <span class="skill-tag">REST APIs</span>
+                            <span class="skill-tag">WebSockets</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                            <span class="skill-tag">Redis</span>
+                            <span class="skill-tag">Google Cloud</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">CI/CD</span>
+                            <span class="skill-tag">NumPy</span>
+                            <span class="skill-tag">Computational Physics</span>
+                            <span class="skill-tag">Quantum Systems</span>
+                            <span class="skill-tag">Numerical Methods</span>
                         </div>
                     </div>
                 </div>
@@ -116,7 +101,7 @@ description: Quantum Engineer
                     <div class="project-status">Live Platform | 1000+ Users</div>
                 </div>
                 
-                <p class="project-description">Full-stack learning platform with sub-200ms API response times and real-time features.</p>
+                <p class="project-description">A free learning tool</p>
                 
                 <div class="project-tech">
                     <span class="tech-tag">Python</span>
