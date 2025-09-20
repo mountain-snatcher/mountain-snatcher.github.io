@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup perspective camera
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            // Position camera high above the donut-shaped plasma looking down
-            this.camera.position.set(0, 20, 0);
+            // Position camera high above to view the donut from above
+            this.camera.position.set(0, 0, 25);
             this.camera.lookAt(0, 0, 0);
         }
 
@@ -400,9 +400,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Setup OrbitControls for interaction (mouse/touch)
         setupControls() {
-            if (typeof THREE.OrbitControls !== 'undefined') {
-                console.log('Setting up OrbitControls...');
-                this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+            // Use the dedicated interaction overlay instead of the canvas
+            const controlElement = document.getElementById('plasmaInteractionOverlay');
+            
+            if (typeof THREE.OrbitControls !== 'undefined' && controlElement) {
+                console.log('Setting up OrbitControls with overlay...');
+                this.controls = new THREE.OrbitControls(this.camera, controlElement);
                 this.controls.enableDamping = true;
                 this.controls.dampingFactor = 0.05;
                 this.controls.enableZoom = true;
@@ -412,9 +415,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.controls.minDistance = 5;
                 this.controls.maxPolarAngle = Math.PI; // Allow full rotation
                 
-                console.log('OrbitControls setup complete');
+                console.log('OrbitControls setup complete with overlay');
             } else {
-                console.warn('THREE.OrbitControls not available, using manual controls');
+                console.warn('Setting up manual controls with overlay');
                 this.setupManualControls();
             }
         }
@@ -425,12 +428,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 isMouseDown: false,
                 lastMouseX: 0,
                 lastMouseY: 0,
-                cameraDistance: 20,
+                cameraDistance: 25,
                 cameraAngleX: 0,
-                cameraAngleY: Math.PI / 2 // Start looking down
+                cameraAngleY: 0 // Start looking straight at center
             };
             
-            const canvas = this.renderer.domElement;
+            const canvas = document.getElementById('plasmaInteractionOverlay') || this.renderer.domElement;
             
             canvas.addEventListener('mousedown', (event) => {
                 this.cameraControls.isMouseDown = true;
