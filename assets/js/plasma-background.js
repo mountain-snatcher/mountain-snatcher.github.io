@@ -128,31 +128,40 @@ document.addEventListener('DOMContentLoaded', function() {
             // Cinematic camera animation parameters (Christopher Nolan inspired)
             this.cameraAnimation = {
                 time: 0,
-                totalDuration: 60, // 1 minute full cinematic cycle
+                totalDuration: 80, // Extended to 80 seconds for smoother transitions
                 
                 // Camera state for smooth interpolation
                 currentPosition: new THREE.Vector3(0, 8, 20),
                 currentTarget: new THREE.Vector3(0, 0, 0),
                 
-                // Predefined cinematic keyframes for smooth movement (no pass-through)
+                // Predefined cinematic keyframes for smooth movement with horizontal and vertical perspectives
                 keyframes: [
-                    // Opening wide shot - establishing the scene
-                    { time: 0, position: [0, 8, 20], target: [0, 0, 0], fov: 75 },
+                    // Opening wide shot - establishing the scene from above-behind
+                    { time: 0, position: [0, 12, 18], target: [0, 0, 0], fov: 75 },
                     
-                    // Slow zoom in while rotating
-                    { time: 12, position: [12, 6, 12], target: [0, 0, 0], fov: 70 },
+                    // Gentle arc to the right side, showing horizontal donut perspective
+                    { time: 10, position: [15, 8, 10], target: [0, 0, 0], fov: 72 },
                     
-                    // Close inspection - orbit around the plasma
-                    { time: 24, position: [8, 4, 0], target: [0, 0, 0], fov: 65 },
+                    // Continue arc to show donut from horizontal angle (avoid line view)
+                    { time: 20, position: [18, 4, -2], target: [0, 0, 0], fov: 68 },
                     
-                    // Low angle dramatic view
-                    { time: 36, position: [6, 2, 8], target: [0, 1, 0], fov: 60 },
+                    // Move to show donut from below-horizontal perspective
+                    { time: 30, position: [12, -6, -12], target: [0, 0, 0], fov: 65 },
                     
-                    // High orbital view from opposite side
-                    { time: 48, position: [-12, 10, -6], target: [0, 0, 0], fov: 65 },
+                    // Sweep to the left side, maintaining good donut visibility
+                    { time: 40, position: [-8, -4, -15], target: [0, 0, 0], fov: 62 },
+                    
+                    // Low horizontal sweep from the left
+                    { time: 50, position: [-18, 2, -8], target: [0, 0, 0], fov: 65 },
+                    
+                    // Rise up while moving to back-left
+                    { time: 60, position: [-12, 10, 8], target: [0, 0, 0], fov: 70 },
+                    
+                    // Final approach back to starting region
+                    { time: 70, position: [-6, 12, 15], target: [0, 0, 0], fov: 73 },
                     
                     // Return to start position
-                    { time: 60, position: [0, 8, 20], target: [0, 0, 0], fov: 75 }
+                    { time: 80, position: [0, 12, 18], target: [0, 0, 0], fov: 75 }
                 ]
             };
         }
@@ -522,9 +531,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Interpolate FOV for dramatic zooms
             const fov = THREE.MathUtils.lerp(startFrame.fov, endFrame.fov, easedT);
             
-            // Apply smooth camera movement
-            this.cameraAnimation.currentPosition.lerp(new THREE.Vector3(...position), 0.05);
-            this.cameraAnimation.currentTarget.lerp(new THREE.Vector3(...target), 0.05);
+            // Apply ultra-smooth camera movement with increased interpolation
+            this.cameraAnimation.currentPosition.lerp(new THREE.Vector3(...position), 0.02);
+            this.cameraAnimation.currentTarget.lerp(new THREE.Vector3(...target), 0.02);
             
             // Update camera
             this.camera.position.copy(this.cameraAnimation.currentPosition);
@@ -540,13 +549,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Cinematic easing function (inspired by film camera moves)
         cinematicEase(t) {
-            // Combination of ease-in-out with slight overshoot for organic feel
-            if (t < 0.5) {
-                return 2 * t * t * t;
-            } else {
-                const p = 2 * t - 2;
-                return 1 + p * p * p / 2;
-            }
+            // Smooth cubic hermite interpolation for ultra-smooth camera moves
+            // This eliminates jerky transitions and provides film-like smoothness
+            return t * t * (3.0 - 2.0 * t);
         }
         
         // Smooth vector interpolation with optional cubic interpolation
