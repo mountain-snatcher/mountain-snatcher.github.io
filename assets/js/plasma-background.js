@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Position camera much closer to view the donut
             this.camera.position.set(0, 0, 4);
             this.camera.lookAt(0, 0, 0);
+            console.log('Camera positioned at:', this.camera.position.x, this.camera.position.y, this.camera.position.z);
         }
 
         // Setup WebGL renderer with shadow support and high quality
