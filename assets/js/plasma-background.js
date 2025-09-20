@@ -294,28 +294,38 @@ document.addEventListener('DOMContentLoaded', function() {
             return system;
         }
         
-        // Reset particle position to initial clustered distribution
+        // Reset particle position to start from center and spread out
         resetParticlePosition(positions, i3) {
-            // Create clusters and filaments
-            const clusterIndex = Math.floor(Math.random() * 4);
-            const clusterAngle = (clusterIndex / 4) * Math.PI * 2;
-            const clusterRadius = 1.2 + Math.random() * 1.8;
-            
-            const localRadius = Math.pow(Math.random(), 0.6) * 0.9;
-            const theta = clusterAngle + (Math.random() - 0.5) * Math.PI * 0.4;
+            // Start particles near the center with small random spread
+            const spreadRadius = 0.5; // Small initial spread
+            const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
+            const r = Math.random() * spreadRadius;
             
-            positions[i3] = clusterRadius * Math.cos(clusterAngle) + localRadius * Math.sin(phi) * Math.cos(theta);
-            positions[i3 + 1] = clusterRadius * Math.sin(clusterAngle) + localRadius * Math.sin(phi) * Math.sin(theta);
-            positions[i3 + 2] = localRadius * Math.cos(phi);
+            positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = r * Math.cos(phi);
         }
         
-        // Reset particle velocity
+        // Reset particle velocity with proper orbital motion
         resetParticleVelocity(velocities, positions, i3, config) {
-            const swirl = 0.04 / config.mass;
-            velocities[i3] = (Math.random() - 0.5) * config.speed + swirl * -positions[i3 + 1];
-            velocities[i3 + 1] = (Math.random() - 0.5) * config.speed + swirl * positions[i3];
-            velocities[i3 + 2] = (Math.random() - 0.5) * config.speed * 0.6;
+            // Add initial outward velocity to spread particles from center
+            const outwardForce = 0.1 / config.mass;
+            const x = positions[i3];
+            const y = positions[i3 + 1];
+            const z = positions[i3 + 2];
+            const distance = Math.sqrt(x*x + y*y + z*z) || 0.001;
+            
+            // Outward velocity
+            velocities[i3] = (x / distance) * outwardForce;
+            velocities[i3 + 1] = (y / distance) * outwardForce;
+            velocities[i3 + 2] = (z / distance) * outwardForce * 0.5;
+            
+            // Add tangential velocity for orbital motion
+            const swirl = 0.06 / config.mass;
+            velocities[i3] += swirl * -y + (Math.random() - 0.5) * config.speed * 0.5;
+            velocities[i3 + 1] += swirl * x + (Math.random() - 0.5) * config.speed * 0.5;
+            velocities[i3 + 2] += (Math.random() - 0.5) * config.speed * 0.3;
         }
 
         // High-quality procedural texture for smooth circular particles
@@ -637,21 +647,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
 
-                // Type-specific electromagnetic forces
+                // Electromagnetic forces for all particles
+                const fieldStrength = 0.012 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
+                const dx = -x * fieldStrength;
+                const dy = -y * fieldStrength;
+                const dz = -z * fieldStrength * 0.5;
+                
                 if (config.charge !== 0) {
-                    const fieldStrength = 0.008 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
-                    const dx = -x * fieldStrength;
-                    const dy = -y * fieldStrength;
-                    const dz = -z * fieldStrength * 0.5;
-                    
-                    // Cyclotron motion (charge-dependent)
-                    const cyclotronFreq = 0.6 * config.charge / config.mass;
+                    // Charged particles: strong electromagnetic forces
+                    const cyclotronFreq = 0.8 * config.charge / config.mass;
                     const cyclotronX = y * cyclotronFreq * delta;
                     const cyclotronY = -x * cyclotronFreq * delta;
                     
                     velocities[i3] += dx + cyclotronX;
                     velocities[i3 + 1] += dy + cyclotronY;
                     velocities[i3 + 2] += dz;
+                } else {
+                    // Neutral particles: weaker magnetic field interaction
+                    const neutralFieldStrength = fieldStrength * 0.3;
+                    const neutralCyclotron = 0.2 / config.mass;
+                    const neutralX = y * neutralCyclotron * delta;
+                    const neutralY = -x * neutralCyclotron * delta;
+                    
+                    velocities[i3] += dx * 0.5 + neutralX;
+                    velocities[i3 + 1] += dy * 0.5 + neutralY;
+                    velocities[i3 + 2] += dz * 0.5;
                 }
 
                 // Thermal motion (mass-dependent)
