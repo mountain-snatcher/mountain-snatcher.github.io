@@ -134,30 +134,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentPosition: new THREE.Vector3(0, 8, 20),
                 currentTarget: new THREE.Vector3(0, 0, 0),
                 
-                // Predefined cinematic keyframes for smooth movement
+                // Predefined cinematic keyframes for smooth movement (no pass-through)
                 keyframes: [
                     // Opening wide shot - establishing the scene
                     { time: 0, position: [0, 8, 20], target: [0, 0, 0], fov: 75 },
                     
                     // Slow zoom in while rotating
-                    { time: 10, position: [12, 6, 12], target: [0, 0, 0], fov: 70 },
+                    { time: 12, position: [12, 6, 12], target: [0, 0, 0], fov: 70 },
                     
                     // Close inspection - orbit around the plasma
-                    { time: 20, position: [8, 4, 0], target: [0, 0, 0], fov: 65 },
+                    { time: 24, position: [8, 4, 0], target: [0, 0, 0], fov: 65 },
                     
-                    // Dramatic approach to the ring
-                    { time: 30, position: [6, 2, -2], target: [0, 0, 2], fov: 60 },
+                    // Low angle dramatic view
+                    { time: 36, position: [6, 2, 8], target: [0, 1, 0], fov: 60 },
                     
-                    // Pass through the center (hero shot)
-                    { time: 40, position: [0, 0, 0], target: [0, 0, -4], fov: 55 },
+                    // High orbital view from opposite side
+                    { time: 48, position: [-12, 10, -6], target: [0, 0, 0], fov: 65 },
                     
-                    // Exit and pull back
-                    { time: 45, position: [-6, 2, -8], target: [0, 0, 0], fov: 60 },
-                    
-                    // High orbital view
-                    { time: 55, position: [-15, 12, -10], target: [0, 0, 0], fov: 70 },
-                    
-                    // Return to start
+                    // Return to start position
                     { time: 60, position: [0, 8, 20], target: [0, 0, 0], fov: 75 }
                 ]
             };
@@ -222,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.electronSystem = this.createParticleType({
                 count: this.params.electronCount,
                 color: 0x0088ff,
-                size: 1.2,
+                size: 0.8,
                 mass: 1,
                 charge: -1,
                 speed: 0.15
@@ -232,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.ionSystem = this.createParticleType({
                 count: this.params.ionCount,
                 color: 0xff4400,
-                size: 1.8,
+                size: 1.2,
                 mass: 10,
                 charge: 1,
                 speed: 0.08
@@ -242,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.neutralSystem = this.createParticleType({
                 count: this.params.neutralCount,
                 color: 0xaa88ff,
-                size: 2.2,
+                size: 1.6,
                 mass: 15,
                 charge: 0,
                 speed: 0.04
@@ -280,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 size: config.size,
                 sizeAttenuation: true,
                 transparent: true,
-                opacity: 0.5,
+                opacity: 0.3,
                 blending: THREE.AdditiveBlending,
                 map: this.createParticleTexture(),
                 alphaTest: 0.001,
@@ -293,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 velocities: velocities,
                 lifetimes: lifetimes,
                 maxLifetimes: maxLifetimes,
-                baseOpacity: 0.5
+                baseOpacity: 0.3
             };
 
             this.scene.add(system);
