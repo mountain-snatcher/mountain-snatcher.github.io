@@ -15,6 +15,12 @@ description: Quantum Engineer
                     <a href="#about" class="btn btn-primary">Learn More</a>
                 </div>
             </div>
+            <div class="animation-info">
+                <div class="animation-description">
+                    <h3>Watch plasma dance</h3>
+                    <p>Four particle clusters spiraling through electromagnetic fields</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>

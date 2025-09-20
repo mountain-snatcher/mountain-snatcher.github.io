@@ -146,11 +146,34 @@ body {
 
 .hero-content {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
     align-items: center;
     position: relative;
     z-index: 10;
+}
+
+.hero-text {
+    justify-self: start;
+    text-align: left;
+}
+
+.animation-info {
+    justify-self: end;
+    text-align: right;
+}
+
+.animation-description h3 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--aurora-electric-green);
+    margin-bottom: 0.5rem;
+}
+
+.animation-description p {
+    font-size: 0.9rem;
+    color: rgba(248, 250, 252, 0.7);
+    line-height: 1.4;
 }
 
 .hero-title {
