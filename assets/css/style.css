@@ -1,8 +1,8 @@
 /* Aurora Color Palette & CSS Custom Properties */
 :root {
   /* Aurora Color System */
-  --aurora-deep-space: #0B1426;
-  --aurora-space-blue: #1a2332;
+  --aurora-deep-space: #000000;
+  --aurora-space-blue: #000000;
   --aurora-electric-green: #00ff88;
   --aurora-ethereal-cyan: #64ffda;
   --aurora-cosmic-purple: #8b5cf6;
@@ -138,7 +138,7 @@ body {
     padding: 80px 0 40px;
     background: transparent;
     position: relative;
-    min-height: 60vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
 }
