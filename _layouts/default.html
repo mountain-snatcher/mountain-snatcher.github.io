@@ -70,44 +70,8 @@
     </footer>
 
     <!-- Three.js Library and Dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r140/three.min.js"></script>
-    <script>
-        // Wait for THREE to be available before loading dependencies
-        if (typeof THREE !== 'undefined') {
-            console.log('THREE.js loaded successfully');
-            
-            // Load dependencies dynamically
-            const scripts = [
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/controls/OrbitControls.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/postprocessing/Pass.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/postprocessing/ShaderPass.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/postprocessing/EffectComposer.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/postprocessing/RenderPass.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/shaders/CopyShader.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/shaders/LuminosityHighPassShader.js',
-                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r140/examples/js/postprocessing/UnrealBloomPass.js'
-            ];
-            
-            let loadedCount = 0;
-            scripts.forEach((src, index) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = () => {
-                    loadedCount++;
-                    console.log(`Loaded ${src.split('/').pop()}`);
-                    if (loadedCount === scripts.length) {
-                        console.log('All Three.js dependencies loaded');
-                    }
-                };
-                script.onerror = () => {
-                    console.warn(`Failed to load ${src}`);
-                };
-                document.head.appendChild(script);
-            });
-        } else {
-            console.error('THREE.js failed to load');
-        }
-    </script>
+    <script src="https://unpkg.com/three@0.140.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.min.js"></script>
     
     <!-- JavaScript -->

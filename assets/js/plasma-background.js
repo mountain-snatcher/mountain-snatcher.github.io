@@ -17,30 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Wait for all dependencies to load
-    let checkCount = 0;
-    const maxChecks = 50; // 5 seconds max wait
-    
-    function checkDependencies() {
-        checkCount++;
-        if (typeof THREE !== 'undefined' && typeof THREE.OrbitControls !== 'undefined') {
-            console.log('All dependencies ready, starting simulation');
-            const simulation = new PlasmaFieldSimulation();
-            simulation.init();
-        } else if (checkCount < maxChecks) {
-            console.log('Waiting for dependencies...', {
-                THREE: typeof THREE,
-                OrbitControls: typeof THREE !== 'undefined' ? typeof THREE.OrbitControls : 'N/A'
-            });
-            setTimeout(checkDependencies, 100);
-        } else {
-            console.warn('Dependencies not loaded after 5 seconds, starting anyway');
-            const simulation = new PlasmaFieldSimulation();
-            simulation.init();
-        }
-    }
-    
-    setTimeout(checkDependencies, 100);
+    // Wait for dependencies to load
+    setTimeout(() => {
+        console.log('Starting plasma simulation...');
+        const simulation = new PlasmaFieldSimulation();
+        simulation.init();
+    }, 200);
 
     // Full Plasma Field Simulation Class with multiple particle types and enhanced effects
     class PlasmaFieldSimulation {
@@ -104,14 +86,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('THREE.js loaded:', typeof THREE);
             console.log('OrbitControls available:', typeof THREE.OrbitControls);
 
-            // Step 2: Check post-processing availability
-            this.usePostProcessing = typeof THREE.EffectComposer !== 'undefined' &&
-                                     typeof THREE.ShaderPass !== 'undefined' &&
-                                     typeof THREE.RenderPass !== 'undefined' &&
-                                     typeof THREE.UnrealBloomPass !== 'undefined';
-            if (!this.usePostProcessing) {
-                console.warn('Post-processing dependencies missing, falling back to basic rendering');
-            }
+            // Disable post-processing for now to simplify dependencies
+            this.usePostProcessing = false;
+            console.log('Post-processing disabled for compatibility');
 
             // Step 3: Setup scene, camera, renderer
             this.setupScene();
@@ -435,15 +412,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.controls.minDistance = 5;
                 this.controls.maxPolarAngle = Math.PI; // Allow full rotation
                 
-                // Test event listener
-                this.controls.addEventListener('change', () => {
-                    console.log('Camera moved!');
-                });
-                
                 console.log('OrbitControls setup complete');
             } else {
-                console.warn('THREE.OrbitControls not available');
+                console.warn('THREE.OrbitControls not available, using manual controls');
+                this.setupManualControls();
             }
+        }
+        
+        // Manual camera controls as fallback
+        setupManualControls() {
+            this.cameraControls = {
+                isMouseDown: false,
+                lastMouseX: 0,
+                lastMouseY: 0,
+                cameraDistance: 20,
+                cameraAngleX: 0,
+                cameraAngleY: Math.PI / 2 // Start looking down
+            };
+            
+            const canvas = this.renderer.domElement;
+            
+            canvas.addEventListener('mousedown', (event) => {
+                this.cameraControls.isMouseDown = true;
+                this.cameraControls.lastMouseX = event.clientX;
+                this.cameraControls.lastMouseY = event.clientY;
+            });
+            
+            canvas.addEventListener('mousemove', (event) => {
+                if (this.cameraControls.isMouseDown) {
+                    const deltaX = event.clientX - this.cameraControls.lastMouseX;
+                    const deltaY = event.clientY - this.cameraControls.lastMouseY;
+                    
+                    this.cameraControls.cameraAngleX += deltaX * 0.01;
+                    this.cameraControls.cameraAngleY += deltaY * 0.01;
+                    
+                    // Limit vertical rotation
+                    this.cameraControls.cameraAngleY = Math.max(0.1, Math.min(Math.PI - 0.1, this.cameraControls.cameraAngleY));
+                    
+                    this.updateCameraPosition();
+                    
+                    this.cameraControls.lastMouseX = event.clientX;
+                    this.cameraControls.lastMouseY = event.clientY;
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                this.cameraControls.isMouseDown = false;
+            });
+            
+            canvas.addEventListener('wheel', (event) => {
+                event.preventDefault();
+                this.cameraControls.cameraDistance += event.deltaY * 0.01;
+                this.cameraControls.cameraDistance = Math.max(5, Math.min(50, this.cameraControls.cameraDistance));
+                this.updateCameraPosition();
+            });
+            
+            console.log('Manual camera controls setup complete');
+        }
+        
+        updateCameraPosition() {
+            const x = this.cameraControls.cameraDistance * Math.sin(this.cameraControls.cameraAngleY) * Math.cos(this.cameraControls.cameraAngleX);
+            const y = this.cameraControls.cameraDistance * Math.cos(this.cameraControls.cameraAngleY);
+            const z = this.cameraControls.cameraDistance * Math.sin(this.cameraControls.cameraAngleY) * Math.sin(this.cameraControls.cameraAngleX);
+            
+            this.camera.position.set(x, y, z);
+            this.camera.lookAt(0, 0, 0);
         }
 
         // Setup post-processing pipeline for cinematic bloom effect on plasma
