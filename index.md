@@ -43,7 +43,7 @@ description: Quantum Engineer
                 </div>
                 
                 <div class="about-details">
-                    <p>Backend engineer with M.Sc. in Computational Physics from IIT Palakkad. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
+                    <p>I am a Quantum engineer with Masters in Computational Physics. Good at Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
                     
                     <div class="quick-facts">
                         <div class="fact">
@@ -56,7 +56,7 @@ description: Quantum Engineer
                         </div>
                         <div class="fact">
                             <i class="fas fa-atom"></i>
-                            <span>Quantum Systems & Backend Engineering</span>
+                            <span>Quantum Systems & Quantum Engineering</span>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,10 @@ description: Quantum Engineer
                             <span class="skill-tag">NumPy</span>
                             <span class="skill-tag">Computational Physics</span>
                             <span class="skill-tag">Quantum Systems</span>
-                            <span class="skill-tag">Numerical Methods</span>
+                            <span class="skill-tag">Numerical Methods</span>   
+                            <span class="skill-tag">Qiskit</span>
+                            <span class="skill-tag">Quantum Algorithms</span>
+                            <span class="skill-tag">Qiskit Finance</span> 
                         </div>
                     </div>
                 </div>
