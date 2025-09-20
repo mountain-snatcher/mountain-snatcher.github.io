@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup perspective camera
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            // Position camera high above to view the donut from above
-            this.camera.position.set(0, 0, 25);
+            // Position camera closer to view the donut
+            this.camera.position.set(0, 0, 8);
             this.camera.lookAt(0, 0, 0);
         }
 
@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 isMouseDown: false,
                 lastMouseX: 0,
                 lastMouseY: 0,
-                cameraDistance: 25,
+                cameraDistance: 8,
                 cameraAngleX: 0,
                 cameraAngleY: 0 // Start looking straight at center
             };
