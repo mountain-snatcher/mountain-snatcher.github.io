@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             // Position camera at optimal distance to view the donut
-            this.camera.position.set(0, 0, 8);
+            this.camera.position.set(0, 0, 10);
             this.camera.lookAt(0, 0, 0);
             console.log('Camera positioned at:', this.camera.position.x, this.camera.position.y, this.camera.position.z);
         }
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 isMouseDown: false,
                 lastMouseX: 0,
                 lastMouseY: 0,
-                cameraDistance: 8,
+                cameraDistance: 10,
                 cameraAngleX: 0,
                 cameraAngleY: 0 // Start looking straight at center
             };
