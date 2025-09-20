@@ -10,7 +10,7 @@ This is the personal profile site for Sankalp Chudmunge, built using [Jekyll](ht
 
 ## Publishing
 
-- Changes pushed to the `main` branch are published automatically at [https://mountain-snatcher.github.io](https://sankalp-chudmunge.github.io).
+- Changes pushed to the `main` branch are published automatically at [https://sankalp-chudmunge.github.io](https://sankalp-chudmunge.github.io).
 
 ## Customization
 
