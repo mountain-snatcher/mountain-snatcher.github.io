@@ -123,8 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Setup perspective camera
         setupCamera() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            // Static top-down view to show the complete circular plasma formation
-            this.camera.position.set(0, 15, 0);
+            // Position camera high above the donut-shaped plasma looking down
+            this.camera.position.set(0, 20, 0);
             this.camera.lookAt(0, 0, 0);
         }
 
@@ -265,37 +265,49 @@ document.addEventListener('DOMContentLoaded', function() {
             return system;
         }
         
-        // Reset particle position to start from center and spread out
+        // Reset particle position to create toroidal (donut) distribution
         resetParticlePosition(positions, i3) {
-            // Start particles near the center with small random spread
-            const spreadRadius = 0.5; // Small initial spread
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(2 * Math.random() - 1);
-            const r = Math.random() * spreadRadius;
+            // Create torus (donut) shape parameters
+            const majorRadius = 2.5; // Distance from center to tube center
+            const minorRadius = 0.8;  // Tube thickness
             
-            positions[i3] = r * Math.sin(phi) * Math.cos(theta);
-            positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-            positions[i3 + 2] = r * Math.cos(phi);
+            // Toroidal coordinates
+            const theta = Math.random() * Math.PI * 2; // Around the major circle
+            const phi = Math.random() * Math.PI * 2;   // Around the minor circle
+            
+            // Add some randomness to the radii for organic look
+            const majorR = majorRadius + (Math.random() - 0.5) * 0.3;
+            const minorR = minorRadius * Math.random();
+            
+            // Convert to Cartesian coordinates (torus lying in X-Z plane)
+            positions[i3] = (majorR + minorR * Math.cos(phi)) * Math.cos(theta);     // X
+            positions[i3 + 1] = minorR * Math.sin(phi);                              // Y (height)
+            positions[i3 + 2] = (majorR + minorR * Math.cos(phi)) * Math.sin(theta); // Z
         }
         
-        // Reset particle velocity with proper orbital motion
+        // Reset particle velocity for toroidal motion
         resetParticleVelocity(velocities, positions, i3, config) {
-            // Add initial outward velocity to spread particles from center
-            const outwardForce = 0.1 / config.mass;
             const x = positions[i3];
             const y = positions[i3 + 1];
             const z = positions[i3 + 2];
-            const distance = Math.sqrt(x*x + y*y + z*z) || 0.001;
             
-            // Outward velocity
-            velocities[i3] = (x / distance) * outwardForce;
-            velocities[i3 + 1] = (y / distance) * outwardForce;
-            velocities[i3 + 2] = (z / distance) * outwardForce * 0.5;
+            // Calculate distance from Y-axis (center of torus)
+            const rho = Math.sqrt(x*x + z*z) || 0.001;
             
-            // Add tangential velocity for orbital motion
-            const swirl = 0.06 / config.mass;
-            velocities[i3] += swirl * -y + (Math.random() - 0.5) * config.speed * 0.5;
-            velocities[i3 + 1] += swirl * x + (Math.random() - 0.5) * config.speed * 0.5;
+            // Toroidal velocity: particles flow around the major radius
+            const toroidalSpeed = 0.08 / config.mass;
+            velocities[i3] = toroidalSpeed * (-z / rho);     // Tangential in X-Z plane
+            velocities[i3 + 1] = 0;                          // No initial Y velocity
+            velocities[i3 + 2] = toroidalSpeed * (x / rho);  // Tangential in X-Z plane
+            
+            // Add some poloidal motion (around the minor radius)
+            const poloidalSpeed = 0.02 / config.mass;
+            const theta = Math.atan2(z, x);
+            velocities[i3 + 1] += poloidalSpeed * (Math.random() - 0.5);
+            
+            // Add small random motion
+            velocities[i3] += (Math.random() - 0.5) * config.speed * 0.3;
+            velocities[i3 + 1] += (Math.random() - 0.5) * config.speed * 0.2;
             velocities[i3 + 2] += (Math.random() - 0.5) * config.speed * 0.3;
         }
 
@@ -538,31 +550,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
 
-                // Electromagnetic forces for all particles
-                const fieldStrength = 0.012 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
-                const dx = -x * fieldStrength;
-                const dy = -y * fieldStrength;
-                const dz = -z * fieldStrength * 0.5;
+                // Toroidal plasma forces
+                const rho = Math.sqrt(x*x + z*z) || 0.001; // Distance from Y-axis
+                const majorRadius = 2.5;
+                
+                // Magnetic confinement force (keeps particles in torus shape)
+                const confinementStrength = 0.015 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
+                
+                // Radial restoring force toward major radius
+                const radialDeviation = rho - majorRadius;
+                const radialForce = -radialDeviation * confinementStrength;
+                const radialX = radialForce * (x / rho);
+                const radialZ = radialForce * (z / rho);
+                
+                // Vertical confinement (keeps particles near midplane)
+                const verticalForce = -y * confinementStrength * 0.8;
                 
                 if (config.charge !== 0) {
-                    // Charged particles: strong electromagnetic forces
-                    const cyclotronFreq = 0.8 * config.charge / config.mass;
-                    const cyclotronX = y * cyclotronFreq * delta;
-                    const cyclotronY = -x * cyclotronFreq * delta;
+                    // Charged particles: toroidal and poloidal motion
+                    const toroidalFreq = 0.6 * config.charge / config.mass;
+                    const poloidalFreq = 0.3 * config.charge / config.mass;
                     
-                    velocities[i3] += dx + cyclotronX;
-                    velocities[i3 + 1] += dy + cyclotronY;
-                    velocities[i3 + 2] += dz;
+                    // Toroidal drift (around major radius)
+                    const toroidalX = toroidalFreq * (-z / rho) * delta;
+                    const toroidalZ = toroidalFreq * (x / rho) * delta;
+                    
+                    // Poloidal motion (around minor radius)
+                    const poloidalY = poloidalFreq * (x * Math.sin(time) + z * Math.cos(time)) * delta * 0.1;
+                    
+                    velocities[i3] += radialX + toroidalX;
+                    velocities[i3 + 1] += verticalForce + poloidalY;
+                    velocities[i3 + 2] += radialZ + toroidalZ;
                 } else {
-                    // Neutral particles: weaker magnetic field interaction
-                    const neutralFieldStrength = fieldStrength * 0.3;
-                    const neutralCyclotron = 0.2 / config.mass;
-                    const neutralX = y * neutralCyclotron * delta;
-                    const neutralY = -x * neutralCyclotron * delta;
+                    // Neutral particles: weaker confinement
+                    const neutralConfinement = confinementStrength * 0.4;
+                    const neutralToroidal = 0.2 / config.mass;
                     
-                    velocities[i3] += dx * 0.5 + neutralX;
-                    velocities[i3 + 1] += dy * 0.5 + neutralY;
-                    velocities[i3 + 2] += dz * 0.5;
+                    velocities[i3] += radialX * 0.5 + neutralToroidal * (-z / rho) * delta;
+                    velocities[i3 + 1] += verticalForce * 0.5;
+                    velocities[i3 + 2] += radialZ * 0.5 + neutralToroidal * (x / rho) * delta;
                 }
 
                 // Thermal motion (mass-dependent)
@@ -576,23 +602,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 positionsArray[i3 + 1] += velocities[i3 + 1] * delta;
                 positionsArray[i3 + 2] += velocities[i3 + 2] * delta;
 
-                // Containment boundary
-                const newDist = Math.sqrt(positionsArray[i3]**2 + positionsArray[i3 + 1]**2 + positionsArray[i3 + 2]**2);
-                if (newDist > radius) {
-                    const normalX = positionsArray[i3] / newDist;
-                    const normalY = positionsArray[i3 + 1] / newDist;
-                    const normalZ = positionsArray[i3 + 2] / newDist;
+                // Toroidal containment boundary
+                const rhoNew = Math.sqrt(positionsArray[i3]**2 + positionsArray[i3 + 2]**2);
+                const majorRadius = 2.5;
+                const minorRadius = 1.2;
+                const maxVertical = 1.5;
+                
+                // Check if particle is outside torus bounds
+                const distFromMajorRadius = Math.abs(rhoNew - majorRadius);
+                const verticalDist = Math.abs(positionsArray[i3 + 1]);
+                
+                if (distFromMajorRadius > minorRadius || verticalDist > maxVertical) {
+                    // Reset particle back into torus
+                    this.resetParticlePosition(positionsArray, i3);
+                    this.resetParticleVelocity(velocities, positionsArray, i3, config);
                     
-                    positionsArray[i3] = normalX * radius;
-                    positionsArray[i3 + 1] = normalY * radius;
-                    positionsArray[i3 + 2] = normalZ * radius;
-                    
-                    // Elastic collision with energy loss
-                    const dot = velocities[i3] * normalX + velocities[i3 + 1] * normalY + velocities[i3 + 2] * normalZ;
-                    const damping = 0.7;
-                    velocities[i3] -= 2 * dot * normalX * damping;
-                    velocities[i3 + 1] -= 2 * dot * normalY * damping;
-                    velocities[i3 + 2] -= 2 * dot * normalZ * damping;
+                    // Apply some damping
+                    velocities[i3] *= 0.5;
+                    velocities[i3 + 1] *= 0.5;
+                    velocities[i3 + 2] *= 0.5;
                 }
 
                 // Velocity damping
