@@ -144,6 +144,12 @@ body {
 }
 
 
+.hero .container {
+    max-width: none;
+    margin: 0;
+    padding: 0 40px;
+}
+
 .hero-content {
     display: grid;
     grid-template-columns: 1fr;
@@ -151,13 +157,13 @@ body {
     align-items: center;
     position: relative;
     z-index: 10;
-    padding-left: 0;
+    justify-items: start;
 }
 
 .hero-text {
     justify-self: start;
     text-align: left;
-    max-width: 50%;
+    max-width: 600px;
     padding-left: 0;
     margin-left: 0;
 }
