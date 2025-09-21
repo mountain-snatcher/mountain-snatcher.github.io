@@ -73,6 +73,24 @@ document.addEventListener('DOMContentLoaded', function() {
             this.mouse = new THREE.Vector2();
             this.mouseWorld = new THREE.Vector3();
             this.mouseInfluence = 0;
+            
+            // Magnetic reconnection system
+            this.reconnectionEvents = [];
+            this.reconnectionFlashes = [];
+            
+            // Plasma instability system
+            this.stabilityFactor = 1.0;
+            this.instabilityPhase = 'stable'; // 'stable', 'unstable', 'disrupting', 'recovering'
+            this.instabilityTimer = 0;
+            this.disruptionSectors = [];
+            
+            // Fusion reaction system
+            this.fusionEvents = [];
+            this.fusionFlashes = [];
+            
+            // Turbulent cascade system
+            this.turbulenceTime = 0;
+            this.turbulenceIntensity = 0.3;
         }
 
         // Initialize the simulation after dependency checks
@@ -98,6 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
             this.createEnvironment();
             this.createMultipleParticleTypes();
             this.createLightningSystem();
+            this.createReconnectionSystem();
+            this.createFusionSystem();
             this.setupContainment();
             this.setupMouseInteraction();
             if (this.usePostProcessing) {
@@ -391,6 +411,58 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Create magnetic reconnection system for dramatic energy events
+        createReconnectionSystem() {
+            // Pre-create reconnection flash objects for performance
+            for (let i = 0; i < 5; i++) {
+                const geometry = new THREE.SphereGeometry(0.1, 8, 6);
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const flash = new THREE.Mesh(geometry, material);
+                this.scene.add(flash);
+                
+                this.reconnectionFlashes.push({
+                    mesh: flash,
+                    active: false,
+                    lifetime: 0,
+                    maxLifetime: 0.5,
+                    intensity: 0,
+                    maxScale: 3.0
+                });
+            }
+        }
+
+        // Create fusion reaction system for particle collisions
+        createFusionSystem() {
+            // Pre-create fusion flash objects for performance
+            for (let i = 0; i < 10; i++) {
+                const geometry = new THREE.SphereGeometry(0.05, 6, 4);
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0xfff8dc, // Bright yellow-white
+                    transparent: true,
+                    opacity: 0,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const flash = new THREE.Mesh(geometry, material);
+                this.scene.add(flash);
+                
+                this.fusionFlashes.push({
+                    mesh: flash,
+                    active: false,
+                    lifetime: 0,
+                    maxLifetime: 0.3,
+                    intensity: 0,
+                    maxScale: 2.0
+                });
+            }
+        }
+
         // No visible containment - particles contained by physics boundaries
         setupContainment() {
             // Containment sphere removed for cleaner visualization
@@ -544,6 +616,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update lightning effects
             this.updateLightning(delta);
 
+            // Update magnetic reconnection events
+            this.updateReconnectionEvents(delta);
+
+            // Update plasma instabilities
+            this.updatePlasmaInstabilities(delta);
+
+            // Update fusion reactions
+            this.updateFusionSystem(delta);
+
+            // Update turbulent cascades
+            this.updateTurbulentCascades(delta);
+
             // Render the scene (use composer if available)
             if (this.usePostProcessing && this.composer) {
                 this.composer.render();
@@ -646,11 +730,40 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
 
+                // Magnetic reconnection forces - dramatic particle acceleration
+                this.reconnectionEvents.forEach(event => {
+                    const reconnectDistX = x - event.position.x;
+                    const reconnectDistY = y - event.position.y;
+                    const reconnectDistZ = z - event.position.z;
+                    const reconnectDist = Math.sqrt(reconnectDistX*reconnectDistX + reconnectDistY*reconnectDistY + reconnectDistZ*reconnectDistZ);
+                    
+                    if (reconnectDist < event.radius && reconnectDist > 0.1) {
+                        // Strong acceleration away from reconnection point
+                        const reconnectForce = event.strength * (1.0 - reconnectDist / event.radius) / config.mass;
+                        const progress = 1.0 - (event.lifetime / event.maxLifetime);
+                        const timeMultiplier = progress * (2.0 - progress); // Peak at 50% of lifetime
+                        
+                        velocities[i3] += (reconnectDistX / reconnectDist) * reconnectForce * timeMultiplier * delta * 15;
+                        velocities[i3 + 1] += (reconnectDistY / reconnectDist) * reconnectForce * timeMultiplier * delta * 15;
+                        velocities[i3 + 2] += (reconnectDistZ / reconnectDist) * reconnectForce * timeMultiplier * delta * 8;
+                    }
+                });
+
+                // Apply plasma instability forces
+                this.applyInstabilityForces(x, y, z, velocities, i3, config, delta);
+
+                // Apply fusion energy release forces
+                this.applyFusionForces(x, y, z, velocities, i3, config, delta);
+
+                // Apply turbulent cascade forces
+                this.applyTurbulentForces(x, y, z, velocities, i3, config, delta);
+
                 // Toroidal plasma forces
                 const rho = Math.sqrt(x*x + y*y) || 0.001; // Distance from Z-axis
                 
-                // Magnetic confinement force (keeps particles in torus shape)
-                const confinementStrength = 0.015 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
+                // Magnetic confinement force (keeps particles in torus shape) - affected by stability
+                const baseConfinement = 0.015 * (1 + 0.3 * Math.sin(time * 2)) / config.mass;
+                const confinementStrength = baseConfinement * this.stabilityFactor;
                 
                 // Radial restoring force toward major radius  
                 const radialDeviation = rho - majorRadius;
@@ -795,6 +908,316 @@ document.addEventListener('DOMContentLoaded', function() {
                 );
                 lightning.line.material.color = color;
             }
+        }
+
+        // Trigger a magnetic reconnection event at a random location
+        triggerReconnectionEvent() {
+            // Find inactive flash
+            const flash = this.reconnectionFlashes.find(f => !f.active);
+            if (!flash) return;
+
+            // Random position along the torus
+            const theta = Math.random() * Math.PI * 2;
+            const majorRadius = 2.5;
+            
+            const x = majorRadius * Math.cos(theta);
+            const y = majorRadius * Math.sin(theta);
+            const z = (Math.random() - 0.5) * 0.4; // Small z variation
+            
+            flash.mesh.position.set(x, y, z);
+            flash.mesh.scale.set(0.1, 0.1, 0.1);
+            flash.active = true;
+            flash.lifetime = flash.maxLifetime;
+            flash.intensity = 1.0;
+            
+            // Create reconnection zone for particle acceleration
+            this.reconnectionEvents.push({
+                position: new THREE.Vector3(x, y, z),
+                lifetime: 2.0,
+                maxLifetime: 2.0,
+                strength: 0.3,
+                radius: 1.5
+            });
+        }
+
+        // Update magnetic reconnection events
+        updateReconnectionEvents(delta) {
+            // Trigger random reconnection events
+            if (Math.random() < 0.0008 * delta * 60) { // About every 20 seconds on average
+                this.triggerReconnectionEvent();
+            }
+
+            // Update reconnection flashes
+            this.reconnectionFlashes.forEach(flash => {
+                if (flash.active) {
+                    flash.lifetime -= delta;
+                    flash.intensity = flash.lifetime / flash.maxLifetime;
+                    
+                    // Scale and fade the flash
+                    const scale = 0.1 + (1.0 - flash.intensity) * flash.maxScale;
+                    flash.mesh.scale.set(scale, scale, scale);
+                    flash.mesh.material.opacity = flash.intensity * 0.8;
+                    
+                    if (flash.lifetime <= 0) {
+                        flash.active = false;
+                        flash.mesh.material.opacity = 0;
+                    }
+                }
+            });
+
+            // Update reconnection zones and remove expired ones
+            this.reconnectionEvents = this.reconnectionEvents.filter(event => {
+                event.lifetime -= delta;
+                return event.lifetime > 0;
+            });
+        }
+
+        // Update plasma instability system
+        updatePlasmaInstabilities(delta) {
+            this.instabilityTimer += delta;
+            
+            // Instability cycle: 60-120 seconds stable, then 15-30 seconds of disruption
+            const cycleDuration = 90 + Math.sin(this.instabilityTimer * 0.01) * 30; // 60-120 seconds
+            const cycleProgress = (this.instabilityTimer % cycleDuration) / cycleDuration;
+            
+            if (cycleProgress < 0.8) {
+                // Stable phase - slowly build up towards instability
+                this.instabilityPhase = 'stable';
+                this.stabilityFactor = 1.0 - cycleProgress * 0.3; // Slowly decrease stability
+            } else if (cycleProgress < 0.9) {
+                // Unstable phase - rapid destabilization
+                this.instabilityPhase = 'unstable';
+                const unstableProgress = (cycleProgress - 0.8) / 0.1;
+                this.stabilityFactor = 0.7 - unstableProgress * 0.5; // Rapid decrease
+                
+                // Create disruption sectors randomly
+                if (Math.random() < delta * 3 && this.disruptionSectors.length < 8) {
+                    const sector = {
+                        angle: Math.random() * Math.PI * 2,
+                        width: 0.3 + Math.random() * 0.5,
+                        strength: 0.3 + Math.random() * 0.4,
+                        lifetime: 5.0 + Math.random() * 10.0,
+                        maxLifetime: 15.0
+                    };
+                    this.disruptionSectors.push(sector);
+                }
+            } else {
+                // Recovery phase - gradually restabilize
+                this.instabilityPhase = 'recovering';
+                const recoveryProgress = (cycleProgress - 0.9) / 0.1;
+                this.stabilityFactor = 0.2 + recoveryProgress * 0.8; // Gradual increase
+                
+                // Remove disruption sectors
+                this.disruptionSectors = this.disruptionSectors.filter(sector => {
+                    sector.lifetime -= delta * 2; // Faster decay during recovery
+                    return sector.lifetime > 0;
+                });
+            }
+            
+            // Update existing disruption sectors
+            this.disruptionSectors.forEach(sector => {
+                sector.lifetime -= delta;
+                sector.strength *= 0.998; // Gradually weaken
+            });
+            
+            // Remove expired sectors
+            this.disruptionSectors = this.disruptionSectors.filter(sector => sector.lifetime > 0);
+        }
+
+        // Apply instability forces to particles
+        applyInstabilityForces(x, y, z, velocities, i3, config, delta) {
+            if (this.instabilityPhase === 'stable') return;
+            
+            const angle = Math.atan2(y, x);
+            const rho = Math.sqrt(x*x + y*y);
+            
+            // Check if particle is in a disruption sector
+            this.disruptionSectors.forEach(sector => {
+                let angleDiff = Math.abs(angle - sector.angle);
+                if (angleDiff > Math.PI) angleDiff = 2 * Math.PI - angleDiff;
+                
+                if (angleDiff < sector.width) {
+                    // Particle is in disruption zone - apply strong outward force
+                    const sectorIntensity = sector.strength * (1.0 - angleDiff / sector.width);
+                    const instabilityForce = sectorIntensity * 0.4 / config.mass;
+                    
+                    // Radial ejection force
+                    const radialX = instabilityForce * (x / rho);
+                    const radialY = instabilityForce * (y / rho);
+                    const verticalZ = instabilityForce * (Math.random() - 0.5) * 0.5;
+                    
+                    velocities[i3] += radialX * delta * 20;
+                    velocities[i3 + 1] += radialY * delta * 20;
+                    velocities[i3 + 2] += verticalZ * delta * 10;
+                    
+                    // Add some chaotic motion
+                    velocities[i3] += (Math.random() - 0.5) * instabilityForce * delta * 10;
+                    velocities[i3 + 1] += (Math.random() - 0.5) * instabilityForce * delta * 10;
+                    velocities[i3 + 2] += (Math.random() - 0.5) * instabilityForce * delta * 5;
+                }
+            });
+        }
+
+        // Detect and create fusion reactions between particles
+        detectFusionReactions(delta) {
+            // Only check a subset of particles each frame for performance
+            const electronPos = this.electronSystem?.geometry.attributes.position.array;
+            const ionPos = this.ionSystem?.geometry.attributes.position.array;
+            const electronVel = this.electronSystem?.userData.velocities;
+            const ionVel = this.ionSystem?.userData.velocities;
+            
+            if (!electronPos || !ionPos) return;
+            
+            // Check random pairs for fusion potential
+            for (let checks = 0; checks < 20; checks++) {
+                const eIdx = Math.floor(Math.random() * (electronPos.length / 3)) * 3;
+                const iIdx = Math.floor(Math.random() * (ionPos.length / 3)) * 3;
+                
+                const dx = electronPos[eIdx] - ionPos[iIdx];
+                const dy = electronPos[eIdx + 1] - ionPos[iIdx + 1];
+                const dz = electronPos[eIdx + 2] - ionPos[iIdx + 2];
+                const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                
+                // Very close approach needed for fusion
+                if (distance < 0.08) {
+                    // Calculate relative velocity
+                    const dvx = electronVel[eIdx] - ionVel[iIdx];
+                    const dvy = electronVel[eIdx + 1] - ionVel[iIdx + 1];
+                    const dvz = electronVel[eIdx + 2] - ionVel[iIdx + 2];
+                    const relativeSpeed = Math.sqrt(dvx*dvx + dvy*dvy + dvz*dvz);
+                    
+                    // Fusion probability based on kinetic energy
+                    const fusionProbability = Math.min(0.02, relativeSpeed * 0.001);
+                    
+                    if (Math.random() < fusionProbability) {
+                        this.createFusionEvent(
+                            (electronPos[eIdx] + ionPos[iIdx]) * 0.5,
+                            (electronPos[eIdx + 1] + ionPos[iIdx + 1]) * 0.5,
+                            (electronPos[eIdx + 2] + ionPos[iIdx + 2]) * 0.5,
+                            relativeSpeed
+                        );
+                    }
+                }
+            }
+        }
+
+        // Create a fusion event at the specified location
+        createFusionEvent(x, y, z, energy) {
+            // Find inactive flash
+            const flash = this.fusionFlashes.find(f => !f.active);
+            if (!flash) return;
+            
+            flash.mesh.position.set(x, y, z);
+            flash.mesh.scale.set(0.05, 0.05, 0.05);
+            flash.active = true;
+            flash.lifetime = flash.maxLifetime;
+            flash.intensity = 1.0;
+            
+            // Create fusion energy release zone
+            this.fusionEvents.push({
+                position: new THREE.Vector3(x, y, z),
+                lifetime: 1.0,
+                maxLifetime: 1.0,
+                energy: energy * 0.1,
+                radius: 0.5
+            });
+        }
+
+        // Update fusion system
+        updateFusionSystem(delta) {
+            // Detect new fusion reactions
+            this.detectFusionReactions(delta);
+            
+            // Update fusion flashes
+            this.fusionFlashes.forEach(flash => {
+                if (flash.active) {
+                    flash.lifetime -= delta;
+                    flash.intensity = flash.lifetime / flash.maxLifetime;
+                    
+                    // Quick bright flash that fades rapidly
+                    const scale = 0.05 + (1.0 - flash.intensity) * flash.maxScale;
+                    flash.mesh.scale.set(scale, scale, scale);
+                    flash.mesh.material.opacity = flash.intensity * 1.0;
+                    
+                    if (flash.lifetime <= 0) {
+                        flash.active = false;
+                        flash.mesh.material.opacity = 0;
+                    }
+                }
+            });
+            
+            // Update fusion energy zones and remove expired ones
+            this.fusionEvents = this.fusionEvents.filter(event => {
+                event.lifetime -= delta;
+                return event.lifetime > 0;
+            });
+        }
+
+        // Apply fusion energy release forces to nearby particles
+        applyFusionForces(x, y, z, velocities, i3, config, delta) {
+            this.fusionEvents.forEach(event => {
+                const dx = x - event.position.x;
+                const dy = y - event.position.y;
+                const dz = z - event.position.z;
+                const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                
+                if (distance < event.radius && distance > 0.01) {
+                    // Moderate outward force from fusion energy release
+                    const fusionForce = event.energy * (1.0 - distance / event.radius) / config.mass;
+                    const progress = 1.0 - (event.lifetime / event.maxLifetime);
+                    const timeMultiplier = progress * (2.0 - progress); // Peak at 50% of lifetime
+                    
+                    velocities[i3] += (dx / distance) * fusionForce * timeMultiplier * delta * 8;
+                    velocities[i3 + 1] += (dy / distance) * fusionForce * timeMultiplier * delta * 8;
+                    velocities[i3 + 2] += (dz / distance) * fusionForce * timeMultiplier * delta * 4;
+                }
+            });
+        }
+
+        // Update turbulent cascade system
+        updateTurbulentCascades(delta) {
+            this.turbulenceTime += delta;
+            
+            // Vary turbulence intensity over time
+            this.turbulenceIntensity = 0.2 + 0.15 * Math.sin(this.turbulenceTime * 0.3) + 
+                                      0.1 * Math.sin(this.turbulenceTime * 0.7) +
+                                      0.05 * Math.sin(this.turbulenceTime * 1.3);
+        }
+
+        // Apply turbulent forces using Perlin-like noise
+        applyTurbulentForces(x, y, z, velocities, i3, config, delta) {
+            const time = this.turbulenceTime;
+            
+            // Multi-scale turbulent field using sine waves (simplified Perlin noise)
+            // Large scale vortices
+            const largeScale = 0.3;
+            const largeTurbX = Math.sin(x * largeScale + time * 0.5) * Math.cos(y * largeScale + time * 0.3);
+            const largeTurbY = Math.cos(x * largeScale + time * 0.7) * Math.sin(y * largeScale + time * 0.4);
+            const largeTurbZ = Math.sin(z * largeScale * 2 + time * 0.6) * 0.5;
+            
+            // Medium scale eddies
+            const mediumScale = 0.8;
+            const mediumTurbX = Math.sin(x * mediumScale + time * 1.2) * Math.cos(y * mediumScale + time * 0.9);
+            const mediumTurbY = Math.cos(x * mediumScale + time * 1.5) * Math.sin(y * mediumScale + time * 1.1);
+            const mediumTurbZ = Math.sin(z * mediumScale * 2 + time * 1.3) * 0.3;
+            
+            // Small scale turbulence
+            const smallScale = 2.0;
+            const smallTurbX = Math.sin(x * smallScale + time * 2.1) * Math.cos(y * smallScale + time * 1.8);
+            const smallTurbY = Math.cos(x * smallScale + time * 2.4) * Math.sin(y * smallScale + time * 2.2);
+            const smallTurbZ = Math.sin(z * smallScale * 2 + time * 2.0) * 0.2;
+            
+            // Combine scales with different strengths (energy cascade)
+            const turbX = largeTurbX * 0.6 + mediumTurbX * 0.3 + smallTurbX * 0.1;
+            const turbY = largeTurbY * 0.6 + mediumTurbY * 0.3 + smallTurbY * 0.1;
+            const turbZ = largeTurbZ * 0.6 + mediumTurbZ * 0.3 + smallTurbZ * 0.1;
+            
+            // Apply turbulent forces
+            const turbulentForce = this.turbulenceIntensity * 0.02 / config.mass;
+            
+            velocities[i3] += turbX * turbulentForce * delta;
+            velocities[i3 + 1] += turbY * turbulentForce * delta;
+            velocities[i3 + 2] += turbZ * turbulentForce * delta * 0.5; // Reduce vertical turbulence
         }
     }
 });
