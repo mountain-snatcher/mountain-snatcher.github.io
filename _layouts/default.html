@@ -119,9 +119,10 @@
             }
         });
 
-        // Active section highlighting
+        // Active section highlighting and plasma overlay control
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.nav-link');
+        const plasmaOverlay = document.getElementById('plasmaInteractionOverlay');
 
         window.addEventListener('scroll', () => {
             let current = '';
@@ -139,6 +140,15 @@
                     link.classList.add('active');
                 }
             });
+
+            // Show/hide plasma interaction overlay based on current section
+            if (plasmaOverlay) {
+                if (current === 'home' || current === '') {
+                    plasmaOverlay.style.display = 'block';
+                } else {
+                    plasmaOverlay.style.display = 'none';
+                }
+            }
         });
     </script>
 

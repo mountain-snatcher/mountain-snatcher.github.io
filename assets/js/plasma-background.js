@@ -129,8 +129,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Setup WebGL renderer with shadow support and high quality
         setupRenderer() {
-            this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            // Try to create renderer with MSAA first
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    alpha: true,
+                    powerPreference: "high-performance",
+                    precision: "highp"
+                });
+                
+                // Check if we can enable MSAA
+                const gl = renderer.getContext();
+                const samples = gl.getParameter(gl.SAMPLES);
+                console.log('MSAA samples:', samples);
+                
+                this.renderer = renderer;
+            } catch (e) {
+                console.warn('Failed to create high-performance renderer, falling back:', e);
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            }
             this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Crisp pixels
             this.renderer.shadowMap.enabled = true;
             this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows for realism
             this.renderer.physicallyCorrectLights = true; // Enable PBR lighting model
@@ -244,11 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 size: config.size,
                 sizeAttenuation: true,
                 transparent: true,
-                opacity: 0.3,
+                opacity: 0.4,
                 blending: THREE.AdditiveBlending,
                 map: this.createParticleTexture(),
-                alphaTest: 0.001,
-                depthWrite: false
+                alphaTest: 0.01,  // Higher alpha test for sharper edges
+                depthWrite: false,
+                vertexColors: false
             });
 
             const system = new THREE.Points(geometry, material);
@@ -313,10 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // High-quality procedural texture for smooth circular particles
         createParticleTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 128;  // Higher resolution
-            canvas.height = 128;
+            canvas.width = 256;  // Much higher resolution for sharper particles
+            canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            const center = 64;
+            const center = 128;
             
             // Create smooth radial gradient with multiple stops
             const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
@@ -328,12 +349,14 @@ document.addEventListener('DOMContentLoaded', function() {
             gradient.addColorStop(1, 'rgba(255,255,255,0)');
             
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 128, 128);
+            ctx.fillRect(0, 0, 256, 256);
             
             const texture = new THREE.CanvasTexture(canvas);
-            texture.generateMipmaps = false;
-            texture.minFilter = THREE.LinearFilter;
+            texture.generateMipmaps = true;  // Enable mipmaps for better quality at distance
+            texture.minFilter = THREE.LinearMipmapLinearFilter;  // Better filtering
             texture.magFilter = THREE.LinearFilter;
+            texture.wrapS = THREE.ClampToEdgeWrap;
+            texture.wrapT = THREE.ClampToEdgeWrap;
             return texture;
         }
 

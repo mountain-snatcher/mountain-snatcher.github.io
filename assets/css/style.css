@@ -259,8 +259,8 @@ body {
 }
 
 .profile-image {
-    width: 200px;
-    height: 200px;
+    width: 240px;
+    height: 240px;
     border-radius: 50%;
     border: 2px solid var(--aurora-electric-green);
     overflow: hidden;
@@ -948,8 +948,8 @@ section {
     }
     
     .profile-image {
-        width: 200px;
-        height: 200px;
+        width: 220px;
+        height: 220px;
     }
     
     .section-title {
