@@ -372,8 +372,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.fillRect(0, 0, 256, 256);
             
             const texture = new THREE.CanvasTexture(canvas);
-            texture.generateMipmaps = true;  // Enable mipmaps for better quality at distance
-            texture.minFilter = THREE.LinearMipmapLinearFilter;  // Better filtering
+            texture.generateMipmaps = false;  // Disable mipmaps to avoid issues
+            texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
             texture.wrapS = THREE.ClampToEdgeWrap;
             texture.wrapT = THREE.ClampToEdgeWrap;
