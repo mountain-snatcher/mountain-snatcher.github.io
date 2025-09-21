@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Neutral atoms: Large, slow, white/purple particles
             this.neutralSystem = this.createParticleType({
                 count: this.params.neutralCount,
-                color: 0xaa88ff,
+                color: 0x6644bb,
                 size: 1.6,
                 mass: 15,
                 charge: 0,
