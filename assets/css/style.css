@@ -163,8 +163,13 @@ body {
 
 .nav-link:hover,
 .nav-link.active {
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     background: rgba(18, 153, 144, 0.1);
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-link.active {
+    background: rgba(144, 209, 202, 0.1);
 }
 
 
@@ -195,9 +200,10 @@ body {
     right: 0;
     bottom: 0;
     background-color: rgba(18, 153, 144, 0.2);
-    transition: 0.3s;
+    transition: background-color 0.3s;
     border-radius: 24px;
     border: 1px solid var(--accent-primary);
+    --toggle-position: 2px;
 }
 
 .slider:before {
@@ -205,11 +211,11 @@ body {
     content: "";
     height: 18px;
     width: 18px;
-    left: 2px;
+    left: var(--toggle-position);
     bottom: 2px;
     background-color: var(--accent-primary);
-    transition: 0.3s;
     border-radius: 50%;
+    /* Position controlled by CSS custom property for smooth JS animation */
 }
 
 input:checked + .slider {
@@ -217,7 +223,7 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+    /* Position will be handled by JavaScript animation */
 }
 
 [data-theme="dark"] .slider {
@@ -227,6 +233,12 @@ input:checked + .slider:before {
 
 [data-theme="dark"] .slider:before {
     background-color: var(--accent-primary);
+}
+
+/* Dark theme for mobile menu */
+[data-theme="dark"] .nav-menu {
+    background: rgba(26, 26, 26, 0.95) !important;
+    border-top: 1px solid rgba(144, 209, 202, 0.2) !important;
 }
 
 .hamburger {
@@ -376,9 +388,10 @@ input:checked + .slider:before {
     width: 240px;
     height: 240px;
     border-radius: 50%;
-    border: 2px solid var(--deep-teal);
+    border: 2px solid var(--accent-primary);
     overflow: hidden;
     position: relative;
+    transition: border-color 0.3s ease;
 }
 
 
@@ -627,8 +640,9 @@ section {
 
 /* Compact Experience Section */
 .experience {
-    background: var(--warm-cream);
+    background: var(--bg-primary);
     position: relative;
+    transition: background-color 0.3s ease;
 }
 
 .timeline {
@@ -870,8 +884,9 @@ section {
 
 /* Compact Contact Section */
 .contact {
-    background: var(--warm-cream);
+    background: var(--bg-primary);
     position: relative;
+    transition: background-color 0.3s ease;
 }
 
 
@@ -946,11 +961,12 @@ section {
 
 /* Compact Footer */
 .footer {
-    background: var(--warm-cream);
-    border-top: 1px solid var(--deep-teal);
-    color: var(--text-dark);
+    background: var(--bg-primary);
+    border-top: 1px solid var(--accent-primary);
+    color: var(--text-primary);
     padding: 1rem 0;
     text-align: center;
+    transition: all 0.3s ease;
 }
 
 .footer .container {

@@ -104,20 +104,98 @@
             });
         });
 
+        // Spring physics animation for toggle
+        function animateToggle(element, toPosition) {
+            const stiffness = 0.2; // Spring tension
+            const damping = 0.8;   // Resistance to motion
+            let velocity = 0;
+            let currentPosition = parseFloat(element.style.transform.replace('translateX(', '').replace('px)', '')) || 0;
+
+            function update() {
+                const distance = toPosition - currentPosition;
+                const springForce = stiffness * distance;
+                const dampingForce = damping * velocity;
+                const acceleration = springForce - dampingForce;
+
+                velocity += acceleration;
+                currentPosition += velocity;
+
+                element.style.transform = `translateX(${currentPosition}px)`;
+
+                // Stop the animation once it has settled
+                if (Math.abs(distance) > 0.1 || Math.abs(velocity) > 0.1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            update();
+        }
+
         // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
-        // Check for saved theme preference or default to light mode
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        body.setAttribute('data-theme', savedTheme);
-        themeToggle.checked = savedTheme === 'dark';
+        if (themeToggle) {
+            const slider = themeToggle.nextElementSibling;
+            const toggleButton = slider.querySelector('::before') || slider;
 
-        themeToggle.addEventListener('change', function() {
-            const newTheme = this.checked ? 'dark' : 'light';
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
+            // Check for saved theme preference or default to light mode
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', savedTheme);
+            themeToggle.checked = savedTheme === 'dark';
+            
+            // Set initial position without animation
+            if (savedTheme === 'dark') {
+                slider.style.setProperty('--toggle-position', '26px');
+            } else {
+                slider.style.setProperty('--toggle-position', '2px');
+            }
+
+            themeToggle.addEventListener('change', function() {
+                const newTheme = this.checked ? 'dark' : 'light';
+                const targetPosition = this.checked ? 26 : 2;
+                
+                // Animate the toggle
+                const pseudoElement = slider;
+                pseudoElement.style.setProperty('--toggle-position', targetPosition + 'px');
+                
+                // Apply theme
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Animate with spring physics
+                animateTogglePosition(targetPosition);
+                
+                console.log('Theme changed to:', newTheme);
+            });
+
+            function animateTogglePosition(targetPosition) {
+                const stiffness = 0.15;
+                const damping = 0.7;
+                let velocity = 0;
+                let currentPosition = parseFloat(getComputedStyle(slider).getPropertyValue('--toggle-position')) || 2;
+
+                function update() {
+                    const distance = targetPosition - currentPosition;
+                    const springForce = stiffness * distance;
+                    const dampingForce = damping * velocity;
+                    const acceleration = springForce - dampingForce;
+
+                    velocity += acceleration;
+                    currentPosition += velocity;
+
+                    slider.style.setProperty('--toggle-position', currentPosition + 'px');
+
+                    if (Math.abs(distance) > 0.1 || Math.abs(velocity) > 0.1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+
+                update();
+            }
+        } else {
+            console.log('Theme toggle element not found');
+        }
 
         // Mobile menu toggle
         const hamburger = document.getElementById('hamburger');
