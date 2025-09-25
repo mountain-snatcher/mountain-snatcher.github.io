@@ -1,14 +1,19 @@
-import taichi as ti
 import numpy as np
 import json
 import time
+import os
 
 # Check if Taichi can be imported and initialized
 TAICHI_AVAILABLE = False
+ti = None
+
 try:
-    import os
+    # Set environment variables before importing Taichi
     os.environ['TI_VISIBLE_DEVICE'] = ''  # Disable GPU detection
     os.environ['DISPLAY'] = ''  # Disable X11 display
+    
+    # Try to import Taichi
+    import taichi as ti
     
     # Try to initialize Taichi
     ti.init(arch=ti.cpu, debug=False, default_fp=ti.f32)
@@ -17,8 +22,10 @@ try:
 except Exception as e:
     print(f"Taichi not available: {e}")
     print("Falling back to simple NumPy simulation")
-    # Import fallback simulation
-    from simple_fluid_simulation import SimpleFluidSimulation
+    ti = None
+
+# Always import fallback simulation
+from simple_fluid_simulation import SimpleFluidSimulation
 
 # Simulation parameters
 N = 256  # Grid resolution

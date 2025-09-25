@@ -2,7 +2,7 @@ import asyncio
 import json
 import websockets
 import numpy as np
-from euler_simulation import EulerSimulation
+from euler_simulation_safe import EulerSimulation
 import logging
 from typing import Dict, Any
 import traceback

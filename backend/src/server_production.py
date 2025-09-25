@@ -6,7 +6,7 @@ from typing import Dict, Any
 import traceback
 from aiohttp import web, web_ws
 from aiohttp.web_ws import WSMsgType
-from euler_simulation import EulerSimulation
+from euler_simulation_safe import EulerSimulation
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
