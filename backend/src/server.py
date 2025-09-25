@@ -177,11 +177,15 @@ class SimulationServer:
 # Global server instance
 server_instance = SimulationServer()
 
-async def health_check(path, request_headers):
+async def health_check(connection, request):
     """Handle HTTP requests (like HEAD requests for health checks)"""
-    if request_headers.get("connection", "").lower() != "upgrade":
-        # This is a regular HTTP request, not a WebSocket upgrade
-        return (200, [], b"OK\n")
+    if request.method != "GET" or request.headers.get("connection", "").lower() != "upgrade":
+        # This is a regular HTTP request (HEAD, POST, etc.), not a WebSocket upgrade
+        response_headers = [
+            ("Content-Type", "text/plain"),
+            ("Access-Control-Allow-Origin", "*")
+        ]
+        return 200, response_headers, b"OK\n"
     # Let WebSocket upgrade continue normally
     return None
 
