@@ -1,15 +1,15 @@
 /* Aurora Color Palette & CSS Custom Properties */
 :root {
-  /* Aurora Color System */
-  --aurora-deep-space: #000000;
-  --aurora-space-blue: #000000;
-  --aurora-electric-green: #00ff88;
-  --aurora-ethereal-cyan: #64ffda;
-  --aurora-cosmic-purple: #8b5cf6;
-  --aurora-stellar-purple: #a855f7;
-  --aurora-cosmic-orange: #ff6b35;
-  --aurora-stellar-white: #f8fafc;
-  --aurora-ethereal-blue: #22d3ee;
+  /* Aurora Color System - Simplified & Positive */
+  --aurora-deep-space: #f5f7fa;         /* Soft light background */
+  --aurora-space-blue: #2563eb;         /* Confident blue */
+  --aurora-electric-green: #22c55e;     /* Positive green */
+  --aurora-ethereal-cyan: #06b6d4;      /* Fresh cyan */
+  --aurora-cosmic-purple: #a78bfa;      /* Friendly purple */
+  --aurora-stellar-purple: #c084fc;     /* Vibrant accent purple */
+  --aurora-cosmic-orange: #f59e42;      /* Warm optimistic orange */
+  --aurora-stellar-white: #ffffff;      /* Pure white */
+  --aurora-ethereal-blue: #38bdf8;      /* Bright blue accent */
   
   /* Solid Colors (replacing gradients) */
   --aurora-solid-primary: var(--aurora-cosmic-purple);
