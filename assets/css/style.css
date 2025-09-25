@@ -28,12 +28,12 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-  --bg-primary: #0f172a;         /* Slate 900 - rich dark background */
-  --bg-secondary: #1e293b;       /* Slate 800 - secondary background */
-  --text-primary: #f1f5f9;       /* Slate 100 - primary text */
-  --text-secondary: #64748b;     /* Slate 500 - secondary text */
-  --accent-primary: #0d9488;     /* Teal 600 - primary accent */
-  --accent-secondary: #0f766e;   /* Teal 700 - secondary accent */
+  --bg-primary: #1a1a1a;         /* Dark background */
+  --bg-secondary: #2d2d2d;       /* Lighter dark for cards */
+  --text-primary: #ffffff;       /* White text */
+  --text-secondary: #90D1CA;     /* Bright teal for secondary text */
+  --accent-primary: #90D1CA;     /* Bright teal - primary accent */
+  --accent-secondary: #129990;   /* Deep teal - secondary accent */
 }
   
   /* Minimal Shadows */
@@ -237,14 +237,96 @@ input:checked + .slider:before {
 
 /* Dark theme for mobile menu */
 [data-theme="dark"] .nav-menu {
-    background: rgba(15, 23, 42, 0.95) !important;
-    border-top: 1px solid rgba(13, 148, 136, 0.3) !important;
+    background: rgba(26, 26, 26, 0.95) !important;
+    border-top: 1px solid rgba(144, 209, 202, 0.3) !important;
 }
 
-/* Dark theme shadows */
+/* Fix dark theme backgrounds for all sections */
+[data-theme="dark"] .about {
+    background: #2d2d2d !important;
+}
+
+[data-theme="dark"] .about-header {
+    background: #1a1a1a !important;
+    border: 1px solid #90D1CA !important;
+}
+
+[data-theme="dark"] .about-details {
+    background: #1a1a1a !important;
+    border: 1px solid #129990 !important;
+}
+
+[data-theme="dark"] .skills-sidebar {
+    background: #1a1a1a !important;
+    border: 1px solid #90D1CA !important;
+}
+
+[data-theme="dark"] .timeline-item {
+    background: #2d2d2d !important;
+    border: 1px solid #90D1CA !important;
+}
+
+[data-theme="dark"] .projects {
+    background: #2d2d2d !important;
+}
+
+[data-theme="dark"] .project-card {
+    background: #1a1a1a !important;
+    border: 1px solid #90D1CA !important;
+}
+
+[data-theme="dark"] .contact {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .contact-info {
+    background: #2d2d2d !important;
+    border: 1px solid #90D1CA !important;
+}
+
+[data-theme="dark"] .footer {
+    background: #1a1a1a !important;
+    border-top: 1px solid #90D1CA !important;
+    color: #ffffff !important;
+}
+
+/* Dark theme shadows and comprehensive overrides */
 [data-theme="dark"] {
     --aurora-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
     --aurora-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark theme text overrides */
+[data-theme="dark"] .profile-name {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .profile-title {
+    color: #90D1CA !important;
+}
+
+[data-theme="dark"] .profile-tagline {
+    color: #cccccc !important;
+}
+
+[data-theme="dark"] .timeline-content p {
+    color: #cccccc !important;
+}
+
+[data-theme="dark"] .about-details p {
+    color: #cccccc !important;
+}
+
+[data-theme="dark"] .hero-title {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .hero-subtitle {
+    color: #90D1CA !important;
+}
+
+[data-theme="dark"] .hero-description {
+    color: #cccccc !important;
 }
 
 .hamburger {
