@@ -28,12 +28,12 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-  --bg-primary: #0a0a0a;         /* Dark background */
-  --bg-secondary: #1a1a1a;       /* Dark secondary background */
-  --text-primary: #ffffff;       /* Light text */
-  --text-secondary: #90D1CA;     /* Soft teal for secondary text */
-  --accent-primary: #90D1CA;     /* Soft teal as primary accent */
-  --accent-secondary: #129990;   /* Deep teal as secondary accent */
+  --bg-primary: #0f172a;         /* Slate 900 - rich dark background */
+  --bg-secondary: #1e293b;       /* Slate 800 - secondary background */
+  --text-primary: #f1f5f9;       /* Slate 100 - primary text */
+  --text-secondary: #64748b;     /* Slate 500 - secondary text */
+  --accent-primary: #0d9488;     /* Teal 600 - primary accent */
+  --accent-secondary: #0f766e;   /* Teal 700 - secondary accent */
 }
   
   /* Minimal Shadows */
@@ -237,8 +237,14 @@ input:checked + .slider:before {
 
 /* Dark theme for mobile menu */
 [data-theme="dark"] .nav-menu {
-    background: rgba(26, 26, 26, 0.95) !important;
-    border-top: 1px solid rgba(144, 209, 202, 0.2) !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    border-top: 1px solid rgba(13, 148, 136, 0.3) !important;
+}
+
+/* Dark theme shadows */
+[data-theme="dark"] {
+    --aurora-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --aurora-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .hamburger {
@@ -500,21 +506,24 @@ section {
 
 .profile-tagline {
     font-size: 0.875rem;
-    color: var(--text-dark);
+    color: var(--text-secondary);
     line-height: 1.5;
+    transition: color 0.3s ease;
 }
 
 .about-details {
-    background: var(--warm-cream);
-    border: 1px solid var(--soft-teal);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent-secondary);
     border-radius: 8px;
     padding: 1.5rem;
+    transition: all 0.3s ease;
 }
 
 .about-details p {
     font-size: 1rem;
     margin-bottom: 1rem;
-    color: var(--text-dark);
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 .quick-facts {
@@ -533,12 +542,17 @@ section {
 }
 
 .fact:hover {
-    background: rgba(18, 153, 144, 0.1);
+    background: rgba(13, 148, 136, 0.1);
+}
+
+[data-theme="dark"] .fact:hover {
+    background: rgba(13, 148, 136, 0.2);
 }
 
 .fact i {
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     width: 16px;
+    transition: color 0.3s ease;
 }
 
 .skills-grid {
@@ -548,10 +562,11 @@ section {
 
 /* Compact Skills Sidebar */
 .skills-sidebar {
-    background: var(--warm-cream);
-    border: 1px solid var(--deep-teal);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
     border-radius: 8px;
     padding: 1rem;
+    transition: all 0.3s ease;
 }
 
 .skills-title {
@@ -560,7 +575,8 @@ section {
     font-weight: 600;
     margin-bottom: 1rem;
     text-align: center;
-    color: var(--deep-teal);
+    color: var(--accent-primary);
+    transition: color 0.3s ease;
 }
 
 .skills-compact {
@@ -570,8 +586,12 @@ section {
 }
 
 .skill-category-compact {
-    border-bottom: 1px solid rgba(18, 153, 144, 0.2);
+    border-bottom: 1px solid rgba(13, 148, 136, 0.2);
     padding-bottom: 0.75rem;
+}
+
+[data-theme="dark"] .skill-category-compact {
+    border-bottom: 1px solid rgba(13, 148, 136, 0.3);
 }
 
 .skill-category-compact:last-child {
@@ -583,10 +603,11 @@ section {
     font-family: var(--font-heading);
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--dark-teal);
+    color: var(--accent-secondary);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    transition: color 0.3s ease;
 }
 
 .skill-category {
@@ -616,20 +637,31 @@ section {
 }
 
 .skill-tag {
-    background: rgba(18, 153, 144, 0.15);
-    color: var(--deep-teal);
+    background: rgba(13, 148, 136, 0.15);
+    color: var(--accent-primary);
     padding: 0.25rem 0.75rem;
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 600;
     font-family: var(--font-code);
-    border: 1px solid var(--deep-teal);
+    border: 1px solid var(--accent-primary);
     transition: all 0.3s ease;
 }
 
+[data-theme="dark"] .skill-tag {
+    background: rgba(13, 148, 136, 0.2);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+}
+
 .skill-tag:hover {
-    background: var(--deep-teal);
+    background: var(--accent-primary);
     color: var(--text-light);
+}
+
+[data-theme="dark"] .skill-tag:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
 }
 
 /* Compact skills - smaller tags */
@@ -665,15 +697,21 @@ section {
     position: relative;
     margin-bottom: 1rem;
     padding-left: 45px;
-    background: var(--soft-teal);
-    border: 1px solid var(--deep-teal);
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-primary);
     border-radius: 6px;
     padding: 0.75rem 0.75rem 0.75rem 2rem;
     transition: all 0.3s ease;
 }
 
 .timeline-item:hover {
-    background: rgba(144, 209, 202, 0.8);
+    background: var(--bg-primary);
+    border-color: var(--accent-secondary);
+}
+
+[data-theme="dark"] .timeline-item:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-secondary);
 }
 
 .timeline-item::before {
@@ -683,33 +721,37 @@ section {
     top: 0.75rem;
     width: 8px;
     height: 8px;
-    background: var(--deep-teal);
+    background: var(--accent-primary);
     border-radius: 50%;
-    border: 2px solid var(--warm-cream);
+    border: 2px solid var(--bg-primary);
+    transition: all 0.3s ease;
 }
 
 
 .timeline-date {
     font-family: var(--font-code);
     font-size: 0.625rem;
-    color: var(--dark-teal);
+    color: var(--accent-secondary);
     font-weight: 600;
     margin-bottom: 0.125rem;
+    transition: color 0.3s ease;
 }
 
 .timeline-content h3 {
     font-family: var(--font-heading);
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-dark);
+    color: var(--text-primary);
     margin-bottom: 0.05rem;
+    transition: color 0.3s ease;
 }
 
 .timeline-content h4 {
-    color: var(--dark-teal);
+    color: var(--text-secondary);
     font-weight: 500;
     margin-bottom: 0.125rem;
     font-size: 0.75rem;
+    transition: color 0.3s ease;
 }
 
 .achievements {
@@ -722,7 +764,8 @@ section {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
-    color: var(--text-dark);
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 .achievement-grid {
@@ -736,26 +779,38 @@ section {
     align-items: center;
     gap: 0.5rem;
     padding: 0.625rem;
-    background: rgba(144, 209, 202, 0.3);
-    border: 1px solid var(--soft-teal);
+    background: rgba(13, 148, 136, 0.1);
+    border: 1px solid var(--accent-secondary);
     border-radius: 6px;
     transition: all 0.3s ease;
     font-size: 0.75rem;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .achievement-item {
+    background: rgba(13, 148, 136, 0.15);
+    border: 1px solid var(--accent-secondary);
 }
 
 .achievement-item:hover {
-    background: rgba(144, 209, 202, 0.5);
+    background: rgba(13, 148, 136, 0.2);
+}
+
+[data-theme="dark"] .achievement-item:hover {
+    background: rgba(13, 148, 136, 0.25);
 }
 
 .achievement-item i {
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     font-size: 0.875rem;
+    transition: color 0.3s ease;
 }
 
 /* Compact Projects Section */
 .projects {
-    background: var(--soft-teal);
+    background: var(--bg-secondary);
     position: relative;
+    transition: background-color 0.3s ease;
 }
 
 
@@ -767,8 +822,8 @@ section {
 }
 
 .project-card {
-    background: var(--warm-cream);
-    border: 1px solid var(--deep-teal);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
     border-radius: 8px;
     padding: 1rem;
     transition: all 0.3s ease;
@@ -777,40 +832,51 @@ section {
 
 
 .project-card:hover {
-    background: rgba(18, 153, 144, 0.05);
-    border-color: var(--deep-teal);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+[data-theme="dark"] .project-card:hover {
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
 }
 
 .project-card.featured {
-    border: 2px solid var(--dark-teal);
+    border: 2px solid var(--accent-secondary);
 }
 
 .project-card.featured:hover {
-    background: rgba(9, 107, 104, 0.05);
-    border-color: var(--dark-teal);
+    border-color: var(--accent-primary);
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.15);
+}
+
+[data-theme="dark"] .project-card.featured:hover {
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.25);
 }
 
 .project-header h3 {
     font-family: var(--font-heading);
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--text-dark);
+    color: var(--text-primary);
     margin-bottom: 0.25rem;
+    transition: color 0.3s ease;
 }
 
 .project-status {
-    color: var(--dark-teal);
+    color: var(--accent-secondary);
     font-weight: 600;
     font-family: var(--font-code);
     font-size: 0.75rem;
     margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
 }
 
 .project-description {
     font-size: 0.875rem;
-    color: var(--text-dark);
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
     line-height: 1.5;
+    transition: color 0.3s ease;
 }
 
 .project-achievements {
@@ -828,12 +894,17 @@ section {
 }
 
 .achievement:hover {
-    background: rgba(18, 153, 144, 0.1);
+    background: rgba(13, 148, 136, 0.1);
+}
+
+[data-theme="dark"] .achievement:hover {
+    background: rgba(13, 148, 136, 0.15);
 }
 
 .achievement i {
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     width: 16px;
+    transition: color 0.3s ease;
 }
 
 .project-tech {
@@ -844,20 +915,31 @@ section {
 }
 
 .tech-tag {
-    background: rgba(144, 209, 202, 0.3);
-    color: var(--dark-teal);
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--accent-secondary);
     padding: 0.25rem 0.5rem;
     border-radius: 12px;
     font-size: 0.625rem;
     font-weight: 600;
     font-family: var(--font-code);
-    border: 1px solid var(--soft-teal);
+    border: 1px solid var(--accent-secondary);
     transition: all 0.3s ease;
 }
 
+[data-theme="dark"] .tech-tag {
+    background: rgba(13, 148, 136, 0.15);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+}
+
 .tech-tag:hover {
-    background: var(--soft-teal);
-    color: var(--text-dark);
+    background: var(--accent-secondary);
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .tech-tag:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
 }
 
 .project-links {
@@ -867,19 +949,33 @@ section {
 }
 
 .btn-outline {
-    background: rgba(18, 153, 144, 0.1);
-    color: var(--deep-teal);
-    border: 1px solid var(--deep-teal);
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
     padding: 0.5rem 1rem;
     font-family: var(--font-heading);
     font-weight: 600;
     font-size: 0.75rem;
     border-radius: 4px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+[data-theme="dark"] .btn-outline {
+    background: rgba(13, 148, 136, 0.15);
 }
 
 .btn-outline:hover {
-    background: var(--deep-teal);
+    background: var(--accent-primary);
     color: var(--text-light);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
 }
 
 /* Compact Contact Section */
@@ -899,10 +995,11 @@ section {
 }
 
 .contact-info {
-    background: var(--soft-teal);
-    border: 1px solid var(--deep-teal);
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-primary);
     border-radius: 8px;
     padding: 1.5rem;
+    transition: all 0.3s ease;
 }
 
 .contact-info h3 {
@@ -910,13 +1007,15 @@ section {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
-    color: var(--text-dark);
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 .contact-info p {
     font-size: 1rem;
-    color: var(--text-dark);
+    color: var(--text-primary);
     margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
 }
 
 .contact-methods {
@@ -929,34 +1028,47 @@ section {
     align-items: center;
     gap: 0.75rem;
     padding: 1rem;
-    background: rgba(144, 209, 202, 0.3);
-    border: 1px solid var(--soft-teal);
+    background: rgba(13, 148, 136, 0.1);
+    border: 1px solid var(--accent-secondary);
     border-radius: 6px;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
+[data-theme="dark"] .contact-method {
+    background: rgba(13, 148, 136, 0.15);
+    border: 1px solid var(--accent-secondary);
+}
+
 .contact-method:hover {
-    background: rgba(144, 209, 202, 0.5);
+    background: rgba(13, 148, 136, 0.2);
+    border-color: var(--accent-primary);
+}
+
+[data-theme="dark"] .contact-method:hover {
+    background: rgba(13, 148, 136, 0.25);
 }
 
 .contact-method i {
     font-size: 1.25rem;
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     width: 20px;
+    transition: color 0.3s ease;
 }
 
 .contact-method .label {
     font-weight: 500;
-    color: var(--dark-teal);
+    color: var(--accent-secondary);
     font-size: 0.75rem;
     font-family: var(--font-code);
+    transition: color 0.3s ease;
 }
 
 .contact-method .value {
-    color: var(--text-dark);
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 0.875rem;
+    transition: color 0.3s ease;
 }
 
 /* Compact Footer */
@@ -982,19 +1094,29 @@ section {
 }
 
 .social-links a {
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     font-size: 1rem;
     transition: all 0.3s ease;
     padding: 0.375rem;
     border-radius: 50%;
-    background: rgba(18, 153, 144, 0.1);
+    background: rgba(13, 148, 136, 0.1);
+    text-decoration: none;
+}
+
+[data-theme="dark"] .social-links a {
+    background: rgba(13, 148, 136, 0.15);
 }
 
 .social-links a:hover {
     color: var(--text-light);
-    background: var(--deep-teal);
+    background: var(--accent-primary);
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(18, 153, 144, 0.4);
+    box-shadow: 0 10px 20px rgba(13, 148, 136, 0.4);
+}
+
+[data-theme="dark"] .social-links a:hover {
+    color: var(--bg-primary);
+    box-shadow: 0 10px 20px rgba(13, 148, 136, 0.6);
 }
 
 /* Responsive Design */
