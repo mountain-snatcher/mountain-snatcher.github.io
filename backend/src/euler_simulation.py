@@ -1,15 +1,20 @@
 import taichi as ti
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 import json
 import time
 
-# Initialize Taichi - fallback to CPU for Render deployment
+# Initialize Taichi for headless environment
+import os
+os.environ['TI_VISIBLE_DEVICE'] = ''  # Disable GPU detection
+os.environ['DISPLAY'] = ''  # Disable X11 display
+
 try:
-    ti.init(arch=ti.gpu)  # Try GPU first
-except:
-    ti.init(arch=ti.cpu)  # Fallback to CPU for cloud deployment
+    # Use CPU with headless configuration
+    ti.init(arch=ti.cpu, debug=False, default_fp=ti.f32)
+except Exception as e:
+    print(f"Taichi initialization failed: {e}")
+    # Force minimal CPU initialization
+    ti.init(arch=ti.cpu, advanced_optimization=False, debug=False)
 
 # Simulation parameters
 N = 256  # Grid resolution
