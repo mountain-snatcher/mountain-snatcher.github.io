@@ -35,9 +35,6 @@
                     <a href="#projects" class="nav-link">Projects</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#simulations" class="nav-link">Simulations</a>
-                </li>
-                <li class="nav-item">
                     <a href="#contact" class="nav-link">Contact</a>
                 </li>
             </ul>
@@ -49,9 +46,13 @@
         </div>
     </nav>
 
-    <!-- Taichi Euler Fluid Simulation Background -->
-    <div id="eulerContainer" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
-        <canvas id="eulerCanvas" width="1920" height="1080" style="width: 100%; height: 100%; opacity: 0.4;"></canvas>
+    <!-- Nature Background Slideshow -->
+    <div id="backgroundSlideshow" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1571074089525-ae0a06c3e4e6?w=1920&h=1080&fit=crop&crop=center');"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&h=1080&fit=crop&crop=center');"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=1080&fit=crop&crop=center');"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&h=1080&fit=crop&crop=center');"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&crop=center');"></div>
     </div>
     
 
@@ -156,8 +157,22 @@
         });
     </script>
 
-    <!-- Taichi Euler Background Animation -->
-    <script src="{{ '/assets/js/euler-background.js' | relative_url }}?v=1"></script>
-    <script src="config.js"></script>
+    <!-- Nature Background Slideshow Script -->
+    <script>
+        // Nature background slideshow
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            let currentSlide = 0;
+            
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            
+            // Change slide every 6 seconds
+            setInterval(nextSlide, 6000);
+        });
+    </script>
 </body>
 </html>

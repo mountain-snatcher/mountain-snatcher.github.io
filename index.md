@@ -239,36 +239,3 @@ description: Quantum Engineer
     </div>
 </section>
 
-<!-- Physics Simulations Section -->
-<section id="simulations" class="simulations">
-    <div class="container">
-        <h2 class="section-title">Interactive Physics Simulations</h2>
-        
-        <div class="simulations-grid">
-            <div class="simulation-card">
-                <div class="simulation-preview">
-                    <div class="preview-placeholder plasma-preview">
-                        <div class="particle-animation">
-                            <div class="particle"></div>
-                            <div class="particle"></div>
-                            <div class="particle"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="simulation-content">
-                    <h3>Plasma Field Visualization</h3>
-                    <p>Interactive 3D plasma simulation with moving particles and visual effects.</p>
-                    
-                    <div class="simulation-links">
-                        <a href="plasma-showcase.html" class="btn btn-primary" target="_blank">
-                            <i class="fas fa-play"></i> Launch Simulation
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        
-    </div>
-</section>
