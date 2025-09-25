@@ -71,7 +71,6 @@ description: Quantum Engineer
                             <span class="skill-tag">FastAPI</span>
                             <span class="skill-tag">SQLModel</span>
                             <span class="skill-tag">REST APIs</span>
-                            <span class="skill-tag">WebSockets</span>
                             <span class="skill-tag">PostgreSQL</span>
                             <span class="skill-tag">Redis</span>
                             <span class="skill-tag">Google Cloud</span>
@@ -269,27 +268,6 @@ description: Quantum Engineer
                 </div>
             </div>
             
-            <div class="simulation-card">
-                <div class="simulation-preview">
-                    <div class="preview-placeholder fluid-preview">
-                        <div class="fluid-animation">
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="simulation-content">
-                    <h3>Taichi Euler Fluid Dynamics</h3>
-                    <p>High-performance fluid simulation with real-time streaming.</p>
-                    
-                    <div class="simulation-links">
-                        <a href="taichi-euler-fluid.html" class="btn btn-primary" target="_blank">
-                            <i class="fas fa-rocket"></i> Launch Simulation
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
         
     </div>
