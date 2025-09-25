@@ -259,23 +259,7 @@ description: Quantum Engineer
                 
                 <div class="simulation-content">
                     <h3>Plasma Field Visualization</h3>
-                    <p>Interactive 3D plasma physics simulation with electrons, ions, and neutral particles. Features electromagnetic interactions, particle collisions, and real-time bloom effects.</p>
-                    
-                    <div class="simulation-tech">
-                        <span class="tech-tag">Three.js</span>
-                        <span class="tech-tag">WebGL</span>
-                        <span class="tech-tag">Physics</span>
-                        <span class="tech-tag">Real-time</span>
-                    </div>
-                    
-                    <div class="simulation-features">
-                        <ul>
-                            <li>3000+ interactive particles</li>
-                            <li>Real-time electromagnetic forces</li>
-                            <li>Mouse interaction & controls</li>
-                            <li>Educational plasma physics</li>
-                        </ul>
-                    </div>
+                    <p>Interactive 3D plasma simulation with moving particles and visual effects.</p>
                     
                     <div class="simulation-links">
                         <a href="plasma-showcase.html" class="btn btn-primary" target="_blank">
@@ -297,23 +281,7 @@ description: Quantum Engineer
                 
                 <div class="simulation-content">
                     <h3>Taichi Euler Fluid Dynamics</h3>
-                    <p>High-performance computational fluid dynamics using Taichi Lang. Solves compressible Euler equations with HLLC Riemann solver and MUSCL reconstruction.</p>
-                    
-                    <div class="simulation-tech">
-                        <span class="tech-tag">Taichi</span>
-                        <span class="tech-tag">GPU Computing</span>
-                        <span class="tech-tag">CFD</span>
-                        <span class="tech-tag">WebSockets</span>
-                    </div>
-                    
-                    <div class="simulation-features">
-                        <ul>
-                            <li>GPU-accelerated computation</li>
-                            <li>Real-time streaming via WebSockets</li>
-                            <li>Multiple visualization modes</li>
-                            <li>Advanced numerical methods</li>
-                        </ul>
-                    </div>
+                    <p>High-performance fluid simulation with real-time streaming.</p>
                     
                     <div class="simulation-links">
                         <a href="taichi-euler-fluid.html" class="btn btn-primary" target="_blank">
@@ -324,8 +292,5 @@ description: Quantum Engineer
             </div>
         </div>
         
-        <div class="simulations-note">
-            <p><i class="fas fa-info-circle"></i> Both simulations demonstrate different computational physics approaches - client-side Three.js rendering vs. server-side GPU acceleration with real-time streaming.</p>
-        </div>
     </div>
 </section>
