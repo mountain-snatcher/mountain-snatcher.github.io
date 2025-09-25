@@ -115,7 +115,7 @@ description: Quantum Engineer
                 </div>
                 
                 <div class="project-links">
-                    <a href="https://github.com/mountain-snatcher/menttor" class="btn btn-outline" target="_blank">
+                    <a href="https://github.com/s-chudmunge/menttor" class="btn btn-outline" target="_blank">
                         <i class="fab fa-github"></i> Code
                     </a>
                     <a href="https://menttor.live" class="btn btn-outline" target="_blank">
@@ -140,7 +140,7 @@ description: Quantum Engineer
                 </div>
                 
                 <div class="project-links">
-                    <a href="https://github.com/mountain-snatcher/majorana-tfim-vqet" class="btn btn-outline" target="_blank">
+                    <a href="https://github.com/s-chudmunge/majorana-tfim-vqet" class="btn btn-outline" target="_blank">
                         <i class="fab fa-github"></i> Code
                     </a>
                 </div>
@@ -226,11 +226,11 @@ description: Quantum Engineer
                         </div>
                     </a>
                     
-                    <a href="https://github.com/mountain-snatcher" class="contact-method" target="_blank">
+                    <a href="https://github.com/s-chudmunge" class="contact-method" target="_blank">
                         <i class="fab fa-github"></i>
                         <div>
                             <span class="label">GitHub</span>
-                            <span class="value">mountain-snatcher</span>
+                            <span class="value">s-chudmunge</span>
                         </div>
                     </a>
                 </div>
