@@ -143,6 +143,16 @@ class SimulationServer:
                 }
                 await websocket.send_str(json.dumps(initial_data))
                 
+            elif message_type == 'mouse_interaction':
+                # Handle mouse interaction
+                x = data.get('x', 0.5)  # Normalized coordinates (0-1)
+                y = data.get('y', 0.5)
+                strength = data.get('strength', 0.1)
+                
+                # Add interaction to simulation
+                self.simulation.add_interaction(x, y, strength)
+                logger.debug(f"Mouse interaction at ({x}, {y}) with strength {strength}")
+                
             else:
                 await websocket.send_str(json.dumps({
                     'type': 'error',

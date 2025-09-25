@@ -3,18 +3,22 @@ import numpy as np
 import json
 import time
 
-# Initialize Taichi for headless environment
-import os
-os.environ['TI_VISIBLE_DEVICE'] = ''  # Disable GPU detection
-os.environ['DISPLAY'] = ''  # Disable X11 display
-
+# Check if Taichi can be imported and initialized
+TAICHI_AVAILABLE = False
 try:
-    # Use CPU with headless configuration
+    import os
+    os.environ['TI_VISIBLE_DEVICE'] = ''  # Disable GPU detection
+    os.environ['DISPLAY'] = ''  # Disable X11 display
+    
+    # Try to initialize Taichi
     ti.init(arch=ti.cpu, debug=False, default_fp=ti.f32)
+    TAICHI_AVAILABLE = True
+    print("Taichi initialized successfully")
 except Exception as e:
-    print(f"Taichi initialization failed: {e}")
-    # Force minimal CPU initialization
-    ti.init(arch=ti.cpu, advanced_optimization=False, debug=False)
+    print(f"Taichi not available: {e}")
+    print("Falling back to simple NumPy simulation")
+    # Import fallback simulation
+    from simple_fluid_simulation import SimpleFluidSimulation
 
 # Simulation parameters
 N = 256  # Grid resolution
@@ -318,50 +322,101 @@ class EulerSimulation:
     def __init__(self):
         self.step_count = 0
         self.time = 0.0
-        initialize()
+        
+        if TAICHI_AVAILABLE:
+            initialize()
+            self.use_fallback = False
+        else:
+            # Use simple fallback simulation
+            self.fallback_sim = SimpleFluidSimulation()
+            self.use_fallback = True
+            print("Using fallback NumPy simulation")
         
     def step(self):
         """Perform one simulation step"""
-        conservative_to_primitive()
-        apply_boundary_conditions()
-        compute_fluxes()
-        time_step()
-        self.step_count += 1
-        self.time += dt
+        if self.use_fallback:
+            self.fallback_sim.step()
+            self.step_count += 1
+            self.time = self.fallback_sim.time
+        else:
+            conservative_to_primitive()
+            apply_boundary_conditions()
+            compute_fluxes()
+            time_step()
+            self.step_count += 1
+            self.time += dt
         
     def get_density_field(self):
         """Get density field for visualization"""
-        conservative_to_primitive()
-        rho_data = rho.to_numpy()[3:N+3, 3:N+3]
-        return rho_data.tolist()
+        if self.use_fallback:
+            data = self.fallback_sim.get_visualization_data("density")
+            return data['data']
+        else:
+            conservative_to_primitive()
+            rho_data = rho.to_numpy()[3:N+3, 3:N+3]
+            return rho_data.tolist()
     
     def get_velocity_field(self):
         """Get velocity field for visualization"""
-        conservative_to_primitive()
-        u_data = u.to_numpy()[3:N+3, 3:N+3]
-        v_data = v.to_numpy()[3:N+3, 3:N+3]
-        return {
-            'u': u_data.tolist(),
-            'v': v_data.tolist()
-        }
+        if self.use_fallback:
+            # Return velocity data in expected format
+            vel_data = self.fallback_sim.get_visualization_data("velocity")['data']
+            return {
+                'u': self.fallback_sim.velocity_x.tolist(),
+                'v': self.fallback_sim.velocity_y.tolist()
+            }
+        else:
+            conservative_to_primitive()
+            u_data = u.to_numpy()[3:N+3, 3:N+3]
+            v_data = v.to_numpy()[3:N+3, 3:N+3]
+            return {
+                'u': u_data.tolist(),
+                'v': v_data.tolist()
+            }
     
     def get_pressure_field(self):
         """Get pressure field for visualization"""
-        conservative_to_primitive()
-        p_data = p.to_numpy()[3:N+3, 3:N+3]
-        return p_data.tolist()
+        if self.use_fallback:
+            data = self.fallback_sim.get_visualization_data("pressure")
+            return data['data']
+        else:
+            conservative_to_primitive()
+            p_data = p.to_numpy()[3:N+3, 3:N+3]
+            return p_data.tolist()
     
     def get_simulation_info(self):
         """Get simulation information"""
-        return {
-            'step': self.step_count,
-            'time': float(self.time),
-            'dt': float(dt),
-            'grid_size': N
-        }
+        if self.use_fallback:
+            return {
+                'step': self.step_count,
+                'time': float(self.time),
+                'dt': float(self.fallback_sim.dt),
+                'grid_size': self.fallback_sim.N
+            }
+        else:
+            return {
+                'step': self.step_count,
+                'time': float(self.time),
+                'dt': float(dt),
+                'grid_size': N
+            }
     
     def reset(self):
         """Reset the simulation"""
         self.step_count = 0
         self.time = 0.0
-        initialize()
+        if self.use_fallback:
+            self.fallback_sim = SimpleFluidSimulation()
+        else:
+            initialize()
+    
+    def add_interaction(self, x, y, strength=0.1):
+        """Add mouse/touch interaction"""
+        if self.use_fallback:
+            # Convert normalized coordinates to grid coordinates
+            grid_x = x * self.fallback_sim.N
+            grid_y = y * self.fallback_sim.N
+            self.fallback_sim.add_interaction(grid_x, grid_y, strength)
+        else:
+            # For Taichi version, you could add similar interaction logic here
+            pass
