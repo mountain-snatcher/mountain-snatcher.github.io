@@ -1,6 +1,6 @@
-/* New Color Palette & CSS Custom Properties */
+/* Color Palette & CSS Custom Properties */
 :root {
-  /* New Color System */
+  /* Light Theme Colors */
   --warm-cream: #FFFBDE;         /* Primary background */
   --soft-teal: #90D1CA;          /* Secondary accent */
   --deep-teal: #129990;          /* Primary teal */
@@ -12,10 +12,29 @@
   --surface-light: #FFFBDE;      /* Light surfaces */
   --surface-dark: #096B68;       /* Dark surfaces */
   
+  /* Dynamic theme variables */
+  --bg-primary: var(--warm-cream);
+  --bg-secondary: var(--soft-teal);
+  --text-primary: var(--text-dark);
+  --text-secondary: var(--dark-teal);
+  --accent-primary: var(--deep-teal);
+  --accent-secondary: var(--soft-teal);
+  
   /* Solid Colors (replacing gradients) */
   --aurora-solid-primary: var(--deep-teal);
   --aurora-solid-secondary: var(--dark-teal);
   --aurora-solid-accent: var(--soft-teal);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-primary: #0a0a0a;         /* Dark background */
+  --bg-secondary: #1a1a1a;       /* Dark secondary background */
+  --text-primary: #ffffff;       /* Light text */
+  --text-secondary: #90D1CA;     /* Soft teal for secondary text */
+  --accent-primary: #90D1CA;     /* Soft teal as primary accent */
+  --accent-secondary: #129990;   /* Deep teal as secondary accent */
+}
   
   /* Minimal Shadows */
   --aurora-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -42,9 +61,10 @@ html {
 body {
     font-family: var(--font-body);
     line-height: 1.6;
-    color: var(--text-dark);
-    background: var(--warm-cream);
+    color: var(--text-primary);
+    background: var(--bg-primary);
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Nature Background Slideshow */
@@ -95,14 +115,15 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background: var(--warm-cream);
-    border-bottom: 1px solid var(--deep-teal);
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--accent-primary);
     z-index: 1000;
     box-shadow: var(--aurora-shadow-sm);
+    transition: background-color 0.3s ease;
 }
 
 .navbar.scrolled {
-    background: var(--warm-cream);
+    background: var(--bg-primary);
     box-shadow: var(--aurora-shadow-md);
 }
 
@@ -119,8 +140,9 @@ body {
     font-family: var(--font-heading);
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--deep-teal);
+    color: var(--accent-primary);
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 .nav-menu {
@@ -130,7 +152,7 @@ body {
 }
 
 .nav-link {
-    color: var(--text-dark);
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 500;
     font-family: var(--font-heading);
@@ -146,6 +168,67 @@ body {
 }
 
 
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(18, 153, 144, 0.2);
+    transition: 0.3s;
+    border-radius: 24px;
+    border: 1px solid var(--accent-primary);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--accent-primary);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: rgba(144, 209, 202, 0.3);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+[data-theme="dark"] .slider {
+    background-color: rgba(144, 209, 202, 0.3);
+    border-color: var(--accent-primary);
+}
+
+[data-theme="dark"] .slider:before {
+    background-color: var(--accent-primary);
+}
+
 .hamburger {
     display: none;
     flex-direction: column;
@@ -155,7 +238,7 @@ body {
 .bar {
     width: 25px;
     height: 3px;
-    background: var(--deep-teal);
+    background: var(--accent-primary);
     margin: 3px 0;
     transition: 0.3s;
 }
@@ -220,21 +303,24 @@ body {
     font-weight: 700;
     margin-bottom: 0.5rem;
     line-height: 1.1;
-    color: var(--dark-teal);
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
 }
 
 .hero-subtitle {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 400;
-    color: var(--dark-teal);
+    color: var(--text-secondary);
     margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
 }
 
 .hero-description {
     font-size: 1.125rem;
     margin-bottom: 1.5rem;
-    color: var(--text-dark);
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 .hero-buttons {
@@ -258,13 +344,14 @@ body {
 
 
 .btn-primary {
-    background: var(--deep-teal);
+    background: var(--accent-primary);
     color: var(--text-light);
-    border: 1px solid var(--deep-teal);
+    border: 1px solid var(--accent-primary);
+    transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
-    background: var(--dark-teal);
+    background: var(--accent-secondary);
     color: var(--text-light);
 }
 
@@ -321,13 +408,15 @@ section {
     font-weight: 600;
     text-align: center;
     margin-bottom: 1.5rem;
-    color: var(--deep-teal);
+    color: var(--accent-primary);
+    transition: color 0.3s ease;
 }
 
 /* Compact About Section */
 .about {
-    background: var(--soft-teal);
+    background: var(--bg-secondary);
     position: relative;
+    transition: background-color 0.3s ease;
 }
 
 
@@ -352,10 +441,11 @@ section {
 }
 
 .about-header {
-    background: var(--warm-cream);
-    border: 1px solid var(--deep-teal);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
     border-radius: 8px;
     padding: 1.5rem;
+    transition: all 0.3s ease;
 }
 
 .profile-section {
