@@ -251,10 +251,9 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(18, 153, 144, 0.2);
+    background-color: transparent;
     transition: background-color 0.3s;
     border-radius: 24px;
-    border: 1px solid var(--accent-primary);
     --toggle-position: 2px;
 }
 
@@ -271,7 +270,7 @@ body {
 }
 
 input:checked + .slider {
-    background-color: rgba(144, 209, 202, 0.3);
+    background-color: transparent;
 }
 
 input:checked + .slider:before {
@@ -279,8 +278,7 @@ input:checked + .slider:before {
 }
 
 [data-theme="dark"] .slider {
-    background-color: rgba(144, 209, 202, 0.3);
-    border-color: var(--accent-primary);
+    background-color: transparent;
 }
 
 [data-theme="dark"] .slider:before {
@@ -289,8 +287,8 @@ input:checked + .slider:before {
 
 /* Dark theme for mobile menu */
 [data-theme="dark"] .nav-menu {
-    background: rgba(26, 26, 26, 0.95) !important;
-    border-top: 1px solid rgba(144, 209, 202, 0.3) !important;
+    background: transparent !important;
+    border-top: none !important;
 }
 
 /* Fix dark theme backgrounds for all sections */
@@ -1272,14 +1270,11 @@ section {
         left: -100%;
         top: 70px;
         flex-direction: column;
-        background: rgba(255, 251, 222, 0.95);
-        backdrop-filter: blur(20px);
+        background: transparent;
         width: 100%;
         text-align: center;
         transition: 0.3s;
-        box-shadow: var(--aurora-shadow-md);
         padding: 2rem 0;
-        border-top: 1px solid rgba(18, 153, 144, 0.2);
     }
     
     .nav-menu.active {
