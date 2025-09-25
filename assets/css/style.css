@@ -110,19 +110,22 @@ body {
     padding: 0 20px;
 }
 
-/* Compact Navigation */
+/* Transparent Navigation with Background Images */
 .navbar {
     position: fixed;
     top: 0;
     width: 100%;
-    background: var(--bg-primary);
+    background: transparent;
     z-index: 1000;
     transition: background-color 0.3s ease;
 }
 
 .navbar.scrolled {
-    background: var(--bg-primary);
-    box-shadow: var(--aurora-shadow-md);
+    background: rgba(255, 251, 222, 0.95);
+}
+
+[data-theme="dark"] .navbar.scrolled {
+    background: rgba(26, 26, 26, 0.95);
 }
 
 .nav-container {
@@ -141,7 +144,16 @@ body {
     font-weight: 600;
     color: var(--accent-primary);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .nav-logo a {
+    background: rgba(26, 26, 26, 0.8);
+    color: var(--accent-primary);
 }
 
 .nav-menu {
@@ -155,20 +167,29 @@ body {
     text-decoration: none;
     font-weight: 500;
     font-family: var(--font-heading);
-    transition: color 0.3s ease;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    transition: all 0.3s ease;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .nav-link {
+    background: rgba(26, 26, 26, 0.7);
+    color: var(--text-primary);
 }
 
 .nav-link:hover,
 .nav-link.active {
     color: var(--accent-primary);
-    background: rgba(18, 153, 144, 0.1);
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
 }
 
 [data-theme="dark"] .nav-link:hover,
 [data-theme="dark"] .nav-link.active {
-    background: rgba(144, 209, 202, 0.1);
+    background: rgba(26, 26, 26, 0.9);
+    color: var(--accent-primary);
 }
 
 
@@ -183,6 +204,14 @@ body {
     display: inline-block;
     width: 50px;
     height: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
+    padding: 2px;
+    backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .theme-switch {
+    background: rgba(26, 26, 26, 0.7);
 }
 
 .theme-switch input {
@@ -332,6 +361,14 @@ input:checked + .slider:before {
     display: none;
     flex-direction: column;
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 6px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .hamburger {
+    background: rgba(26, 26, 26, 0.7);
 }
 
 .bar {
