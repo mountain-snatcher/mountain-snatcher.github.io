@@ -1,6 +1,8 @@
 import asyncio
 import json
 import websockets
+from websockets import serve
+from websockets.exceptions import ConnectionClosedError, InvalidMessage
 import numpy as np
 from euler_simulation_safe import EulerSimulation
 import logging
@@ -37,7 +39,7 @@ class SimulationServer:
             for client in clients_copy:
                 try:
                     await client.send(message)
-                except websockets.exceptions.ConnectionClosed:
+                except ConnectionClosedError:
                     self.clients.discard(client)
                 except Exception as e:
                     logger.error(f"Error broadcasting to client: {e}")
@@ -165,7 +167,7 @@ class SimulationServer:
         try:
             async for message in websocket:
                 await self.handle_client_message(websocket, message)
-        except websockets.exceptions.ConnectionClosed:
+        except ConnectionClosedError:
             pass
         except Exception as e:
             logger.error(f"Error handling client: {e}")
@@ -175,18 +177,27 @@ class SimulationServer:
 # Global server instance
 server_instance = SimulationServer()
 
+async def health_check(path, request_headers):
+    """Handle HTTP requests (like HEAD requests for health checks)"""
+    if request_headers.get("connection", "").lower() != "upgrade":
+        # This is a regular HTTP request, not a WebSocket upgrade
+        return (200, [], b"OK\n")
+    # Let WebSocket upgrade continue normally
+    return None
+
 async def main():
     """Main server function"""
     logger.info("Starting Taichi Euler Simulation Server...")
     
-    # Start WebSocket server
+    # Start WebSocket server with HTTP request handling
     start_server = websockets.serve(
         server_instance.handle_client,
         "localhost",
         8765,
         ping_interval=20,
         ping_timeout=10,
-        max_size=10**7  # 10MB max message size for large simulation data
+        max_size=10**7,  # 10MB max message size for large simulation data
+        process_request=health_check
     )
     
     logger.info("Server listening on ws://localhost:8765")
