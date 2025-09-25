@@ -1,16 +1,11 @@
 services:
   - type: web
-    name: taichi-euler-backend
+    name: github-page-sankalp
     env: python
     plan: starter
     buildCommand: pip install -r requirements.txt
-    startCommand: cd src && python server_production.py
+    startCommand: python start.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.16
-      - key: PORT
-        fromService:
-          type: web
-          name: taichi-euler-backend
-          property: port
     healthCheckPath: /health

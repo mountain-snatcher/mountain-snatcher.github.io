@@ -5,8 +5,11 @@ from matplotlib.colors import LinearSegmentedColormap
 import json
 import time
 
-# Initialize Taichi
-ti.init(arch=ti.gpu)  # Use GPU for better performance
+# Initialize Taichi - fallback to CPU for Render deployment
+try:
+    ti.init(arch=ti.gpu)  # Try GPU first
+except:
+    ti.init(arch=ti.cpu)  # Fallback to CPU for cloud deployment
 
 # Simulation parameters
 N = 256  # Grid resolution
