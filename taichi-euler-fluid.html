@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taichi Euler Fluid Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            border: 1px solid #333;
+            background: #000;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 300px;
+            z-index: 100;
+        }
+
+        #controls h3 {
+            margin: 0 0 15px 0;
+            color: #4CAF50;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        select {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 5px;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        #status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 200px;
+            z-index: 100;
+        }
+
+        .status-connected {
+            color: #4CAF50;
+        }
+
+        .status-disconnected {
+            color: #f44336;
+        }
+
+        #info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 400px;
+            z-index: 100;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 200;
+        }
+
+        #error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(136, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 200;
+            display: none;
+        }
+
+        .colorbar {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            width: 20px;
+            height: 200px;
+            background: linear-gradient(to top, 
+                #000040 0%, 
+                #0000FF 20%, 
+                #00FFFF 40%, 
+                #00FF00 60%, 
+                #FFFF00 80%, 
+                #FF0000 100%);
+            border: 1px solid #fff;
+            z-index: 100;
+        }
+
+        .colorbar-label {
+            position: absolute;
+            right: 75px;
+            top: 45px;
+            font-size: 12px;
+            z-index: 100;
+        }
+    </style>
+    <script src="config.js"></script>
+</head>
+<body>
+    <div id="container">
+        <canvas id="simulationCanvas" width="800" height="600"></canvas>
+        
+        <div id="loading">
+            <h3>Connecting to Taichi Backend...</h3>
+            <p>Starting Euler fluid simulation server</p>
+        </div>
+
+        <div id="error">
+            <h3>Connection Error</h3>
+            <p id="errorMessage"></p>
+            <button onclick="location.reload()">Retry</button>
+        </div>
+
+        <div id="controls">
+            <h3>Taichi Euler Simulation</h3>
+            
+            <div class="control-group">
+                <button id="startBtn" onclick="startSimulation()">Start</button>
+                <button id="stopBtn" onclick="stopSimulation()" disabled>Stop</button>
+                <button id="resetBtn" onclick="resetSimulation()">Reset</button>
+            </div>
+
+            <div class="control-group">
+                <label for="visualMode">Visualization Mode:</label>
+                <select id="visualMode" onchange="changeVisualizationMode()">
+                    <option value="density">Density</option>
+                    <option value="pressure">Pressure</option>
+                    <option value="velocity">Velocity Magnitude</option>
+                    <option value="vorticity">Vorticity</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="status">
+            <h4>Connection Status</h4>
+            <div id="connectionStatus" class="status-disconnected">Disconnected</div>
+            <div id="simulationInfo">
+                <p>Step: <span id="stepCount">0</span></p>
+                <p>Time: <span id="simTime">0.000</span>s</p>
+                <p>FPS: <span id="fps">0</span></p>
+            </div>
+        </div>
+
+        <div class="colorbar-label">Intensity</div>
+        <div class="colorbar"></div>
+
+        <div id="info">
+            <h4>About Euler Fluid Simulation</h4>
+            <p>This simulation solves the compressible Euler equations using Taichi Lang with HLLC Riemann solver and MUSCL reconstruction. The visualization shows fluid dynamics in real-time with a vortex initial condition.</p>
+            <p><strong>Features:</strong></p>
+            <ul>
+                <li>GPU-accelerated computation with Taichi</li>
+                <li>High-resolution finite volume method</li>
+                <li>Real-time WebSocket communication</li>
+                <li>Multiple visualization modes</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        class TaichiEulerVisualization {
+            constructor() {
+                this.canvas = document.getElementById('simulationCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.websocket = null;
+                this.connected = false;
+                this.simulationRunning = false;
+                this.visualizationMode = 'density';
+                
+                // Simulation data
+                this.densityField = null;
+                this.velocityField = null;
+                this.pressureField = null;
+                this.gridSize = 256;
+                
+                // FPS tracking
+                this.frameCount = 0;
+                this.lastTime = Date.now();
+                this.fps = 0;
+                
+                // Color mapping
+                this.colorMap = this.createColorMap();
+                
+                this.initializeCanvas();
+                this.connectToServer();
+            }
+
+            initializeCanvas() {
+                // Fit canvas to container while maintaining aspect ratio
+                const container = document.getElementById('container');
+                const maxWidth = container.clientWidth - 350; // Account for controls
+                const maxHeight = container.clientHeight - 100;
+                
+                const aspectRatio = 1; // Square simulation domain
+                let canvasWidth = Math.min(maxWidth, maxHeight);
+                let canvasHeight = canvasWidth;
+                
+                this.canvas.width = canvasWidth;
+                this.canvas.height = canvasHeight;
+                this.canvas.style.position = 'absolute';
+                this.canvas.style.left = '350px';
+                this.canvas.style.top = '50px';
+                
+                // Clear canvas
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            }
+
+            createColorMap() {
+                // Create a color map for visualization
+                const colors = [
+                    [0, 0, 64],      // Dark blue
+                    [0, 0, 255],     // Blue
+                    [0, 255, 255],   // Cyan
+                    [0, 255, 0],     // Green
+                    [255, 255, 0],   // Yellow
+                    [255, 0, 0]      // Red
+                ];
+                
+                const colorMap = [];
+                const numColors = 256;
+                
+                for (let i = 0; i < numColors; i++) {
+                    const t = i / (numColors - 1);
+                    const scaledT = t * (colors.length - 1);
+                    const colorIndex = Math.floor(scaledT);
+                    const localT = scaledT - colorIndex;
+                    
+                    if (colorIndex >= colors.length - 1) {
+                        colorMap.push(colors[colors.length - 1]);
+                    } else {
+                        const color1 = colors[colorIndex];
+                        const color2 = colors[colorIndex + 1];
+                        const r = Math.round(color1[0] + (color2[0] - color1[0]) * localT);
+                        const g = Math.round(color1[1] + (color2[1] - color1[1]) * localT);
+                        const b = Math.round(color1[2] + (color2[2] - color1[2]) * localT);
+                        colorMap.push([r, g, b]);
+                    }
+                }
+                
+                return colorMap;
+            }
+
+            connectToServer() {
+                try {
+                    const wsUrl = CONFIG.websocket.getWebSocketUrl();
+                    console.log(`Connecting to: ${wsUrl}`);
+                    this.websocket = new WebSocket(wsUrl);
+                    
+                    this.websocket.onopen = () => {
+                        console.log('Connected to Taichi simulation server');
+                        this.connected = true;
+                        this.updateConnectionStatus();
+                        this.hideLoading();
+                        
+                        // Request initial data
+                        this.sendMessage({type: 'get_initial_data'});
+                    };
+                    
+                    this.websocket.onmessage = (event) => {
+                        const data = JSON.parse(event.data);
+                        this.handleServerMessage(data);
+                    };
+                    
+                    this.websocket.onclose = () => {
+                        console.log('Disconnected from server');
+                        this.connected = false;
+                        this.updateConnectionStatus();
+                        
+                        // Try to reconnect after 2 seconds
+                        setTimeout(() => this.connectToServer(), 2000);
+                    };
+                    
+                    this.websocket.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                        this.showError('Failed to connect to Taichi backend. Make sure the Python server is running.');
+                    };
+                    
+                } catch (error) {
+                    console.error('Failed to create WebSocket:', error);
+                    this.showError('WebSocket not supported or connection failed.');
+                }
+            }
+
+            handleServerMessage(data) {
+                switch (data.type) {
+                    case 'simulation_data':
+                    case 'initial_data':
+                        this.densityField = data.density;
+                        this.velocityField = data.velocity;
+                        this.pressureField = data.pressure;
+                        this.gridSize = data.info.grid_size;
+                        
+                        // Update info display
+                        document.getElementById('stepCount').textContent = data.info.step;
+                        document.getElementById('simTime').textContent = data.info.time.toFixed(3);
+                        
+                        // Calculate and update FPS
+                        this.frameCount++;
+                        const currentTime = Date.now();
+                        if (currentTime - this.lastTime >= 1000) {
+                            this.fps = Math.round(this.frameCount * 1000 / (currentTime - this.lastTime));
+                            document.getElementById('fps').textContent = this.fps;
+                            this.frameCount = 0;
+                            this.lastTime = currentTime;
+                        }
+                        
+                        this.renderVisualization();
+                        break;
+                        
+                    case 'status':
+                        console.log('Server status:', data.message);
+                        break;
+                        
+                    case 'error':
+                        console.error('Server error:', data.message);
+                        this.showError(`Server error: ${data.message}`);
+                        break;
+                }
+            }
+
+            renderVisualization() {
+                if (!this.densityField) return;
+                
+                const canvasWidth = this.canvas.width;
+                const canvasHeight = this.canvas.height;
+                const imageData = this.ctx.createImageData(canvasWidth, canvasHeight);
+                
+                let field = this.getVisualizationField();
+                let minVal = Math.min(...field.flat());
+                let maxVal = Math.max(...field.flat());
+                
+                // Avoid division by zero
+                if (maxVal - minVal < 1e-10) {
+                    maxVal = minVal + 1e-10;
+                }
+                
+                for (let i = 0; i < canvasHeight; i++) {
+                    for (let j = 0; j < canvasWidth; j++) {
+                        // Map canvas coordinates to simulation grid
+                        const gridI = Math.floor(i * this.gridSize / canvasHeight);
+                        const gridJ = Math.floor(j * this.gridSize / canvasWidth);
+                        
+                        // Ensure we don't go out of bounds
+                        const safeI = Math.min(gridI, this.gridSize - 1);
+                        const safeJ = Math.min(gridJ, this.gridSize - 1);
+                        
+                        const value = field[safeI][safeJ];
+                        const normalizedValue = (value - minVal) / (maxVal - minVal);
+                        const colorIndex = Math.floor(normalizedValue * 255);
+                        const color = this.colorMap[Math.min(colorIndex, 255)];
+                        
+                        const pixelIndex = (i * canvasWidth + j) * 4;
+                        imageData.data[pixelIndex] = color[0];     // Red
+                        imageData.data[pixelIndex + 1] = color[1]; // Green
+                        imageData.data[pixelIndex + 2] = color[2]; // Blue
+                        imageData.data[pixelIndex + 3] = 255;      // Alpha
+                    }
+                }
+                
+                this.ctx.putImageData(imageData, 0, 0);
+            }
+
+            getVisualizationField() {
+                switch (this.visualizationMode) {
+                    case 'density':
+                        return this.densityField;
+                    case 'pressure':
+                        return this.pressureField;
+                    case 'velocity':
+                        if (this.velocityField) {
+                            // Calculate velocity magnitude
+                            const velMag = [];
+                            for (let i = 0; i < this.gridSize; i++) {
+                                velMag[i] = [];
+                                for (let j = 0; j < this.gridSize; j++) {
+                                    const u = this.velocityField.u[i][j];
+                                    const v = this.velocityField.v[i][j];
+                                    velMag[i][j] = Math.sqrt(u * u + v * v);
+                                }
+                            }
+                            return velMag;
+                        }
+                        return this.densityField;
+                    case 'vorticity':
+                        if (this.velocityField) {
+                            // Calculate vorticity (curl of velocity)
+                            const vorticity = [];
+                            for (let i = 0; i < this.gridSize; i++) {
+                                vorticity[i] = [];
+                                for (let j = 0; j < this.gridSize; j++) {
+                                    let curl = 0;
+                                    if (i > 0 && i < this.gridSize - 1 && j > 0 && j < this.gridSize - 1) {
+                                        const dudx = (this.velocityField.u[i][j + 1] - this.velocityField.u[i][j - 1]) / 2;
+                                        const dvdy = (this.velocityField.v[i + 1][j] - this.velocityField.v[i - 1][j]) / 2;
+                                        curl = dvdy - dudx;
+                                    }
+                                    vorticity[i][j] = curl;
+                                }
+                            }
+                            return vorticity;
+                        }
+                        return this.densityField;
+                    default:
+                        return this.densityField;
+                }
+            }
+
+            sendMessage(message) {
+                if (this.websocket && this.connected) {
+                    this.websocket.send(JSON.stringify(message));
+                }
+            }
+
+            updateConnectionStatus() {
+                const statusElement = document.getElementById('connectionStatus');
+                if (this.connected) {
+                    statusElement.textContent = 'Connected';
+                    statusElement.className = 'status-connected';
+                } else {
+                    statusElement.textContent = 'Disconnected';
+                    statusElement.className = 'status-disconnected';
+                }
+            }
+
+            hideLoading() {
+                document.getElementById('loading').style.display = 'none';
+            }
+
+            showError(message) {
+                document.getElementById('errorMessage').textContent = message;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Global instance
+        let visualization = null;
+
+        // Control functions
+        function startSimulation() {
+            if (visualization && visualization.connected) {
+                visualization.sendMessage({type: 'start_simulation'});
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+            }
+        }
+
+        function stopSimulation() {
+            if (visualization && visualization.connected) {
+                visualization.sendMessage({type: 'stop_simulation'});
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            }
+        }
+
+        function resetSimulation() {
+            if (visualization && visualization.connected) {
+                visualization.sendMessage({type: 'reset_simulation'});
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            }
+        }
+
+        function changeVisualizationMode() {
+            const mode = document.getElementById('visualMode').value;
+            if (visualization) {
+                visualization.visualizationMode = mode;
+                visualization.renderVisualization();
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            visualization = new TaichiEulerVisualization();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (visualization) {
+                visualization.initializeCanvas();
+                visualization.renderVisualization();
+            }
+        });
+    </script>
+</body>
+</html>

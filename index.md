@@ -239,3 +239,93 @@ description: Quantum Engineer
         </div>
     </div>
 </section>
+
+<!-- Physics Simulations Section -->
+<section id="simulations" class="simulations">
+    <div class="container">
+        <h2 class="section-title">Interactive Physics Simulations</h2>
+        
+        <div class="simulations-grid">
+            <div class="simulation-card">
+                <div class="simulation-preview">
+                    <div class="preview-placeholder plasma-preview">
+                        <div class="particle-animation">
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                            <div class="particle"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="simulation-content">
+                    <h3>Plasma Field Visualization</h3>
+                    <p>Interactive 3D plasma physics simulation with electrons, ions, and neutral particles. Features electromagnetic interactions, particle collisions, and real-time bloom effects.</p>
+                    
+                    <div class="simulation-tech">
+                        <span class="tech-tag">Three.js</span>
+                        <span class="tech-tag">WebGL</span>
+                        <span class="tech-tag">Physics</span>
+                        <span class="tech-tag">Real-time</span>
+                    </div>
+                    
+                    <div class="simulation-features">
+                        <ul>
+                            <li>3000+ interactive particles</li>
+                            <li>Real-time electromagnetic forces</li>
+                            <li>Mouse interaction & controls</li>
+                            <li>Educational plasma physics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="simulation-links">
+                        <a href="plasma-showcase.html" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-play"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="simulation-card">
+                <div class="simulation-preview">
+                    <div class="preview-placeholder fluid-preview">
+                        <div class="fluid-animation">
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="simulation-content">
+                    <h3>Taichi Euler Fluid Dynamics</h3>
+                    <p>High-performance computational fluid dynamics using Taichi Lang. Solves compressible Euler equations with HLLC Riemann solver and MUSCL reconstruction.</p>
+                    
+                    <div class="simulation-tech">
+                        <span class="tech-tag">Taichi</span>
+                        <span class="tech-tag">GPU Computing</span>
+                        <span class="tech-tag">CFD</span>
+                        <span class="tech-tag">WebSockets</span>
+                    </div>
+                    
+                    <div class="simulation-features">
+                        <ul>
+                            <li>GPU-accelerated computation</li>
+                            <li>Real-time streaming via WebSockets</li>
+                            <li>Multiple visualization modes</li>
+                            <li>Advanced numerical methods</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="simulation-links">
+                        <a href="taichi-euler-fluid.html" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-rocket"></i> Launch Simulation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="simulations-note">
+            <p><i class="fas fa-info-circle"></i> Both simulations demonstrate different computational physics approaches - client-side Three.js rendering vs. server-side GPU acceleration with real-time streaming.</p>
+        </div>
+    </div>
+</section>

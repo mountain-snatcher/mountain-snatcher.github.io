@@ -1049,3 +1049,220 @@ section {
     z-index: -1;
     pointer-events: none;
 }
+/* Physics Simulations Section */
+.simulations {
+    padding: 6rem 0;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(100, 255, 218, 0.05) 100%);
+}
+
+.simulations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.simulation-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.simulation-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--aurora-cosmic-purple);
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.1);
+}
+
+.simulation-preview {
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.preview-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.plasma-preview {
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(0, 255, 136, 0.2) 50%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.fluid-preview {
+    background: linear-gradient(45deg, rgba(34, 211, 238, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+}
+
+.particle-animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--aurora-electric-green);
+    border-radius: 50%;
+    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 0 10px var(--aurora-electric-green);
+}
+
+.particle:nth-child(1) {
+    top: 20%;
+    left: 30%;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    top: 60%;
+    left: 70%;
+    animation-delay: 1s;
+    background: var(--aurora-ethereal-cyan);
+    box-shadow: 0 0 10px var(--aurora-ethereal-cyan);
+}
+
+.particle:nth-child(3) {
+    top: 80%;
+    left: 20%;
+    animation-delay: 2s;
+    background: var(--aurora-cosmic-purple);
+    box-shadow: 0 0 10px var(--aurora-cosmic-purple);
+}
+
+.fluid-animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.wave {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.3) 50%, transparent 100%);
+    animation: wave 4s linear infinite;
+}
+
+.wave:nth-child(2) {
+    animation-delay: 2s;
+    background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.3) 50%, transparent 100%);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    33% { transform: translateY(-10px) translateX(5px); }
+    66% { transform: translateY(5px) translateX(-5px); }
+}
+
+@keyframes wave {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(0%); }
+}
+
+.simulation-content h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--aurora-stellar-white);
+    margin-bottom: 1rem;
+}
+
+.simulation-content p {
+    color: rgba(248, 250, 252, 0.8);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.simulation-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.simulation-features {
+    margin-bottom: 2rem;
+}
+
+.simulation-features ul {
+    list-style: none;
+    padding: 0;
+}
+
+.simulation-features li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: rgba(248, 250, 252, 0.8);
+}
+
+.simulation-features li::before {
+    content: '▶';
+    position: absolute;
+    left: 0;
+    color: var(--aurora-electric-green);
+    font-size: 0.8rem;
+}
+
+.simulation-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.simulation-links .btn {
+    flex: 1;
+    text-align: center;
+}
+
+.simulations-note {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 12px;
+    border-left: 4px solid var(--aurora-cosmic-purple);
+}
+
+.simulations-note p {
+    color: rgba(248, 250, 252, 0.9);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.simulations-note i {
+    color: var(--aurora-cosmic-purple);
+}
+
+/* Responsive Design for Simulations */
+@media (max-width: 768px) {
+    .simulations-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .simulation-card {
+        padding: 1rem;
+    }
+    
+    .simulation-preview {
+        height: 150px;
+    }
+    
+    .simulation-links {
+        flex-direction: column;
+    }
+}

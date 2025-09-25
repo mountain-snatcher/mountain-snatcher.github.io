@@ -35,6 +35,9 @@
                     <a href="#projects" class="nav-link">Projects</a>
                 </li>
                 <li class="nav-item">
+                    <a href="#simulations" class="nav-link">Simulations</a>
+                </li>
+                <li class="nav-item">
                     <a href="#contact" class="nav-link">Contact</a>
                 </li>
             </ul>
@@ -46,11 +49,29 @@
         </div>
     </nav>
 
-    <!-- Plasma Field Animation Background -->
-    <div id="fourierContainer" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+    <!-- Taichi Euler Fluid Simulation Background -->
+    <div id="eulerContainer" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        <canvas id="eulerCanvas" width="1920" height="1080" style="width: 100%; height: 100%; opacity: 0.4;"></canvas>
+    </div>
     
-    <!-- Interaction overlay for plasma controls -->
-    <div id="plasmaInteractionOverlay" style="position: fixed; top: 10px; right: 10px; width: 200px; height: 200px; z-index: 10; border: 1px solid rgba(0,255,136,0.3); background: rgba(0,0,0,0.1); border-radius: 10px; cursor: grab;" title="Drag to control plasma view"></div>
+    <!-- Simulation Status Overlay -->
+    <div id="simulationStatus" style="position: fixed; top: 20px; right: 20px; z-index: 10; padding: 15px; background: rgba(0,0,0,0.8); border-radius: 10px; border: 1px solid rgba(139, 92, 246, 0.3); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(248, 250, 252, 0.9); min-width: 200px;">
+        <div style="color: var(--aurora-cosmic-purple); font-weight: 600; margin-bottom: 8px;">
+            <i class="fas fa-rocket" style="margin-right: 5px;"></i>Taichi Euler CFD
+        </div>
+        <div id="connectionIndicator" style="margin-bottom: 5px;">
+            <i class="fas fa-circle" style="color: #ff6b35; margin-right: 5px; font-size: 8px;"></i>
+            <span id="statusText">Connecting...</span>
+        </div>
+        <div style="font-size: 10px; color: rgba(248, 250, 252, 0.6);">
+            Step: <span id="stepCounter">0</span> | FPS: <span id="fpsCounter">0</span>
+        </div>
+        <div style="margin-top: 10px;">
+            <button id="toggleSimulation" style="background: var(--aurora-cosmic-purple); color: white; border: none; padding: 5px 12px; border-radius: 5px; font-size: 11px; cursor: pointer;">
+                Start Simulation
+            </button>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main style="position: relative; z-index: 2; background: rgba(0,0,0,0.0);">
@@ -141,18 +162,20 @@
                 }
             });
 
-            // Show/hide plasma interaction overlay based on current section
-            if (plasmaOverlay) {
+            // Show/hide simulation status overlay based on current section
+            const simulationStatus = document.getElementById('simulationStatus');
+            if (simulationStatus) {
                 if (current === 'home' || current === '') {
-                    plasmaOverlay.style.display = 'block';
+                    simulationStatus.style.display = 'block';
                 } else {
-                    plasmaOverlay.style.display = 'none';
+                    simulationStatus.style.display = 'none';
                 }
             }
         });
     </script>
 
-    <!-- Plasma Background Animation -->
-    <script src="{{ '/assets/js/plasma-background.js' | relative_url }}?v=6"></script>
+    <!-- Taichi Euler Background Animation -->
+    <script src="{{ '/assets/js/euler-background.js' | relative_url }}?v=1"></script>
+    <script src="config.js"></script>
 </body>
 </html>
