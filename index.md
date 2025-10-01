@@ -96,54 +96,19 @@ description: Quantum Engineer
     <div class="container">
         <h2 class="section-title">Featured Projects</h2>
         
-        <div class="projects-grid">
-            <div class="project-card featured">
-                <div class="project-header">
-                    <h3>menttor</h3>
-                    <div class="project-status">Live Platform | 1000+ Users</div>
-                </div>
-                
-                <p class="project-description">A free learning tool</p>
-                
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">FastAPI</span>
-                    <span class="tech-tag">PostgreSQL</span>
-                    <span class="tech-tag">Redis</span>
-                    <span class="tech-tag">GCP</span>
-                    <span class="tech-tag">Next.js</span>
-                </div>
-                
-                <div class="project-links">
-                    <a href="https://github.com/s-chudmunge/menttor" class="btn btn-outline" target="_blank">
-                        <i class="fab fa-github"></i> Code
-                    </a>
-                    <a href="https://menttor.live" class="btn btn-outline" target="_blank">
-                        <i class="fas fa-external-link-alt"></i> Live
-                    </a>
-                </div>
+        <div class="simple-list">
+            <div class="list-item">
+                <strong>menttor</strong> - A free learning tool (Live Platform | 1000+ Users)<br>
+                Tech: Python, FastAPI, PostgreSQL, Redis, GCP, Next.js<br>
+                <a href="https://github.com/s-chudmunge/menttor" target="_blank">Code</a> | 
+                <a href="https://menttor.live" target="_blank">Live</a>
             </div>
             
-            <div class="project-card">
-                <div class="project-header">
-                    <h3>Quantum Majorana Edge States</h3>
-                    <div class="project-status">Master's Thesis</div>
-                </div>
-                
-                <p class="project-description">Quantum simulation research on phase transitions and edge states in many-body systems.</p>
-                
-                <div class="project-tech">
-                    <span class="tech-tag">Python</span>
-                    <span class="tech-tag">NumPy</span>
-                    <span class="tech-tag">Quantum Computing</span>
-                    <span class="tech-tag">Numerical Methods</span>
-                </div>
-                
-                <div class="project-links">
-                    <a href="https://github.com/s-chudmunge/majorana-tfim-vqet" class="btn btn-outline" target="_blank">
-                        <i class="fab fa-github"></i> Code
-                    </a>
-                </div>
+            <div class="list-item">
+                <strong>Quantum Majorana Edge States</strong> - Master's Thesis<br>
+                Quantum simulation research on phase transitions and edge states in many-body systems<br>
+                Tech: Python, NumPy, Quantum Computing, Numerical Methods<br>
+                <a href="https://github.com/s-chudmunge/majorana-tfim-vqet" target="_blank">Code</a>
             </div>
         </div>
     </div>
@@ -154,45 +119,28 @@ description: Quantum Engineer
     <div class="container">
         <h2 class="section-title">Experience & Education</h2>
         
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-date">Mar 2025 – Present</div>
-                <div class="timeline-content">
-                    <h3>Physics Subject Matter Expert</h3>
-                    <h4>PhysicsWallah</h4>
-                    <p>Curating and Managing Content for PW online business and batches</p>
-                </div>
+        <div class="simple-list">
+            <div class="list-item">
+                <strong>Mar 2025 – Present:</strong> Physics R&D, PhysicsWallah
             </div>
             
-            <div class="timeline-item">
-                <div class="timeline-date">Aug 2022 – May 2024</div>
-                <div class="timeline-content">
-                    <h3>Master of Science in Physics</h3>
-                    <h4>Indian Institute of Technology, Palakkad</h4>
-                    <p>Specialization in Computational Physics with focus on quantum systems and numerical modeling</p>
-                </div>
+            <div class="list-item">
+                <strong>Aug 2022 – May 2024:</strong> M.Sc. Physics (Computational Physics), IIT Palakkad
             </div>
             
-            <div class="timeline-item">
-                <div class="timeline-date">Jun 2018 – Oct 2021</div>
-                <div class="timeline-content">
-                    <h3>Bachelor of Science in Physics</h3>
-                    <h4>Willingdon College, Sangli</h4>
-                    <p>Foundation in theoretical and experimental physics</p>
-                </div>
+            <div class="list-item">
+                <strong>Jun 2018 – Oct 2021:</strong> B.Sc. Physics, Willingdon College, Sangli
             </div>
         </div>
         
         <div class="achievements">
             <h3>Achievements & Certifications</h3>
-            <div class="achievement-grid">
-                <div class="achievement-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>JAM-2022 AIR 768 (top 1%)</span>
+            <div class="simple-list">
+                <div class="list-item">
+                    JAM-2022 AIR 768 (top 1%)
                 </div>
-                <div class="achievement-item">
-                    <i class="fas fa-star"></i>
-                    <span>98.5 percentile in aptitude test</span>
+                <div class="list-item">
+                    98.5 percentile in aptitude test
                 </div>
             </div>
         </div>

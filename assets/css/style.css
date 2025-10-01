@@ -555,6 +555,48 @@ input:checked + .slider:before {
 section {
     padding: 40px 0;
     position: relative;
+    background: transparent;
+}
+
+/* Simple List Styles */
+.simple-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.list-item {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    transition: all 0.3s ease;
+}
+
+.list-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(13, 148, 136, 0.5);
+    transform: translateY(-2px);
+}
+
+.list-item strong {
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 1);
+}
+
+.list-item a {
+    color: #90D1CA;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.list-item a:hover {
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 1);
 }
 
 .experience {
@@ -573,7 +615,7 @@ section {
 
 /* Compact About Section */
 .about {
-    background: var(--bg-secondary);
+    background: transparent;
     position: relative;
     transition: background-color 0.3s ease;
 }
@@ -812,7 +854,7 @@ section {
 
 /* Compact Experience Section */
 .experience {
-    background: var(--bg-primary);
+    background: transparent;
     position: relative;
     transition: background-color 0.3s ease;
 }
@@ -948,7 +990,7 @@ section {
 
 /* Compact Projects Section */
 .projects {
-    background: var(--bg-secondary);
+    background: transparent;
     position: relative;
     transition: background-color 0.3s ease;
 }
@@ -1120,7 +1162,7 @@ section {
 
 /* Compact Contact Section */
 .contact {
-    background: var(--bg-primary);
+    background: transparent;
     position: relative;
     transition: background-color 0.3s ease;
 }
