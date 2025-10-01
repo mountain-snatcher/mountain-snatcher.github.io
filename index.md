@@ -23,69 +23,25 @@ description: Quantum Engineer
 <section id="about" class="about">
     <div class="container">
         <h2 class="section-title">About Me</h2>
-        <div class="about-content">
-            <div class="about-left">
-                <div class="about-header">
-                    <div class="profile-section">
-                        <div class="profile-image">
-                            <img src="coast_side.png" alt="Sankalp Chudmunge" />
-                        </div>
-                        <div class="profile-info">
-                            <h1 class="profile-name">Sankalp Chudmunge</h1>
-                            <h2 class="profile-title">Quantum Engineer</h2>
-                            <p class="profile-tagline">Building scalable systems at the intersection of physics and software engineering</p>
-                        </div>
-                    </div>
-                    <div class="hero-buttons">
-                        <a href="#contact" class="btn btn-primary">Get In Touch</a>
-                        <a href="#projects" class="btn btn-secondary">View Projects</a>
-                    </div>
-                </div>
-                
-                <div class="about-details">
-                    <p>I am a Quantum engineer with Masters in Computational Physics. Good at Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.</p>
-                    
-                    <div class="quick-facts">
-                        <div class="fact">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Maharashtra, India</span>
-                        </div>
-                        <div class="fact">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>M.Sc. Physics (Computational Physics), IIT Palakkad</span>
-                        </div>
-                        <div class="fact">
-                            <i class="fas fa-atom"></i>
-                            <span>Quantum Systems & Quantum Engineering</span>
-                        </div>
-                    </div>
-                </div>
+        <div class="simple-list">
+            <div class="list-item">
+                <strong>Sankalp Chudmunge</strong> - Quantum Engineer<br>
+                Building scalable systems at the intersection of physics and software engineering
             </div>
             
-            <div class="about-right">
-                <div class="skills-sidebar">
-                    <h3 class="skills-title">Technical Skills</h3>
-                    <div class="skills-compact">
-                        <div class="skills">
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">FastAPI</span>
-                            <span class="skill-tag">SQLModel</span>
-                            <span class="skill-tag">REST APIs</span>
-                            <span class="skill-tag">PostgreSQL</span>
-                            <span class="skill-tag">Redis</span>
-                            <span class="skill-tag">Google Cloud</span>
-                            <span class="skill-tag">Docker</span>
-                            <span class="skill-tag">CI/CD</span>
-                            <span class="skill-tag">NumPy</span>
-                            <span class="skill-tag">Computational Physics</span>
-                            <span class="skill-tag">Quantum Systems</span>
-                            <span class="skill-tag">Numerical Methods</span>   
-                            <span class="skill-tag">Qiskit</span>
-                            <span class="skill-tag">Quantum Algorithms</span>
-                            <span class="skill-tag">Qiskit Finance</span> 
-                        </div>
-                    </div>
-                </div>
+            <div class="list-item">
+                <strong>Profile:</strong> Quantum engineer with Masters in Computational Physics. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.
+            </div>
+            
+            <div class="list-item">
+                <strong>Location:</strong> Maharashtra, India<br>
+                <strong>Education:</strong> M.Sc. Physics (Computational Physics), IIT Palakkad<br>
+                <strong>Specialization:</strong> Quantum Systems & Quantum Engineering
+            </div>
+            
+            <div class="list-item">
+                <strong>Technical Skills:</strong><br>
+                Python • FastAPI • SQLModel • REST APIs • PostgreSQL • Redis • Google Cloud • Docker • CI/CD • NumPy • Computational Physics • Quantum Systems • Numerical Methods • Qiskit • Quantum Algorithms • Qiskit Finance
             </div>
         </div>
     </div>
@@ -152,36 +108,22 @@ description: Quantum Engineer
     <div class="container">
         <h2 class="section-title">Get In Touch</h2>
         
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Let's Connect</h3>
-                <p>I'm always interested in discussing new opportunities, collaborations, or innovative projects at the intersection of physics and technology.</p>
-                
-                <div class="contact-methods">
-                    <a href="mailto:csankalp21@gmail.com" class="contact-method">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <span class="label">Email</span>
-                            <span class="value">csankalp21@gmail.com</span>
-                        </div>
-                    </a>
-                    
-                    <a href="tel:+918766775227" class="contact-method">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <span class="label">Phone</span>
-                            <span class="value">+91 8766775227</span>
-                        </div>
-                    </a>
-                    
-                    <a href="https://github.com/s-chudmunge" class="contact-method" target="_blank">
-                        <i class="fab fa-github"></i>
-                        <div>
-                            <span class="label">GitHub</span>
-                            <span class="value">s-chudmunge</span>
-                        </div>
-                    </a>
-                </div>
+        <div class="simple-list">
+            <div class="list-item">
+                <strong>Let's Connect:</strong><br>
+                Interested in discussing new opportunities, collaborations, or innovative projects at the intersection of physics and technology.
+            </div>
+            
+            <div class="list-item">
+                <strong>Email:</strong> <a href="mailto:csankalp21@gmail.com">csankalp21@gmail.com</a>
+            </div>
+            
+            <div class="list-item">
+                <strong>Phone:</strong> <a href="tel:+918766775227">+91 8766775227</a>
+            </div>
+            
+            <div class="list-item">
+                <strong>GitHub:</strong> <a href="https://github.com/s-chudmunge" target="_blank">s-chudmunge</a>
             </div>
         </div>
     </div>
