@@ -599,6 +599,17 @@ section {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 1);
 }
 
+.profile-intro {
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.profile-intro strong {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
 .experience {
     padding: 25px 0;
 }
@@ -609,7 +620,8 @@ section {
     font-weight: 600;
     text-align: center;
     margin-bottom: 1.5rem;
-    color: var(--accent-primary);
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 1);
     transition: color 0.3s ease;
 }
 
@@ -642,10 +654,11 @@ section {
 }
 
 .about-header {
-    background: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 8px;
     padding: 1.5rem;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
@@ -694,10 +707,11 @@ section {
 }
 
 .about-details {
-    background: var(--bg-primary);
-    border: 1px solid var(--accent-secondary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 8px;
     padding: 1.5rem;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
@@ -744,10 +758,11 @@ section {
 
 /* Compact Skills Sidebar */
 .skills-sidebar {
-    background: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 8px;
     padding: 1rem;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
@@ -879,10 +894,11 @@ section {
     position: relative;
     margin-bottom: 1rem;
     padding-left: 45px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 6px;
     padding: 0.75rem 0.75rem 0.75rem 2rem;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
@@ -961,12 +977,13 @@ section {
     align-items: center;
     gap: 0.5rem;
     padding: 0.625rem;
-    background: rgba(13, 148, 136, 0.1);
-    border: 1px solid var(--accent-secondary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 6px;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     font-size: 0.75rem;
-    color: var(--text-primary);
+    color: #ffffff;
 }
 
 [data-theme="dark"] .achievement-item {
@@ -1004,10 +1021,11 @@ section {
 }
 
 .project-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 8px;
     padding: 1rem;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     position: relative;
 }
@@ -1177,10 +1195,11 @@ section {
 }
 
 .contact-info {
-    background: var(--bg-secondary);
-    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 8px;
     padding: 1.5rem;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
@@ -1210,9 +1229,10 @@ section {
     align-items: center;
     gap: 0.75rem;
     padding: 1rem;
-    background: rgba(13, 148, 136, 0.1);
-    border: 1px solid var(--accent-secondary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(13, 148, 136, 0.3);
     border-radius: 6px;
+    backdrop-filter: blur(10px);
     text-decoration: none;
     transition: all 0.3s ease;
 }

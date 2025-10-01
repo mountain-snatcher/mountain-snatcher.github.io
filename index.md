@@ -24,9 +24,9 @@ description: Quantum Engineer
     <div class="container">
         <h2 class="section-title">About Me</h2>
         <div class="simple-list">
-            <div class="list-item">
-                <strong>Sankalp Chudmunge</strong> - Quantum Engineer<br>
-                Building scalable systems at the intersection of physics and software engineering
+            <div class="list-item profile-intro">
+                <strong>Sankalp Chudmunge</strong><br>
+                Physics graduate from <strong>IIT Palakkad</strong> with research experience in quantum systems. Strong foundation in computational methods and interdisciplinary collaboration, with a keen interest in quantum technologies and photonic devices.
             </div>
             
             <div class="list-item">
