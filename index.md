@@ -23,25 +23,71 @@ description: Quantum Engineer
 <section id="about" class="about">
     <div class="container">
         <h2 class="section-title">About Me</h2>
-        <div class="simple-list">
+        <div class="enhanced-list">
             <div class="list-item profile-intro">
-                <strong>Sankalp Chudmunge</strong><br>
-                Physics graduate from <strong>IIT Palakkad</strong> with research experience in quantum systems. Strong foundation in computational methods and interdisciplinary collaboration, with a keen interest in quantum technologies and photonic devices.
+                <div class="item-icon">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <div class="item-content">
+                    <strong>Sankalp Chudmunge</strong><br>
+                    Physics graduate from <strong>IIT Palakkad</strong> with research experience in quantum systems. Strong foundation in computational methods and interdisciplinary collaboration, with a keen interest in quantum technologies and photonic devices.
+                </div>
             </div>
             
             <div class="list-item">
-                <strong>Profile:</strong> Quantum engineer with Masters in Computational Physics. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.
+                <div class="item-icon">
+                    <i class="fas fa-atom"></i>
+                </div>
+                <div class="item-content">
+                    <strong>Profile:</strong> Quantum engineer with Masters in Computational Physics. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.
+                </div>
             </div>
             
             <div class="list-item">
-                <strong>Location:</strong> Maharashtra, India<br>
-                <strong>Education:</strong> M.Sc. Physics (Computational Physics), IIT Palakkad<br>
-                <strong>Specialization:</strong> Quantum Systems & Quantum Engineering
+                <div class="item-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="item-content">
+                    <strong>Location:</strong> Maharashtra, India<br>
+                    <strong>Education:</strong> M.Sc. Physics (Computational Physics), IIT Palakkad<br>
+                    <strong>Specialization:</strong> Quantum Systems & Quantum Engineering
+                </div>
             </div>
             
-            <div class="list-item">
-                <strong>Technical Skills:</strong><br>
-                Python • FastAPI • SQLModel • REST APIs • PostgreSQL • Redis • Google Cloud • Docker • CI/CD • NumPy • Computational Physics • Quantum Systems • Numerical Methods • Qiskit • Quantum Algorithms • Qiskit Finance
+            <div class="list-item skills-item">
+                <div class="item-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="item-content">
+                    <strong>Technical Skills:</strong><br>
+                    <div class="skills-enhanced">
+                        <div class="skill-group">
+                            <span class="group-label">Programming:</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">FastAPI</span>
+                            <span class="skill-tag">SQLModel</span>
+                            <span class="skill-tag">REST APIs</span>
+                        </div>
+                        <div class="skill-group">
+                            <span class="group-label">Data & Cloud:</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                            <span class="skill-tag">Redis</span>
+                            <span class="skill-tag">Google Cloud</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">CI/CD</span>
+                        </div>
+                        <div class="skill-group">
+                            <span class="group-label">Quantum & Physics:</span>
+                            <span class="skill-tag">NumPy</span>
+                            <span class="skill-tag">Computational Physics</span>
+                            <span class="skill-tag">Quantum Systems</span>
+                            <span class="skill-tag">Numerical Methods</span>
+                            <span class="skill-tag">Qiskit</span>
+                            <span class="skill-tag">Quantum Algorithms</span>
+                            <span class="skill-tag">Qiskit Finance</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -77,7 +123,7 @@ description: Quantum Engineer
         
         <div class="simple-list">
             <div class="list-item">
-                <strong>Mar 2025 – Present:</strong> Physics R&D, PhysicsWallah
+                <strong>Mar 2025 – Present:</strong> PhysicsWallah
             </div>
             
             <div class="list-item">

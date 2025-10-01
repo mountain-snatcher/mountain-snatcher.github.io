@@ -650,11 +650,154 @@ section {
     transition: color 0.3s ease;
 }
 
-/* Compact About Section */
+/* Enhanced About Section - List Style */
 .about {
     background: transparent;
     position: relative;
     transition: background-color 0.3s ease;
+    padding: 60px 0;
+}
+
+.enhanced-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.enhanced-list .list-item {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(13, 148, 136, 0.4);
+    border-radius: 12px;
+    backdrop-filter: blur(15px);
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.enhanced-list .list-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(13, 148, 136, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.item-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.item-icon i {
+    font-size: 1.4rem;
+    color: white;
+}
+
+.item-content {
+    flex: 1;
+    line-height: 1.6;
+}
+
+.item-content strong {
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
+    font-weight: 700;
+}
+
+.profile-intro {
+    font-size: 1.8rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.profile-intro strong {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 800;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+}
+
+/* Enhanced Skills Styling */
+.skills-enhanced {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.skill-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.group-label {
+    font-weight: 600;
+    color: var(--accent-primary);
+    font-size: 0.85rem;
+    min-width: 120px;
+    margin-right: 0.5rem;
+}
+
+.skill-tag {
+    background: rgba(13, 148, 136, 0.2);
+    color: var(--accent-primary);
+    padding: 0.25rem 0.6rem;
+    border-radius: 14px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1px solid rgba(13, 148, 136, 0.4);
+    transition: all 0.3s ease;
+    font-family: var(--font-code);
+}
+
+.skill-tag:hover {
+    background: var(--accent-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3);
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] .enhanced-list .list-item {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .enhanced-list .list-item:hover {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(144, 209, 202, 0.7) !important;
+}
+
+[data-theme="dark"] .item-content strong {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .skill-tag {
+    background: rgba(13, 148, 136, 0.25) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+}
+
+[data-theme="dark"] .skill-tag:hover {
+    background: var(--accent-primary) !important;
+    color: #1a1a1a !important;
 }
 
 
@@ -1394,6 +1537,44 @@ section {
         font-size: 1rem;
     }
     
+    /* Enhanced About Section Mobile */
+    .enhanced-list .list-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+    
+    .item-icon {
+        align-self: center;
+        width: 60px;
+        height: 60px;
+    }
+    
+    .item-icon i {
+        font-size: 1.6rem;
+    }
+    
+    .profile-intro {
+        font-size: 1.4rem;
+    }
+    
+    .profile-intro strong {
+        font-size: 1.4rem;
+    }
+    
+    .skill-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .group-label {
+        min-width: auto;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    
     .about-content {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -1407,14 +1588,6 @@ section {
         flex-direction: column;
         text-align: center;
         gap: 1.5rem;
-    }
-    
-    .profile-name {
-        font-size: 2rem;
-    }
-    
-    .profile-title {
-        font-size: 1.1rem;
     }
     
     .skills-grid {
