@@ -291,53 +291,71 @@ input:checked + .slider:before {
     border-top: none !important;
 }
 
-/* Fix dark theme backgrounds for all sections */
+/* Dark theme transparent backgrounds */
 [data-theme="dark"] .about {
-    background: #2d2d2d !important;
+    background: transparent !important;
 }
 
 [data-theme="dark"] .about-header {
-    background: #1a1a1a !important;
-    border: 1px solid #90D1CA !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
 }
 
 [data-theme="dark"] .about-details {
-    background: #1a1a1a !important;
-    border: 1px solid #129990 !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
 }
 
 [data-theme="dark"] .skills-sidebar {
-    background: #1a1a1a !important;
-    border: 1px solid #90D1CA !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
 }
 
 [data-theme="dark"] .timeline-item {
-    background: #2d2d2d !important;
-    border: 1px solid #90D1CA !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
 }
 
 [data-theme="dark"] .projects {
-    background: #2d2d2d !important;
+    background: transparent !important;
 }
 
 [data-theme="dark"] .project-card {
-    background: #1a1a1a !important;
-    border: 1px solid #90D1CA !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
 }
 
 [data-theme="dark"] .contact {
-    background: #1a1a1a !important;
+    background: transparent !important;
 }
 
 [data-theme="dark"] .contact-info {
-    background: #2d2d2d !important;
-    border: 1px solid #90D1CA !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
+}
+
+[data-theme="dark"] .list-item {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(144, 209, 202, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .footer {
     background: #1a1a1a !important;
     border-top: 1px solid #90D1CA !important;
     color: #ffffff !important;
+}
+
+[data-theme="dark"] .section-title {
+    color: #ffffff !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 1) !important;
 }
 
 /* Dark theme shadows and comprehensive overrides */
@@ -568,12 +586,13 @@ section {
 
 .list-item {
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(13, 148, 136, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(13, 148, 136, 0.4);
     border-radius: 8px;
     backdrop-filter: blur(10px);
     color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
+    font-weight: 500;
     transition: all 0.3s ease;
 }
 
@@ -585,12 +604,15 @@ section {
 
 .list-item strong {
     color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 1);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 1);
+    font-weight: 700;
 }
 
 .list-item a {
     color: #90D1CA;
     text-decoration: none;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     transition: color 0.3s ease;
 }
 
@@ -600,14 +622,17 @@ section {
 }
 
 .profile-intro {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     line-height: 1.6;
+    font-weight: 500;
 }
 
 .profile-intro strong {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     display: block;
     margin-bottom: 0.5rem;
+    font-weight: 800;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 1);
 }
 
 .experience {
