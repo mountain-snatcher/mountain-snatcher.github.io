@@ -25,12 +25,12 @@ description: Quantum Engineer
         <h2 class="section-title">About Me</h2>
         <div class="enhanced-list">
             <div class="list-item profile-intro">
-                <div class="item-icon">
-                    <i class="fas fa-user-astronaut"></i>
+                <div class="item-icon profile-image-container">
+                    <img src="coast_side.png" alt="Sankalp Chudmunge" class="profile-image-round">
                 </div>
                 <div class="item-content">
                     <strong>Sankalp Chudmunge</strong><br>
-                    Physics graduate from <strong>IIT Palakkad</strong> with research experience in quantum systems. Strong foundation in computational methods and interdisciplinary collaboration, with a keen interest in quantum technologies and photonic devices.
+                    Physics graduate from IIT Palakkad with research experience in quantum systems. Strong foundation in computational methods and interdisciplinary collaboration, with a keen interest in quantum technologies and photonic devices.
                 </div>
             </div>
             

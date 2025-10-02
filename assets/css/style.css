@@ -263,7 +263,8 @@ body {
     height: 18px;
     width: 18px;
     left: var(--toggle-position);
-    bottom: 2px;
+    top: 50%;
+    transform: translateY(-50%);
     background-color: var(--accent-primary);
     border-radius: 50%;
     /* Position controlled by CSS custom property for smooth JS animation */
@@ -622,9 +623,9 @@ section {
 }
 
 .profile-intro {
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.6;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .profile-intro strong {
@@ -705,6 +706,20 @@ section {
     color: white;
 }
 
+.profile-image-container {
+    padding: 0 !important;
+    overflow: hidden;
+    width: 80px !important;
+    height: 80px !important;
+}
+
+.profile-image-round {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
 .item-content {
     flex: 1;
     line-height: 1.6;
@@ -717,9 +732,9 @@ section {
 }
 
 .profile-intro {
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.6;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .profile-intro strong {
