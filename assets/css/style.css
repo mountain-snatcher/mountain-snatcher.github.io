@@ -622,7 +622,7 @@ section {
 }
 
 .profile-intro {
-    font-size: 1.8rem;
+    font-size: 1rem;
     line-height: 1.6;
     font-weight: 500;
 }
@@ -717,7 +717,7 @@ section {
 }
 
 .profile-intro {
-    font-size: 1.8rem;
+    font-size: 1rem;
     line-height: 1.6;
     font-weight: 500;
 }
@@ -1556,7 +1556,7 @@ section {
     }
     
     .profile-intro {
-        font-size: 1.4rem;
+        font-size: 0.95rem;
     }
     
     .profile-intro strong {

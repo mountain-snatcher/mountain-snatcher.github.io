@@ -39,7 +39,7 @@ description: Quantum Engineer
                     <i class="fas fa-atom"></i>
                 </div>
                 <div class="item-content">
-                    <strong>Profile:</strong> Quantum engineer with Masters in Computational Physics. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.
+                    <strong>Profile:</strong> Masters in Computational Physics. Applying quantum systems research and numerical methods to scalable software architectures and high-performance platforms.
                 </div>
             </div>
             
@@ -50,7 +50,7 @@ description: Quantum Engineer
                 <div class="item-content">
                     <strong>Location:</strong> Maharashtra, India<br>
                     <strong>Education:</strong> M.Sc. Physics (Computational Physics), IIT Palakkad<br>
-                    <strong>Specialization:</strong> Quantum Systems & Quantum Engineering
+                    <strong>Specialization:</strong> Computational Physics
                 </div>
             </div>
             
