@@ -142,7 +142,10 @@ description: Quantum Engineer
                     JAM-2022 AIR 768 (top 1%)
                 </div>
                 <div class="list-item">
-                    98.5 percentile in aptitude test
+                    99.4 percentile in aptitude test
+                </div>
+                <div class="list-item">
+                    State Intra-Tournament Cricket (2012): Represented Sangli District in the Under-14 State Tournament, where the team secured runner-up position.
                 </div>
             </div>
         </div>
