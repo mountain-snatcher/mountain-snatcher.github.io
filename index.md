@@ -62,29 +62,29 @@ description: Quantum Engineer
                     <strong>Technical Skills:</strong><br>
                     <div class="skills-enhanced">
                         <div class="skill-group">
-                            <span class="group-label">Programming:</span>
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">FastAPI</span>
-                            <span class="skill-tag">SQLModel</span>
-                            <span class="skill-tag">REST APIs</span>
-                        </div>
-                        <div class="skill-group">
-                            <span class="group-label">Data & Cloud:</span>
-                            <span class="skill-tag">PostgreSQL</span>
-                            <span class="skill-tag">Redis</span>
-                            <span class="skill-tag">Google Cloud</span>
-                            <span class="skill-tag">Docker</span>
-                            <span class="skill-tag">CI/CD</span>
-                        </div>
-                        <div class="skill-group">
-                            <span class="group-label">Quantum & Physics:</span>
-                            <span class="skill-tag">NumPy</span>
+                            <span class="group-label">Physics & Simulation:</span>
                             <span class="skill-tag">Computational Physics</span>
-                            <span class="skill-tag">Quantum Systems</span>
-                            <span class="skill-tag">Numerical Methods</span>
+                            <span class="skill-tag">Many-Body Systems</span>
+                            <span class="skill-tag">Phase Transitions</span>
+                            <span class="skill-tag">Edge States</span>
+                            <span class="skill-tag">Statistical Mechanics</span>
+                        </div>
+                        <div class="skill-group">
+                            <span class="group-label">Quantum Computing:</span>
                             <span class="skill-tag">Qiskit</span>
                             <span class="skill-tag">Quantum Algorithms</span>
-                            <span class="skill-tag">Qiskit Finance</span>
+                            <span class="skill-tag">VQE (Variational Quantum Eigensolver)</span>
+                            <span class="skill-tag">Majorana Fermions</span>
+                            <span class="skill-tag">Quantum Finance</span>
+                        </div>
+                        <div class="skill-group">
+                            <span class="group-label">Scientific Computing:</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">NumPy</span>
+                            <span class="skill-tag">SciPy</span>
+                            <span class="skill-tag">Matplotlib</span>
+                            <span class="skill-tag">Numerical Methods</span>
+                            <span class="skill-tag">Monte Carlo Simulations</span>
                         </div>
                     </div>
                 </div>
